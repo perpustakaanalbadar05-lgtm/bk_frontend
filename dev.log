@@ -1,0 +1,15 @@
+
+> simbk-frontend@1.0.0 dev
+> vite
+
+
+  VITE v5.4.21  ready in 207 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+6:28:10 PM [vite] hmr update /src/pages/KlasikalPage.jsx, /src/index.css
+6:31:32 PM [vite] hmr update /src/pages/AsesmenPage.jsx, /src/index.css
+6:32:11 PM [vite] hmr update /src/App.jsx, /src/index.css
+6:32:25 PM [vite] hmr update /src/App.jsx, /src/index.css
+6:32:38 PM [vite] hmr update /src/components/Sidebar.jsx, /src/index.css
+6:32:51 PM [vite] hmr update /src/components/Topbar.jsx, /src/index.css
