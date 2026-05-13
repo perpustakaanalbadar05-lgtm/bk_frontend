@@ -78,25 +78,25 @@ export default function KonselingPage() {
       {showForm && (
         <div className="fixed inset-0 z-[999] flex justify-end">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowForm(false)} />
-          <div className="relative w-full max-w-xl h-full bg-dark-950 border-l border-white/10 shadow-2xl overflow-y-auto animate-in flex flex-col" style={{animationDuration: '0.3s'}}>
-            <div className="p-6 border-b border-white/10 flex items-center justify-between sticky top-0 bg-dark-950/90 backdrop-blur z-10">
+          <div className="relative w-full max-w-xl h-full bg-dark-950 border-l border-white/20 shadow-2xl overflow-y-auto animate-in flex flex-col" style={{animationDuration: '0.3s'}}>
+            <div className="p-6 border-b border-white/20 flex items-center justify-between sticky top-0 bg-dark-950/90 backdrop-blur z-10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center">
                   <RiBallPenLine className="text-xl text-white" />
                 </div>
                 <div>
                   <h2 className="font-display font-bold text-white text-lg">Pencatatan Jurnal Digital</h2>
-                  <p className="text-dark-400 text-xs">Rekam sesi layanan bimbingan konseling</p>
+                  <p className="text-dark-200 text-xs">Rekam sesi layanan bimbingan konseling</p>
                 </div>
               </div>
-              <button onClick={() => setShowForm(false)} className="p-2 rounded-full hover:bg-white/10 text-dark-400 hover:text-white transition-colors">
+              <button onClick={() => setShowForm(false)} className="p-2 rounded-full hover:bg-white/10 text-dark-200 hover:text-white transition-colors">
                 <RiCloseLine className="text-xl" />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-5 flex-1">
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-dark-400 block mb-2">Informasi Subjek</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-dark-200 block mb-2">Informasi Subjek</label>
                 <div className="grid grid-cols-2 gap-3">
                   <input 
                     type="text" placeholder="Nama Siswa / Kelompok" required 
@@ -120,7 +120,7 @@ export default function KonselingPage() {
               </div>
 
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-dark-400 block mb-2">Detail Layanan</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-dark-200 block mb-2">Detail Layanan</label>
                 <input 
                   type="text" placeholder="Topik Permasalahan" required 
                   className="input-field text-sm mb-3"
@@ -139,11 +139,11 @@ export default function KonselingPage() {
                   <label className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
                     <RiAccountCircleLine className="text-base" /> Tanda Tangan Siswa (Validasi)
                   </label>
-                  <button type="button" onClick={handleClearSignature} className="text-xs text-dark-400 hover:text-red-400 flex items-center gap-1 transition-colors">
+                  <button type="button" onClick={handleClearSignature} className="text-xs text-dark-200 hover:text-red-400 flex items-center gap-1 transition-colors">
                     <RiEraserLine /> Bersihkan
                   </button>
                 </div>
-                <div className="border-2 border-dashed border-white/10 rounded-xl bg-white overflow-hidden h-[180px]">
+                <div className="border-2 border-dashed border-white/20 rounded-xl bg-white overflow-hidden h-[180px]">
                   <SignatureCanvas 
                     ref={sigCanvas}
                     penColor='black'
@@ -153,13 +153,13 @@ export default function KonselingPage() {
                     }} 
                   />
                 </div>
-                <p className="text-[10px] text-dark-500 mt-2 italic text-center">Silakan minta siswa/konseli untuk menandatangani kotak di atas.</p>
+                <p className="text-[10px] text-dark-300 mt-2 italic text-center">Silakan minta siswa/konseli untuk menandatangani kotak di atas.</p>
               </div>
             </form>
 
-            <div className="p-6 border-t border-white/10 bg-dark-900/50 flex gap-3">
+            <div className="p-6 border-t border-white/20 bg-white/5 flex gap-3">
               <button type="button" onClick={() => setShowForm(false)} className="btn-secondary flex-1">Batal</button>
-              <button type="button" onClick={handleSubmit} className="btn-primary flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 gap-2">
+              <button type="button" onClick={handleSubmit} className="btn-primary flex-1 bg-primary-500 gap-2">
                 <RiCheckLine /> Simpan Jurnal
               </button>
             </div>
@@ -174,12 +174,12 @@ export default function KonselingPage() {
             Jurnal Konseling Digital
             <span className="badge-primary text-[10px] py-0.5">Realtime</span>
           </h1>
-          <p className="text-dark-400 text-sm">Arsip & pencatatan sesi layanan bimbingan lengkap dengan digital signature.</p>
+          <p className="text-dark-200 text-sm">Arsip & pencatatan sesi layanan bimbingan lengkap dengan digital signature.</p>
         </div>
         <button 
           id="konseling-add-btn" 
           onClick={() => setShowForm(true)}
-          className="btn-primary text-sm py-2.5 shadow-glow-teal bg-gradient-to-r from-teal-600 to-emerald-600 animate-pulse-slow"
+          className="btn-primary text-sm py-2.5 shadow-glow-teal bg-primary-500 animate-pulse-slow"
         >
           <RiBallPenLine className="text-lg" /> Catat Sesi Baru
         </button>
@@ -195,12 +195,12 @@ export default function KonselingPage() {
         ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="card-feature flex items-center gap-4 py-5 px-6 relative overflow-hidden group">
             <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity text-6xl"><Icon /></div>
-            <div className={`p-3 rounded-xl bg-dark-800 border border-white/5 ${color}`}>
+            <div className={`p-3 rounded-xl bg-white/10 border border-white/20 ${color}`}>
               <Icon className="text-2xl" />
             </div>
             <div>
               <div className={`font-display font-black text-2xl text-white`}>{value}</div>
-              <div className="text-dark-400 text-xs">{label}</div>
+              <div className="text-dark-200 text-xs">{label}</div>
             </div>
           </div>
         ))}
@@ -208,27 +208,27 @@ export default function KonselingPage() {
 
       {/* Tabs + List View */}
       <div className="card-feature p-0 overflow-hidden">
-        <div className="flex items-center justify-between p-5 border-b border-white/10 bg-dark-900/50">
+        <div className="flex items-center justify-between p-5 border-b border-white/20 bg-white/5">
           <div className="flex gap-1">
             {tabs.map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
-                  activeTab === tab ? 'bg-primary-600/20 border border-primary-500/50 text-white' : 'text-dark-500 hover:text-white'
+                  activeTab === tab ? 'bg-primary-600/20 border border-primary-500/50 text-white' : 'text-dark-300 hover:text-white'
                 }`}
               >
                 {tab}
               </button>
             ))}
           </div>
-          <div className="text-xs text-dark-500 hidden md:block">Menampilkan {filtered.length} arsip</div>
+          <div className="text-xs text-dark-300 hidden md:block">Menampilkan {filtered.length} arsip</div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/5 bg-dark-900/30">
+              <tr className="border-b border-white/20 bg-dark-900/30">
                 <th className="table-header text-left py-4 px-6">Subjek / Siswa</th>
                 <th className="table-header text-left py-4 px-4">Topik Utama</th>
                 <th className="table-header text-left py-4 px-4 hidden md:table-cell">Klasifikasi</th>
@@ -242,12 +242,12 @@ export default function KonselingPage() {
                 <tr key={s.id} className="hover:bg-white/5 transition-all group">
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-dark-800 flex items-center justify-center font-bold text-dark-300 border border-white/10 group-hover:border-primary-500/50 group-hover:text-white transition-colors">
+                      <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center font-bold text-dark-300 border border-white/20 group-hover:border-primary-500/50 group-hover:text-white transition-colors">
                         {s.siswa[0]}
                       </div>
                       <div>
                         <div className="font-bold text-white text-sm group-hover:text-primary-300 transition-colors">{s.siswa}</div>
-                        <div className="text-dark-500 text-xs flex items-center gap-1.5 mt-0.5">
+                        <div className="text-dark-300 text-xs flex items-center gap-1.5 mt-0.5">
                           <span className="font-medium">{s.kelas}</span> • <span className="opacity-70">{s.tanggal}</span>
                         </div>
                       </div>
@@ -261,14 +261,14 @@ export default function KonselingPage() {
                         <RiBallPenLine />
                       </div>
                     ) : (
-                      <div className="inline-flex p-1.5 rounded-full bg-dark-800 text-dark-600" title="Belum ditanda tangani">
+                      <div className="inline-flex p-1.5 rounded-full bg-white/10 text-dark-600" title="Belum ditanda tangani">
                         <RiBallPenLine />
                       </div>
                     )}
                   </td>
                   <td className="table-cell"><span className={STATUS_CLS[s.status]}>{s.status}</span></td>
                   <td className="py-4 px-6 text-center">
-                    <button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-800 border border-white/10 text-xs text-white hover:bg-primary-600 hover:border-primary-500 transition-all">
+                    <button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-xs text-white hover:bg-primary-600 hover:border-primary-500 transition-all">
                       <RiFileTextLine className="text-sm" /> Buka Jurnal
                     </button>
                   </td>
@@ -280,7 +280,7 @@ export default function KonselingPage() {
           {filtered.length === 0 && (
             <div className="p-12 text-center">
               <RiFileTextLine className="text-5xl text-dark-700 mx-auto mb-3" />
-              <p className="text-dark-500">Tidak ada data konseling untuk filter "{activeTab}".</p>
+              <p className="text-dark-300">Tidak ada data konseling untuk filter "{activeTab}".</p>
             </div>
           )}
         </div>

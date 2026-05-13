@@ -61,7 +61,7 @@ export default function DashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl text-white">{greeting}, Guru BK 👋</h1>
-          <p className="text-dark-400 text-sm mt-1">
+          <p className="text-dark-200 text-sm mt-1">
             <RiCalendarLine className="inline mr-1" />
             {now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
@@ -102,7 +102,7 @@ export default function DashboardPage() {
               </span>
             </div>
             <div className="font-display font-black text-3xl text-white mb-1">{value}</div>
-            <div className="text-dark-400 text-sm">{label}</div>
+            <div className="text-dark-200 text-sm">{label}</div>
           </div>
         ))}
       </div>
@@ -112,7 +112,7 @@ export default function DashboardPage() {
         {/* Area Chart */}
         <div className="card-feature">
           <h3 className="font-display font-bold text-white mb-1">Tren Layanan BK</h3>
-          <p className="text-dark-400 text-xs mb-5">Konseling & asesmen per bulan</p>
+          <p className="text-dark-200 text-xs mb-5">Konseling & asesmen per bulan</p>
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={CHART_DATA}>
               <defs>
@@ -139,7 +139,7 @@ export default function DashboardPage() {
         {/* Bar Chart */}
         <div className="card-feature">
           <h3 className="font-display font-bold text-white mb-1">Sesi per Bulan</h3>
-          <p className="text-dark-400 text-xs mb-5">Perbandingan layanan tahunan</p>
+          <p className="text-dark-200 text-xs mb-5">Perbandingan layanan tahunan</p>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={CHART_DATA} barSize={18}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -159,14 +159,14 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between mb-5">
           <div>
             <h3 className="font-display font-bold text-white">Konseling Terbaru</h3>
-            <p className="text-dark-400 text-xs mt-0.5">5 sesi terakhir yang dicatat</p>
+            <p className="text-dark-200 text-xs mt-0.5">5 sesi terakhir yang dicatat</p>
           </div>
           <button className="btn-ghost text-xs gap-1.5"><RiEyeLine />Lihat Semua</button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/10">
+              <tr className="border-b border-white/20">
                 <th className="table-header text-left pb-3">Nama Siswa</th>
                 <th className="table-header text-left pb-3">Kelas</th>
                 <th className="table-header text-left pb-3 hidden md:table-cell">Topik</th>
@@ -181,7 +181,7 @@ export default function DashboardPage() {
                   <td className="table-cell">{kelas}</td>
                   <td className="table-cell hidden md:table-cell">{topik}</td>
                   <td className="table-cell"><span className={STATUS_STYLE[status]}>{status}</span></td>
-                  <td className="table-cell hidden sm:table-cell text-dark-500">{date}</td>
+                  <td className="table-cell hidden sm:table-cell text-dark-300">{date}</td>
                 </tr>
               ))}
             </tbody>

@@ -20,7 +20,7 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-display font-bold text-2xl text-white">Pengaturan</h1>
-        <p className="text-dark-400 text-sm">Kelola profil dan konfigurasi sistem SIMBK</p>
+        <p className="text-dark-200 text-sm">Kelola profil dan konfigurasi sistem SIMBK</p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
@@ -32,7 +32,7 @@ export default function SettingsPage() {
                 key={id}
                 onClick={() => setActiveTab(id)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                  activeTab === id ? 'bg-primary-600/40 text-white border border-primary-500/30' : 'text-dark-400 hover:text-white hover:bg-white/10'
+                  activeTab === id ? 'bg-primary-600/40 text-white border border-primary-500/30' : 'text-dark-200 hover:text-white hover:bg-white/10'
                 }`}
               >
                 <Icon className="text-lg" /> {label}
@@ -47,15 +47,15 @@ export default function SettingsPage() {
             <>
               <div>
                 <h2 className="font-display font-bold text-white text-lg mb-1">Profil Pengguna</h2>
-                <p className="text-dark-400 text-sm">Perbarui informasi akun Guru BK</p>
+                <p className="text-dark-200 text-sm">Perbarui informasi akun Guru BK</p>
               </div>
               <div className="flex items-center gap-4 p-4 glass rounded-xl">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-2xl font-bold text-white">
+                <div className="w-16 h-16 rounded-2xl bg-primary-500 flex items-center justify-center text-2xl font-bold text-white">
                   {user?.name?.[0]?.toUpperCase() || 'G'}
                 </div>
                 <div>
                   <p className="font-semibold text-white">{user?.name || 'Guru BK'}</p>
-                  <p className="text-dark-400 text-sm">{user?.email || 'guru@sekolah.id'}</p>
+                  <p className="text-dark-200 text-sm">{user?.email || 'guru@sekolah.id'}</p>
                   <button className="text-primary-400 text-xs mt-1 hover:text-primary-300 transition-colors">Ganti Foto</button>
                 </div>
               </div>
@@ -81,7 +81,7 @@ export default function SettingsPage() {
             <>
               <div>
                 <h2 className="font-display font-bold text-white text-lg mb-1">Keamanan Akun</h2>
-                <p className="text-dark-400 text-sm">Perbarui password akun Anda</p>
+                <p className="text-dark-200 text-sm">Perbarui password akun Anda</p>
               </div>
               <div className="space-y-4 max-w-md">
                 {['Password Lama', 'Password Baru', 'Konfirmasi Password Baru'].map(label => (
@@ -98,7 +98,7 @@ export default function SettingsPage() {
             <>
               <div>
                 <h2 className="font-display font-bold text-white text-lg mb-1">Notifikasi</h2>
-                <p className="text-dark-400 text-sm">Atur preferensi notifikasi sistem</p>
+                <p className="text-dark-200 text-sm">Atur preferensi notifikasi sistem</p>
               </div>
               <div className="space-y-3">
                 {[
@@ -125,22 +125,22 @@ export default function SettingsPage() {
             <>
               <div>
                 <h2 className="font-display font-bold text-white text-lg mb-1">Pengaturan Aplikasi</h2>
-                <p className="text-dark-400 text-sm">Konfigurasi tampilan dan perilaku SIMBK</p>
+                <p className="text-dark-200 text-sm">Konfigurasi tampilan dan perilaku SIMBK</p>
               </div>
               <div className="p-4 glass rounded-xl">
                 <div className="flex items-center gap-3">
                   <RiShieldStarLine className="text-primary-400 text-2xl" />
                   <div>
                     <p className="font-semibold text-white text-sm">SIMBK v1.0.0</p>
-                    <p className="text-dark-400 text-xs">Sistem Informasi Manajemen Bimbingan dan Konseling</p>
-                    <p className="text-dark-500 text-xs">CV. Alifba Media © {new Date().getFullYear()}</p>
+                    <p className="text-dark-200 text-xs">Sistem Informasi Manajemen Bimbingan dan Konseling</p>
+                    <p className="text-dark-300 text-xs">CV. Alifba Media © {new Date().getFullYear()}</p>
                   </div>
                 </div>
               </div>
             </>
           )}
 
-          <div className="flex justify-end pt-4 border-t border-white/10">
+          <div className="flex justify-end pt-4 border-t border-white/20">
             <button id="settings-save-btn" onClick={handleSave} className="btn-primary py-2.5">
               <RiSaveLine /> Simpan Perubahan
             </button>

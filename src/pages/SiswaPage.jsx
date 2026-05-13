@@ -44,44 +44,44 @@ function SiswaModal({ isOpen, onClose, initial, onSave }) {
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-xl bg-dark-950 border border-white/10 rounded-2xl shadow-2xl animate-in flex flex-col max-h-[90vh]" style={{animationDuration:'0.25s'}}>
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
+      <div className="relative w-full max-w-xl bg-dark-950 border border-white/20 rounded-2xl shadow-2xl animate-in flex flex-col max-h-[90vh]" style={{animationDuration:'0.25s'}}>
+        <div className="flex items-center justify-between p-6 border-b border-white/20">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center">
               <RiUserLine className="text-xl text-white" />
             </div>
             <div>
               <h2 className="font-display font-bold text-white text-lg">{isEdit ? 'Edit Data Siswa' : 'Tambah Siswa Baru'}</h2>
-              <p className="text-dark-400 text-xs">{isEdit ? `NIS: ${initial.nis}` : 'Isi formulir data siswa binaan'}</p>
+              <p className="text-dark-200 text-xs">{isEdit ? `NIS: ${initial.nis}` : 'Isi formulir data siswa binaan'}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-dark-400 hover:text-white transition-colors"><RiCloseLine className="text-xl" /></button>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-dark-200 hover:text-white transition-colors"><RiCloseLine className="text-xl" /></button>
         </div>
         <form onSubmit={handleSubmit} className="overflow-y-auto flex-1 p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-dark-400 mb-2">Nama Lengkap *</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-2">Nama Lengkap *</label>
               <input className="input-field" placeholder="Contoh: Ahmad Fauzi" value={form.nama} onChange={e=>set('nama',e.target.value)} required />
             </div>
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-dark-400 mb-2">NIS *</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-2">NIS *</label>
               <input className="input-field" placeholder="2024001" value={form.nis} onChange={e=>set('nis',e.target.value)} required />
             </div>
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-dark-400 mb-2">Jenis Kelamin</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-2">Jenis Kelamin</label>
               <select className="input-field" value={form.jk} onChange={e=>set('jk',e.target.value)}>
                 <option value="L">Laki-laki</option>
                 <option value="P">Perempuan</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-dark-400 mb-2">Kelas</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-2">Kelas</label>
               <select className="input-field" value={form.kelas} onChange={e=>set('kelas',e.target.value)}>
                 {KELAS_OPTIONS.map(k=><option key={k} value={k}>{k}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-dark-400 mb-2">Status</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-2">Status</label>
               <select className="input-field" value={form.status} onChange={e=>set('status',e.target.value)}>
                 <option value="Aktif">Aktif</option>
                 <option value="Perhatian">Perlu Perhatian</option>
@@ -89,16 +89,16 @@ function SiswaModal({ isOpen, onClose, initial, onSave }) {
               </select>
             </div>
             <div className="col-span-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-dark-400 mb-2">No. HP / WA</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-2">No. HP / WA</label>
               <input className="input-field" placeholder="+62 8xx-xxxx-xxxx" value={form.hp} onChange={e=>set('hp',e.target.value)} />
             </div>
             <div className="col-span-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-dark-400 mb-2">Alamat Rumah</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-2">Alamat Rumah</label>
               <textarea className="input-field resize-none" rows={2} placeholder="Jl. Contoh No. 1, Kota" value={form.alamat} onChange={e=>set('alamat',e.target.value)} />
             </div>
           </div>
         </form>
-        <div className="p-5 border-t border-white/10 bg-dark-900/50 flex gap-3">
+        <div className="p-5 border-t border-white/20 bg-white/5 flex gap-3">
           <button type="button" onClick={onClose} className="flex-1 btn-secondary py-2.5 text-sm">Batal</button>
           <button type="button" onClick={handleSubmit} className="flex-1 btn-primary py-2.5 text-sm gap-2">
             <RiSaveLine /> {isEdit ? 'Simpan Perubahan' : 'Tambah Siswa'}
@@ -114,17 +114,17 @@ function DetailModal({ siswa, onClose }) {
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-dark-950 border border-white/10 rounded-2xl shadow-2xl animate-in" style={{animationDuration:'0.25s'}}>
-        <div className="p-6 border-b border-white/10 flex justify-between items-center">
+      <div className="relative w-full max-w-md bg-dark-950 border border-white/20 rounded-2xl shadow-2xl animate-in" style={{animationDuration:'0.25s'}}>
+        <div className="p-6 border-b border-white/20 flex justify-between items-center">
           <h2 className="font-bold text-white text-lg">Detail Siswa</h2>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-dark-400 hover:text-white"><RiCloseLine /></button>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-dark-200 hover:text-white"><RiCloseLine /></button>
         </div>
         <div className="p-6 space-y-4">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-2xl font-bold text-white">{siswa.nama[0]}</div>
+            <div className="w-16 h-16 rounded-2xl bg-primary-500 flex items-center justify-center text-2xl font-bold text-white">{siswa.nama[0]}</div>
             <div>
               <div className="font-bold text-white text-xl">{siswa.nama}</div>
-              <div className="text-dark-400 text-sm font-mono">{siswa.nis}</div>
+              <div className="text-dark-200 text-sm font-mono">{siswa.nis}</div>
               <span className={STATUS_CLS[siswa.status]}>{siswa.status}</span>
             </div>
           </div>
@@ -136,19 +136,19 @@ function DetailModal({ siswa, onClose }) {
               { l: 'Total Konseling', v: `${siswa.konseling} sesi` },
             ].map(({ l, v }) => (
               <div key={l} className="p-3 rounded-xl glass">
-                <div className="text-dark-500 text-xs uppercase font-bold tracking-wider mb-1">{l}</div>
+                <div className="text-dark-300 text-xs uppercase font-bold tracking-wider mb-1">{l}</div>
                 <div className="text-white font-semibold text-sm">{v}</div>
               </div>
             ))}
           </div>
           {siswa.alamat && (
             <div className="p-3 rounded-xl glass">
-              <div className="text-dark-500 text-xs uppercase font-bold tracking-wider mb-1">Alamat</div>
+              <div className="text-dark-300 text-xs uppercase font-bold tracking-wider mb-1">Alamat</div>
               <div className="text-white text-sm">{siswa.alamat}</div>
             </div>
           )}
         </div>
-        <div className="p-5 border-t border-white/10">
+        <div className="p-5 border-t border-white/20">
           <button onClick={onClose} className="w-full btn-secondary py-2.5 text-sm">Tutup</button>
         </div>
       </div>
@@ -161,12 +161,12 @@ function ConfirmDelete({ siswa, onClose, onConfirm }) {
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-dark-950 border border-white/10 rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-in" style={{animationDuration:'0.2s'}}>
+      <div className="relative bg-dark-950 border border-white/20 rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-in" style={{animationDuration:'0.2s'}}>
         <div className="w-14 h-14 rounded-2xl bg-red-500/20 border border-red-500/30 flex items-center justify-center mx-auto mb-4">
           <RiAlertLine className="text-3xl text-red-400" />
         </div>
         <h3 className="text-white font-bold text-lg text-center mb-2">Hapus Data Siswa?</h3>
-        <p className="text-dark-400 text-sm text-center mb-6">Data <span className="text-white font-semibold">{siswa.nama}</span> akan dihapus permanen dan tidak bisa dikembalikan.</p>
+        <p className="text-dark-200 text-sm text-center mb-6">Data <span className="text-white font-semibold">{siswa.nama}</span> akan dihapus permanen dan tidak bisa dikembalikan.</p>
         <div className="flex gap-3">
           <button onClick={onClose} className="flex-1 btn-secondary py-2.5 text-sm">Batal</button>
           <button onClick={() => { onConfirm(siswa.id); onClose() }} className="flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold bg-red-600 hover:bg-red-500 text-white transition-all">Hapus</button>
@@ -244,7 +244,7 @@ export default function SiswaPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl text-white">Data Siswa</h1>
-          <p className="text-dark-400 text-sm">Kelola data siswa binaan Guru BK</p>
+          <p className="text-dark-200 text-sm">Kelola data siswa binaan Guru BK</p>
         </div>
         <div className="flex gap-2">
           <button onClick={handleExport} className="btn-secondary text-sm py-2"><RiDownloadLine /> Export CSV</button>
@@ -262,7 +262,7 @@ export default function SiswaPage() {
         ].map(({ label, value, color }) => (
           <div key={label} className="card-feature text-center py-4">
             <div className={`font-display font-black text-3xl ${color} mb-1`}>{value}</div>
-            <div className="text-dark-400 text-xs">{label}</div>
+            <div className="text-dark-200 text-xs">{label}</div>
           </div>
         ))}
       </div>
@@ -271,7 +271,7 @@ export default function SiswaPage() {
       <div className="card-feature">
         <div className="flex flex-col sm:flex-row gap-3 mb-5">
           <div className="flex-1 relative">
-            <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-400" />
+            <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-200" />
             <input
               type="text" placeholder="Cari nama atau NIS..."
               className="input-field pl-9"
@@ -294,17 +294,17 @@ export default function SiswaPage() {
           <div className="mb-5 p-4 rounded-xl glass border border-primary-500/20 space-y-3 animate-in" style={{animationDuration:'0.2s'}}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-semibold text-white">Panel Filter</span>
-              <button onClick={resetFilter} className="text-xs text-dark-400 hover:text-red-400 transition-colors flex items-center gap-1"><RiCloseLine /> Reset</button>
+              <button onClick={resetFilter} className="text-xs text-dark-200 hover:text-red-400 transition-colors flex items-center gap-1"><RiCloseLine /> Reset</button>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-dark-400 block mb-2">Status</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-dark-200 block mb-2">Status</label>
                 <select className="input-field text-sm" value={filterStatus} onChange={e=>{setFilterStatus(e.target.value);setPage(1)}}>
                   {['Semua','Aktif','Perhatian','Alumni'].map(s=><option key={s}>{s}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-dark-400 block mb-2">Kelas</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-dark-200 block mb-2">Kelas</label>
                 <select className="input-field text-sm" value={filterKelas} onChange={e=>{setFilterKelas(e.target.value);setPage(1)}}>
                   <option>Semua</option>
                   {KELAS_OPTIONS.map(k=><option key={k}>{k}</option>)}
@@ -318,7 +318,7 @@ export default function SiswaPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/10">
+              <tr className="border-b border-white/20">
                 <th className="table-header text-left pb-3">Nama Siswa</th>
                 <th className="table-header text-left pb-3">NIS</th>
                 <th className="table-header text-left pb-3">Kelas</th>
@@ -330,7 +330,7 @@ export default function SiswaPage() {
             </thead>
             <tbody className="divide-y divide-white/5">
               {paginated.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-12 text-dark-500">Tidak ada data siswa yang cocok.</td></tr>
+                <tr><td colSpan={7} className="text-center py-12 text-dark-300">Tidak ada data siswa yang cocok.</td></tr>
               ) : paginated.map(s => (
                 <tr key={s.id} className="hover:bg-white/5 transition-colors">
                   <td className="table-cell font-medium text-white">{s.nama}</td>
@@ -340,13 +340,13 @@ export default function SiswaPage() {
                   <td className="table-cell"><span className={STATUS_CLS[s.status]}>{s.status}</span></td>
                   <td className="table-cell hidden md:table-cell">
                     <span className="font-semibold text-white">{s.konseling}</span>
-                    <span className="text-dark-500 ml-1">sesi</span>
+                    <span className="text-dark-300 ml-1">sesi</span>
                   </td>
                   <td className="table-cell">
                     <div className="flex items-center justify-center gap-1">
-                      <button title="Detail" onClick={() => setModalDetail(s)} className="p-1.5 rounded-lg hover:bg-primary-500/20 text-dark-400 hover:text-primary-300 transition-colors"><RiEyeLine /></button>
-                      <button title="Edit" onClick={() => setModalEdit(s)} className="p-1.5 rounded-lg hover:bg-teal-500/20 text-dark-400 hover:text-teal-300 transition-colors"><RiEditLine /></button>
-                      <button title="Hapus" onClick={() => setModalDelete(s)} className="p-1.5 rounded-lg hover:bg-red-500/20 text-dark-400 hover:text-red-400 transition-colors"><RiDeleteBinLine /></button>
+                      <button title="Detail" onClick={() => setModalDetail(s)} className="p-1.5 rounded-lg hover:bg-primary-500/20 text-dark-200 hover:text-primary-300 transition-colors"><RiEyeLine /></button>
+                      <button title="Edit" onClick={() => setModalEdit(s)} className="p-1.5 rounded-lg hover:bg-teal-500/20 text-dark-200 hover:text-teal-300 transition-colors"><RiEditLine /></button>
+                      <button title="Hapus" onClick={() => setModalDelete(s)} className="p-1.5 rounded-lg hover:bg-red-500/20 text-dark-200 hover:text-red-400 transition-colors"><RiDeleteBinLine /></button>
                     </div>
                   </td>
                 </tr>
@@ -356,7 +356,7 @@ export default function SiswaPage() {
         </div>
 
         {/* Pagination */}
-        <div className="mt-4 flex items-center justify-between text-dark-400 text-sm border-t border-white/10 pt-4">
+        <div className="mt-4 flex items-center justify-between text-dark-200 text-sm border-t border-white/20 pt-4">
           <span>Menampilkan {Math.min((page-1)*PAGE_SIZE+1, filtered.length)}–{Math.min(page*PAGE_SIZE, filtered.length)} dari {filtered.length} siswa</span>
           <div className="flex gap-1">
             <button onClick={() => setPage(p=>Math.max(1,p-1))} disabled={page===1} className="w-8 h-8 rounded-lg text-sm transition-colors hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed">‹</button>

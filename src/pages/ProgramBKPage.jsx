@@ -47,7 +47,7 @@ export default function ProgramBKPage() {
             Program BK Otomatis
             <span className="badge-teal bg-emerald-500/10 text-emerald-400 text-xs py-0.5 animate-pulse">AI Powered</span>
           </h1>
-          <p className="text-dark-400 text-sm mt-1">Hasilkan PROTA, PROSEM, dan RPL otomatis dari integrasi data asesmen.</p>
+          <p className="text-dark-200 text-sm mt-1">Hasilkan PROTA, PROSEM, dan RPL otomatis dari integrasi data asesmen.</p>
         </div>
         <div className="flex items-center gap-2">
           <button 
@@ -58,7 +58,7 @@ export default function ProgramBKPage() {
           </button>
           <button 
             onClick={() => setActiveTab('generator')}
-            className="btn-primary text-sm py-2.5 shadow-glow-accent bg-gradient-to-r from-accent-600 to-primary-600"
+            className="btn-primary text-sm py-2.5 shadow-glow-accent bg-primary-500"
           >
             <RiMagicLine className="text-lg" /> Generate Otomatis
           </button>
@@ -75,10 +75,10 @@ export default function ProgramBKPage() {
               { label: 'PROSEM Selesai', count: '2 Dokumen', color: 'from-purple-500/20 to-pink-500/20', text: 'text-pink-400' },
               { label: 'RPL Terbit', count: '18 Dokumen', color: 'from-teal-500/20 to-emerald-500/20', text: 'text-teal-400' }
             ].map((item, i) => (
-              <div key={i} className={`p-5 rounded-2xl bg-gradient-to-br ${item.color} border border-white/5 backdrop-blur-lg`}>
+              <div key={i} className={`p-5 rounded-2xl bg-gradient-to-br ${item.color} border border-white/20 backdrop-blur-lg`}>
                 <h4 className="text-dark-300 text-xs font-medium uppercase tracking-wider">{item.label}</h4>
                 <p className={`text-3xl font-display font-black mt-2 ${item.text}`}>{item.count}</p>
-                <div className="flex justify-between items-center mt-4 text-xs text-dark-400">
+                <div className="flex justify-between items-center mt-4 text-xs text-dark-200">
                   <span>Aktif Tahun 2025/2026</span>
                   <RiCheckboxCircleLine className="text-teal-400 text-lg" />
                 </div>
@@ -103,7 +103,7 @@ export default function ProgramBKPage() {
             <div className="flex justify-between items-center mb-6">
               <h3 className="font-display font-bold text-white text-lg">Daftar Dokumen Program Terbit</h3>
               <div className="flex gap-2">
-                <select className="bg-dark-800 text-dark-300 text-xs border border-white/10 rounded-lg px-3 py-1.5 outline-none">
+                <select className="bg-white/10 text-dark-300 text-xs border border-white/20 rounded-lg px-3 py-1.5 outline-none">
                   <option>Tahun 2025/2026</option>
                 </select>
               </div>
@@ -116,15 +116,15 @@ export default function ProgramBKPage() {
                 { name: 'RPL Klasikal: Cara Belajar Efektif', type: 'RPL', date: '1 minggu lalu', status: 'Selesai' },
                 { name: 'RPL Bimbingan Kelompok: Karir', type: 'RPL', date: '2 minggu lalu', status: 'Draft' },
               ].map((prog, idx) => (
-                <div key={idx} className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-xl glass border-white/5 hover:bg-white/5 transition-colors group">
+                <div key={idx} className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-xl glass border-white/20 hover:bg-white/5 transition-colors group">
                   <div className="flex items-center gap-4 w-full sm:w-auto">
-                    <div className="p-3 rounded-xl bg-dark-800 border border-white/10 text-primary-400 group-hover:text-accent-400 transition-colors">
+                    <div className="p-3 rounded-xl bg-white/10 border border-white/20 text-primary-400 group-hover:text-accent-400 transition-colors">
                       <RiFileTextLine className="text-xl" />
                     </div>
                     <div>
                       <div className="font-medium text-white text-sm">{prog.name}</div>
-                      <div className="flex items-center gap-2 text-xs text-dark-500 mt-1">
-                        <span className="px-2 py-0.5 rounded bg-dark-700 border border-white/10 font-mono">{prog.type}</span>
+                      <div className="flex items-center gap-2 text-xs text-dark-300 mt-1">
+                        <span className="px-2 py-0.5 rounded bg-dark-700 border border-white/20 font-mono">{prog.type}</span>
                         <span>Diproses {prog.date}</span>
                       </div>
                     </div>
@@ -146,7 +146,7 @@ export default function ProgramBKPage() {
         <div className="animate-in">
           {!showResult ? (
             <div className="max-w-3xl mx-auto card-feature p-8 md:p-12 text-center border-dashed border-white/20">
-              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-primary-500/20 to-accent-500/20 rounded-3xl flex items-center justify-center border border-primary-500/30 mb-6 relative">
+              <div className="w-20 h-20 mx-auto bg-primary-500 rounded-3xl flex items-center justify-center border border-primary-500/30 mb-6 relative">
                 <RiMagicLine className={`text-4xl text-primary-400 ${generating ? 'animate-spin' : ''}`} />
                 {generating && <div className="absolute inset-0 border-2 border-primary-500 rounded-3xl animate-ping opacity-40" />}
               </div>
@@ -154,15 +154,15 @@ export default function ProgramBKPage() {
               {generating ? (
                 <div className="space-y-4 animate-pulse">
                   <h2 className="text-2xl font-display font-bold text-white">Sedang Mengolah Data...</h2>
-                  <p className="text-dark-400 max-w-md mx-auto text-sm">Menarik data Asesmen AKPD, mengurutkan skala prioritas masalah, memetakan bidang layanan, dan menyusun Rencana Pelaksanaan Layanan (RPL).</p>
-                  <div className="w-full bg-dark-800 h-2 rounded-full overflow-hidden max-w-sm mx-auto mt-6">
-                    <div className="bg-gradient-to-r from-primary-500 to-accent-500 h-full animate-shimmer" style={{ width: '100%', backgroundSize: '200% 100%' }} />
+                  <p className="text-dark-200 max-w-md mx-auto text-sm">Menarik data Asesmen AKPD, mengurutkan skala prioritas masalah, memetakan bidang layanan, dan menyusun Rencana Pelaksanaan Layanan (RPL).</p>
+                  <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden max-w-sm mx-auto mt-6">
+                    <div className="bg-primary-500 h-full animate-shimmer" style={{ width: '100%', backgroundSize: '200% 100%' }} />
                   </div>
                 </div>
               ) : (
                 <>
                   <h2 className="text-2xl font-display font-bold text-white mb-2">Konfigurasi Generator Program</h2>
-                  <p className="text-dark-400 text-sm mb-8 max-w-lg mx-auto">Pilih parameter di bawah ini, AI SIMBK akan menyusun struktur program tahunan dan semesteran Anda dalam hitungan detik.</p>
+                  <p className="text-dark-200 text-sm mb-8 max-w-lg mx-auto">Pilih parameter di bawah ini, AI SIMBK akan menyusun struktur program tahunan dan semesteran Anda dalam hitungan detik.</p>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left mb-8">
                     <div>
@@ -183,7 +183,7 @@ export default function ProgramBKPage() {
                       <label className="text-xs font-semibold text-dark-300 mb-1.5 block">Output Dokumen Yang Diperlukan</label>
                       <div className="grid grid-cols-3 gap-2">
                         {['PROTA', 'PROSEM', 'RPL'].map(item => (
-                          <label key={item} className="flex items-center gap-2 p-3 rounded-xl glass cursor-pointer hover:bg-white/5 border-white/10">
+                          <label key={item} className="flex items-center gap-2 p-3 rounded-xl glass cursor-pointer hover:bg-white/5 border-white/20">
                             <input type="checkbox" defaultChecked className="accent-primary-500 h-4 w-4" />
                             <span className="text-white font-medium text-sm">{item}</span>
                           </label>
@@ -192,9 +192,9 @@ export default function ProgramBKPage() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row justify-center gap-3 border-t border-white/10 pt-6">
+                  <div className="flex flex-col sm:flex-row justify-center gap-3 border-t border-white/20 pt-6">
                     <button onClick={() => setActiveTab('overview')} className="btn-secondary py-2.5">Batal</button>
-                    <button onClick={handleGenerate} className="btn-primary py-2.5 bg-gradient-to-r from-accent-600 to-primary-600 gap-2 px-8">
+                    <button onClick={handleGenerate} className="btn-primary py-2.5 bg-primary-500 gap-2 px-8">
                       <RiMagicLine /> Bangun Program Otomatis
                     </button>
                   </div>
@@ -205,14 +205,14 @@ export default function ProgramBKPage() {
             /* GENERATION RESULT VIEWER */
             <div className="space-y-6 animate-in">
               {/* Result Toolbar */}
-              <div className="card-feature p-4 flex flex-col md:flex-row justify-between items-center gap-4 bg-gradient-to-r from-dark-900 to-dark-800 border-emerald-500/30">
+              <div className="card-feature p-4 flex flex-col md:flex-row justify-between items-center gap-4 bg-primary-500 border-emerald-500/30">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center">
                     <RiCheckboxCircleLine className="text-2xl" />
                   </div>
                   <div>
                     <h4 className="text-white font-bold font-display text-lg">Pembuatan Berhasil!</h4>
-                    <p className="text-dark-400 text-xs">Draf dokumen di bawah disusun berdasarkan skor prioritas masalah siswa.</p>
+                    <p className="text-dark-200 text-xs">Draf dokumen di bawah disusun berdasarkan skor prioritas masalah siswa.</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -224,13 +224,13 @@ export default function ProgramBKPage() {
               {/* Viewer Body with Internal Tabs */}
               <div className="card-feature p-0 overflow-hidden">
                 {/* Result Type Switcher */}
-                <div className="flex bg-dark-900 border-b border-white/10">
+                <div className="flex bg-dark-900 border-b border-white/20">
                   {['PROTA', 'PROSEM', 'RPL'].map(tab => (
                     <button
                       key={tab}
                       onClick={() => setProgramType(tab)}
                       className={`flex-1 py-4 text-center font-display font-bold text-sm tracking-wider border-b-2 transition-all
-                        ${programType === tab ? 'border-primary-500 bg-primary-500/5 text-primary-300' : 'border-transparent text-dark-400 hover:text-white hover:bg-white/5'}
+                        ${programType === tab ? 'border-primary-500 bg-primary-500/5 text-primary-300' : 'border-transparent text-dark-200 hover:text-white hover:bg-white/5'}
                       `}
                     >
                       {tab} {tab === 'PROTA' ? 'Tahun' : tab === 'PROSEM' ? 'Semester' : 'Harian'}
@@ -246,9 +246,9 @@ export default function ProgramBKPage() {
                         <h5 className="text-white font-bold text-sm">Rencana Program Tahunan (PROTA) - 2025/2026</h5>
                         <button className="text-primary-400 text-xs hover:underline flex items-center gap-1"><RiDownloadLine /> Unduh XLSX</button>
                       </div>
-                      <div className="overflow-x-auto rounded-xl border border-white/10">
+                      <div className="overflow-x-auto rounded-xl border border-white/20">
                         <table className="w-full text-xs md:text-sm text-left text-dark-300">
-                          <thead className="bg-dark-800 text-dark-400 font-semibold border-b border-white/10">
+                          <thead className="bg-white/10 text-dark-200 font-semibold border-b border-white/20">
                             <tr>
                               <th className="px-4 py-3">Bidang</th>
                               <th className="px-4 py-3">Rumusan Kebutuhan (Materi)</th>
@@ -285,17 +285,17 @@ export default function ProgramBKPage() {
                         <h5 className="text-white font-bold text-sm">Rencana Program Semester Ganjil</h5>
                         <button className="text-primary-400 text-xs hover:underline flex items-center gap-1"><RiDownloadLine /> Unduh XLSX</button>
                       </div>
-                      <div className="overflow-x-auto rounded-xl border border-white/10">
+                      <div className="overflow-x-auto rounded-xl border border-white/20">
                         <table className="w-full text-xs md:text-sm text-left text-dark-300">
-                          <thead className="bg-dark-800 text-dark-400 border-b border-white/10 text-center">
+                          <thead className="bg-white/10 text-dark-200 border-b border-white/20 text-center">
                             <tr>
                               <th className="px-4 py-3 text-left" rowSpan="2">Bulan</th>
-                              <th className="px-4 py-2 border-b border-white/10" colSpan="4">Minggu Efektif</th>
+                              <th className="px-4 py-2 border-b border-white/20" colSpan="4">Minggu Efektif</th>
                             </tr>
-                            <tr className="text-[10px] bg-dark-900/50">
-                              <th className="px-2 py-1 border-r border-white/5">I</th>
-                              <th className="px-2 py-1 border-r border-white/5">II</th>
-                              <th className="px-2 py-1 border-r border-white/5">III</th>
+                            <tr className="text-[10px] bg-white/5">
+                              <th className="px-2 py-1 border-r border-white/20">I</th>
+                              <th className="px-2 py-1 border-r border-white/20">II</th>
+                              <th className="px-2 py-1 border-r border-white/20">III</th>
                               <th className="px-2 py-1">IV</th>
                             </tr>
                           </thead>
@@ -303,10 +303,10 @@ export default function ProgramBKPage() {
                             {MOCK_PROSEM.map((row, idx) => (
                               <tr key={idx} className="hover:bg-white/5">
                                 <td className="px-4 py-4 text-left font-bold text-white">{row.bulan}</td>
-                                <td className="px-2 py-4 border-r border-white/5 text-dark-400 text-xs">{row.m1}</td>
-                                <td className="px-2 py-4 border-r border-white/5 text-dark-400 text-xs">{row.m2}</td>
-                                <td className="px-2 py-4 border-r border-white/5 text-accent-400 font-medium text-xs bg-accent-500/5">{row.m3}</td>
-                                <td className="px-2 py-4 text-dark-500 text-xs">{row.m4}</td>
+                                <td className="px-2 py-4 border-r border-white/20 text-dark-200 text-xs">{row.m1}</td>
+                                <td className="px-2 py-4 border-r border-white/20 text-dark-200 text-xs">{row.m2}</td>
+                                <td className="px-2 py-4 border-r border-white/20 text-accent-400 font-medium text-xs bg-accent-500/5">{row.m3}</td>
+                                <td className="px-2 py-4 text-dark-300 text-xs">{row.m4}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -320,20 +320,20 @@ export default function ProgramBKPage() {
                       <h5 className="text-white font-bold text-sm mb-3">Draf RPL Siap Cetak (Berdasarkan PROTA)</h5>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {MOCK_PROTA.map((row) => (
-                          <div key={row.id} className="p-4 rounded-xl glass border-white/10 bg-dark-800/40 hover:border-primary-500/30 transition-all group">
+                          <div key={row.id} className="p-4 rounded-xl glass border-white/20 bg-white/10/40 hover:border-primary-500/30 transition-all group">
                             <div className="flex justify-between items-start">
                               <div>
                                 <span className="text-[10px] font-bold text-primary-400 uppercase tracking-widest">RPL BK KLASIKAL</span>
                                 <h6 className="text-white font-bold mt-1 group-hover:text-primary-300 transition-colors">{row.kebutuhan}</h6>
-                                <p className="text-dark-500 text-xs mt-1">Alokasi Waktu: 1 x 45 Menit</p>
+                                <p className="text-dark-300 text-xs mt-1">Alokasi Waktu: 1 x 45 Menit</p>
                               </div>
                               <RiFileChartLine className="text-dark-600 text-3xl group-hover:text-primary-500/50 transition-colors" />
                             </div>
-                            <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-3">
-                              <span className="text-dark-400 text-[11px] flex items-center gap-1"><RiCalendarCheckLine /> Jadwal: {row.waktu}</span>
+                            <div className="mt-4 flex items-center justify-between border-t border-white/20 pt-3">
+                              <span className="text-dark-200 text-[11px] flex items-center gap-1"><RiCalendarCheckLine /> Jadwal: {row.waktu}</span>
                               <div className="flex gap-1">
-                                <button className="p-1.5 bg-dark-900 rounded-lg border border-white/10 text-white hover:bg-primary-600 transition-colors" title="Print"><RiPrinterLine className="text-xs" /></button>
-                                <button className="p-1.5 bg-dark-900 rounded-lg border border-white/10 text-white hover:bg-blue-600 transition-colors" title="Download"><RiDownloadLine className="text-xs" /></button>
+                                <button className="p-1.5 bg-dark-900 rounded-lg border border-white/20 text-white hover:bg-primary-600 transition-colors" title="Print"><RiPrinterLine className="text-xs" /></button>
+                                <button className="p-1.5 bg-dark-900 rounded-lg border border-white/20 text-white hover:bg-blue-600 transition-colors" title="Download"><RiDownloadLine className="text-xs" /></button>
                               </div>
                             </div>
                           </div>

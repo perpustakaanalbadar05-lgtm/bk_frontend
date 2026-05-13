@@ -42,7 +42,7 @@ export default function AsesmenPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="card-feature">
                 <h3 className="font-display font-bold text-white mb-1">Profil Kebutuhan Siswa</h3>
-                <p className="text-dark-400 text-xs mb-4">Rata-rata skor kebutuhan 4 bidang BK</p>
+                <p className="text-dark-200 text-xs mb-4">Rata-rata skor kebutuhan 4 bidang BK</p>
                 <ResponsiveContainer width="100%" height={280}>
                   <RadarChart data={RADAR_DATA}>
                     <PolarGrid stroke="rgba(255,255,255,0.1)" />
@@ -75,12 +75,12 @@ export default function AsesmenPage() {
                   <div key={kelas} className="flex items-center gap-4 p-3 rounded-xl glass hover:bg-white/10 transition-colors">
                     <div className="w-24 text-white font-semibold text-sm">{kelas}</div>
                     <div className="flex-1">
-                      <div className="flex justify-between text-xs text-dark-400 mb-1">
+                      <div className="flex justify-between text-xs text-dark-200 mb-1">
                         <span>{selesai}/{total} siswa</span>
                         <span className="font-semibold text-white">{pct}%</span>
                       </div>
                       <div className="h-1.5 bg-dark-700 rounded-full">
-                        <div className="h-full rounded-full bg-gradient-to-r from-primary-500 to-accent-500" style={{ width: `${pct}%` }} />
+                        <div className="h-full rounded-full bg-primary-500" style={{ width: `${pct}%` }} />
                       </div>
                     </div>
                     <span className={STATUS_CLS[status]}>{status}</span>
@@ -101,7 +101,7 @@ export default function AsesmenPage() {
                ].map(item => (
                  <div key={item.t} className="card-feature flex items-center justify-between py-6">
                    <div>
-                     <div className="text-dark-400 text-sm font-bold uppercase tracking-wider mb-1">{item.t}</div>
+                     <div className="text-dark-200 text-sm font-bold uppercase tracking-wider mb-1">{item.t}</div>
                      <div className={`font-display font-black text-3xl ${item.col}`}>{item.val}</div>
                    </div>
                    <div className={`w-12 h-12 rounded-full ${item.bg} bg-opacity-20 border border-${item.bg.replace('bg-', '')}/50 flex items-center justify-center text-2xl ${item.col}`}>
@@ -113,7 +113,7 @@ export default function AsesmenPage() {
              <div className="card-feature p-8 text-center border-dashed">
                 <RiBrainLine className="text-6xl text-primary-500/50 mx-auto mb-4" />
                 <h3 className="text-xl text-white font-bold">Sebarkan Kuesioner Gaya Belajar</h3>
-                <p className="text-dark-400 text-sm mt-2 max-w-md mx-auto mb-6">Bagikan link ini ke siswa untuk mengukur dominasi gaya belajar (V-A-K) secara mandiri.</p>
+                <p className="text-dark-200 text-sm mt-2 max-w-md mx-auto mb-6">Bagikan link ini ke siswa untuk mengukur dominasi gaya belajar (V-A-K) secara mandiri.</p>
                 <button className="btn-primary" onClick={() => toast.success('Link disalin!')}>Salin Link Kuesioner</button>
              </div>
           </div>
@@ -123,11 +123,11 @@ export default function AsesmenPage() {
       case 'kepribadian':
         return (
            <div className="animate-in flex flex-col items-center justify-center p-12 text-center card-feature border-dashed mt-4">
-             <div className="w-20 h-20 bg-dark-800 rounded-full flex items-center justify-center text-3xl text-dark-400 border border-white/10 mb-6">
+             <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center text-3xl text-dark-200 border border-white/20 mb-6">
                {activeTab === 'kepribadian' ? <RiStarLine /> : <RiFireLine />}
              </div>
              <h2 className="text-xl font-bold text-white mb-2">Modul {TABS.find(t=>t.id === activeTab).label}</h2>
-             <p className="text-dark-400 text-sm max-w-lg mb-6">Bank soal untuk asesmen psikologis ini sudah diintegrasikan. Silakan generate token ujian untuk mendistribusikannya ke siswa melalui portal murid.</p>
+             <p className="text-dark-200 text-sm max-w-lg mb-6">Bank soal untuk asesmen psikologis ini sudah diintegrasikan. Silakan generate token ujian untuk mendistribusikannya ke siswa melalui portal murid.</p>
              <button className="btn-primary py-2.5 px-6">Buat Sesi Ujian Baru</button>
            </div>
         )
@@ -139,13 +139,13 @@ export default function AsesmenPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl text-white">Pusat Asesmen & Psikotes</h1>
-          <p className="text-dark-400 text-sm">Integrasi alat ukur psikologis dan diagnostik kebutuhan peserta didik</p>
+          <p className="text-dark-200 text-sm">Integrasi alat ukur psikologis dan diagnostik kebutuhan peserta didik</p>
         </div>
       </div>
 
       {/* Tabs */}
       <div className="flex overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="flex gap-2 bg-dark-900/50 p-1.5 rounded-xl border border-white/10 w-max">
+        <div className="flex gap-2 bg-white/5 p-1.5 rounded-xl border border-white/20 w-max">
           {TABS.map(tab => (
             <button
               key={tab.id}
@@ -153,7 +153,7 @@ export default function AsesmenPage() {
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap
                 ${activeTab === tab.id 
                   ? 'bg-primary-600 shadow-glow-sm text-white' 
-                  : 'text-dark-400 hover:text-white hover:bg-white/5'}
+                  : 'text-dark-200 hover:text-white hover:bg-white/5'}
               `}
             >
               {tab.label}

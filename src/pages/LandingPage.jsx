@@ -15,43 +15,31 @@ const FEATURES = [
     icon: RiUserHeartLine,
     title: 'Manajemen Siswa Binaan',
     desc: 'Kelola profil lengkap siswa, riwayat konseling, dan perkembangan dari satu dashboard terintegrasi.',
-    color: 'from-primary-500 to-primary-700',
-    glow: 'primary',
   },
   {
     icon: RiFileChartLine,
     title: 'Asesmen AKPD Otomatis',
     desc: 'Analisis Kebutuhan Peserta Didik secara digital dengan laporan yang terstruktur dan dapat diunduh.',
-    color: 'from-accent-500 to-accent-700',
-    glow: 'accent',
   },
   {
     icon: RiRobot2Line,
     title: 'Program BK & RPL Cerdas',
     desc: 'Susun Program Tahunan, Semesteran, dan RPL secara efisien dengan panduan terstruktur.',
-    color: 'from-teal-500 to-teal-700',
-    glow: 'teal',
   },
   {
     icon: RiHeartPulseLine,
     title: 'Jurnal Konseling Digital',
     desc: 'Catat dan pantau setiap sesi konseling individu maupun kelompok dengan rapi dan terorganisir.',
-    color: 'from-pink-500 to-rose-700',
-    glow: 'pink',
   },
   {
     icon: RiBarChart2Line,
     title: 'Laporan & Analitik',
     desc: 'Hasilkan laporan berkala otomatis dengan visualisasi data yang informatif dan siap cetak.',
-    color: 'from-amber-500 to-orange-600',
-    glow: 'amber',
   },
   {
     icon: RiGraduationCapLine,
     title: 'Pemetaan Karawanan Siswa',
     desc: 'Deteksi dini siswa bermasalah berdasarkan data asesmen untuk intervensi yang tepat sasaran.',
-    color: 'from-emerald-500 to-green-700',
-    glow: 'emerald',
   },
 ]
 
@@ -83,16 +71,16 @@ export default function LandingPage() {
     <div className="min-h-screen bg-dark-950 text-white">
       {/* Navbar */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-dark-950/90 backdrop-blur-xl border-b border-white/10 py-3' : 'py-5'
+        scrolled ? 'bg-dark-950/90 backdrop-blur-xl border-b border-white/20 py-3' : 'py-5'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center shadow-glow-sm">
+            <div className="w-9 h-9 rounded-xl bg-primary-500 flex items-center justify-center shadow-glow-sm">
               <RiShieldStarLine className="text-white text-lg" />
             </div>
             <div>
               <span className="font-display font-bold text-white text-lg">SIMBK</span>
-              <span className="hidden sm:block text-[10px] text-dark-400 leading-none">CV. Alifba Media</span>
+              <span className="hidden sm:block text-[10px] text-dark-200 leading-none">CV. Alifba Media</span>
             </div>
           </Link>
 
@@ -120,7 +108,7 @@ export default function LandingPage() {
 
         {/* Mobile menu */}
         {menuOpen && (
-          <div className="lg:hidden mt-2 mx-4 p-4 rounded-2xl glass border border-white/10 space-y-1">
+          <div className="lg:hidden mt-2 mx-4 p-4 rounded-2xl glass border border-white/20 space-y-1">
             {NAV_LINKS.map(link => (
               <a key={link} href={`#${link.toLowerCase()}`}
                 className="block px-4 py-2.5 rounded-xl text-dark-300 hover:text-white hover:bg-white/10 text-sm font-medium transition-all"
@@ -186,7 +174,7 @@ export default function LandingPage() {
             {/* Trust badges */}
             <div className="flex flex-wrap items-center justify-center gap-4 mt-10 animate-in delay-400">
               {['Tanpa Biaya Setup', 'Data Aman & Terenkripsi', 'Dukungan Penuh'].map(item => (
-                <div key={item} className="flex items-center gap-1.5 text-dark-400 text-sm">
+                <div key={item} className="flex items-center gap-1.5 text-dark-200 text-sm">
                   <RiCheckLine className="text-teal-400" />
                   {item}
                 </div>
@@ -200,7 +188,7 @@ export default function LandingPage() {
               <div key={label} className="card-feature text-center p-4">
                 <Icon className="text-2xl text-primary-400 mx-auto mb-2" />
                 <div className="font-display font-black text-2xl gradient-text">{value}</div>
-                <div className="text-dark-400 text-xs mt-1">{label}</div>
+                <div className="text-dark-200 text-xs mt-1">{label}</div>
               </div>
             ))}
           </div>
@@ -223,15 +211,14 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {FEATURES.map(({ icon: Icon, title, desc, color }, i) => (
+            {FEATURES.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="card-feature group">
-                {/* Gradient overlay on hover */}
-                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                <div className="absolute inset-0 rounded-2xl bg-primary-500 opacity-0 group-hover:opacity-5 transition-opacity duration-300" />
+                <div className="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <Icon className="text-white text-xl" />
                 </div>
                 <h3 className="font-display font-bold text-white text-lg mb-2">{title}</h3>
-                <p className="text-dark-400 text-sm leading-relaxed">{desc}</p>
+                <p className="text-dark-200 text-sm leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
@@ -259,7 +246,7 @@ export default function LandingPage() {
                 <div className="card-feature h-full">
                   <div className="text-5xl font-black gradient-text opacity-30 mb-4 font-display">{step}</div>
                   <h3 className="font-display font-bold text-white text-lg mb-2">{title}</h3>
-                  <p className="text-dark-400 text-sm leading-relaxed">{desc}</p>
+                  <p className="text-dark-200 text-sm leading-relaxed">{desc}</p>
                 </div>
               </div>
             ))}
@@ -275,14 +262,14 @@ export default function LandingPage() {
         </div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <div className="card-feature p-12 md:p-16">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center mx-auto mb-6 shadow-glow animate-float">
+            <div className="w-16 h-16 rounded-2xl bg-primary-500 flex items-center justify-center mx-auto mb-6 shadow-glow animate-float">
               <RiShieldStarLine className="text-white text-3xl" />
             </div>
             <h2 className="section-title mb-4">
               Siap Transformasi Layanan BK<br />
               <span className="gradient-text">Sekolah Anda?</span>
             </h2>
-            <p className="text-dark-400 text-lg mb-8 max-w-xl mx-auto">
+            <p className="text-dark-200 text-lg mb-8 max-w-xl mx-auto">
               Bergabung bersama ratusan sekolah yang telah meningkatkan kualitas layanan bimbingan konseling dengan SIMBK dari CV. Alifba Media.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
@@ -290,7 +277,7 @@ export default function LandingPage() {
                 <RiSparklingLine /> Daftar Sekarang — Gratis
               </Link>
             </div>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-dark-400 text-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-dark-200 text-sm">
               <a href="tel:+62" className="flex items-center gap-2 hover:text-primary-300 transition-colors">
                 <RiPhoneLine /> +62 xxx-xxxx-xxxx
               </a>
@@ -303,21 +290,21 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 py-10">
+      <footer className="border-t border-white/20 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center">
               <RiShieldStarLine className="text-white text-sm" />
             </div>
             <div>
               <span className="font-display font-bold text-white">SIMBK</span>
-              <span className="text-dark-500 text-xs ml-2">by CV. Alifba Media</span>
+              <span className="text-dark-300 text-xs ml-2">by CV. Alifba Media</span>
             </div>
           </div>
-          <p className="text-dark-500 text-sm">
+          <p className="text-dark-300 text-sm">
             © {new Date().getFullYear()} CV. Alifba Media. Solusi Digital BK yang Cepat, Cerdas, dan Terintegrasi.
           </p>
-          <div className="flex gap-4 text-dark-500 text-sm">
+          <div className="flex gap-4 text-dark-300 text-sm">
             <a href="#" className="hover:text-white transition-colors">Privasi</a>
             <a href="#" className="hover:text-white transition-colors">Syarat</a>
             <a href="#" className="hover:text-white transition-colors">Bantuan</a>

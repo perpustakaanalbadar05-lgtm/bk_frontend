@@ -38,7 +38,7 @@ export default function LoginPage() {
           style={{ backgroundImage: 'linear-gradient(#6366f1 1px, transparent 1px), linear-gradient(90deg, #6366f1 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
 
         <div className="relative text-center max-w-md">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center mx-auto mb-8 shadow-glow animate-float">
+          <div className="w-20 h-20 rounded-2xl bg-primary-500 flex items-center justify-center mx-auto mb-8 shadow-glow animate-float">
             <RiShieldStarLine className="text-white text-4xl" />
           </div>
           <h1 className="font-display font-black text-5xl text-white mb-4">SIMBK</h1>
@@ -51,7 +51,7 @@ export default function LoginPage() {
               <span key={tag} className="badge-primary text-xs">{tag}</span>
             ))}
           </div>
-          <p className="mt-10 text-dark-500 text-sm">CV. Alifba Media — Solusi Digital BK</p>
+          <p className="mt-10 text-dark-300 text-sm">CV. Alifba Media — Solusi Digital BK</p>
         </div>
       </div>
 
@@ -60,18 +60,18 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-3 justify-center mb-10">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center shadow-glow-sm">
+            <div className="w-11 h-11 rounded-xl bg-primary-500 flex items-center justify-center shadow-glow-sm">
               <RiShieldStarLine className="text-white text-2xl" />
             </div>
             <div>
               <div className="font-display font-bold text-white text-2xl">SIMBK</div>
-              <div className="text-dark-400 text-xs">CV. Alifba Media</div>
+              <div className="text-dark-200 text-xs">CV. Alifba Media</div>
             </div>
           </div>
 
           <div className="mb-8">
             <h2 className="font-display font-bold text-3xl text-white mb-2">Selamat Datang</h2>
-            <p className="text-dark-400">Masuk untuk mengakses dashboard layanan BK Anda</p>
+            <p className="text-dark-200">Masuk untuk mengakses dashboard layanan BK Anda</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -110,7 +110,7 @@ export default function LoginPage() {
                   autoComplete="current-password"
                 />
                 <button type="button" onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-dark-400 hover:text-white transition-colors">
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-dark-200 hover:text-white transition-colors">
                   {showPass ? <RiEyeOffLine /> : <RiEyeLine />}
                 </button>
               </div>
@@ -137,8 +137,8 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-white/10 text-center">
-            <p className="text-dark-400 text-sm">
+          <div className="mt-8 pt-6 border-t border-white/20 text-center">
+            <p className="text-dark-200 text-sm">
               Belum memiliki akun?{' '}
               <Link to="/login" className="text-primary-400 hover:text-primary-300 font-medium transition-colors">
                 Hubungi Admin Sekolah

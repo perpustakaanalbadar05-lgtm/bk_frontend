@@ -25,7 +25,7 @@ export default function Topbar({ onMenuClick }) {
   const page = PAGE_TITLES[pathname] || { title: 'SIMBK', sub: '' }
 
   return (
-    <header className="sticky top-0 z-10 flex items-center gap-4 px-6 py-4 bg-dark-950/80 backdrop-blur-xl border-b border-white/10">
+    <header className="sticky top-0 z-10 flex items-center gap-4 px-6 py-4 bg-dark-950/80 backdrop-blur-xl border-b border-white/20">
       {/* Mobile menu */}
       <button
         onClick={onMenuClick}
@@ -38,12 +38,12 @@ export default function Topbar({ onMenuClick }) {
       {/* Page title */}
       <div className="flex-1">
         <h2 className="font-display font-bold text-white text-xl leading-tight">{page.title}</h2>
-        <p className="text-dark-400 text-xs">{page.sub}</p>
+        <p className="text-dark-200 text-xs">{page.sub}</p>
       </div>
 
       {/* Search */}
-      <div className={`hidden md:flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 transition-all duration-300 ${searchOpen ? 'w-64' : 'w-40 cursor-pointer'}`}>
-        <RiSearchLine className="text-dark-400 flex-shrink-0" />
+      <div className={`hidden md:flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/20 transition-all duration-300 ${searchOpen ? 'w-64' : 'w-40 cursor-pointer'}`}>
+        <RiSearchLine className="text-dark-200 flex-shrink-0" />
         <input
           type="text"
           placeholder="Cari siswa, laporan..."
@@ -56,15 +56,15 @@ export default function Topbar({ onMenuClick }) {
       {/* Notifications */}
       <button
         id="topbar-notif-btn"
-        className="relative p-2.5 rounded-xl glass border border-white/10 text-dark-300 hover:text-white transition-colors"
+        className="relative p-2.5 rounded-xl glass border border-white/20 text-dark-300 hover:text-white transition-colors"
       >
         <RiBellLine className="text-lg" />
         <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-accent-500 rounded-full" />
       </button>
 
       {/* Avatar */}
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl glass border border-white/10">
-        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center">
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl glass border border-white/20">
+        <div className="w-7 h-7 rounded-full bg-primary-500 flex items-center justify-center">
           <span className="text-white text-xs font-bold">
             {user?.name?.[0]?.toUpperCase() || 'G'}
           </span>

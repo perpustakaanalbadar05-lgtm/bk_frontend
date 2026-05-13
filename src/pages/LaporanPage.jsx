@@ -21,7 +21,7 @@ export default function LaporanPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl text-white">Laporan BK</h1>
-          <p className="text-dark-400 text-sm">Unduh dan cetak laporan layanan bimbingan konseling</p>
+          <p className="text-dark-200 text-sm">Unduh dan cetak laporan layanan bimbingan konseling</p>
         </div>
         <button id="laporan-generate-btn" className="btn-primary text-sm py-2.5">
           <RiBarChart2Line /> Buat Laporan Baru
@@ -41,7 +41,7 @@ export default function LaporanPage() {
             </div>
             <div>
               <div className="font-semibold text-white">{label}</div>
-              <div className="text-dark-400 text-xs">{desc}</div>
+              <div className="text-dark-200 text-xs">{desc}</div>
             </div>
           </button>
         ))}
@@ -60,7 +60,7 @@ export default function LaporanPage() {
                 <div className="font-semibold text-white text-sm truncate">{judul}</div>
                 <div className="flex items-center gap-2 mt-1">
                   <span className={TIPE_CLS[tipe]}>{tipe}</span>
-                  <span className="text-dark-500 text-xs">{tanggal} · {ukuran}</span>
+                  <span className="text-dark-300 text-xs">{tanggal} · {ukuran}</span>
                 </div>
               </div>
               <button className="btn-secondary text-xs py-1.5 px-3 gap-1.5 flex-shrink-0">
