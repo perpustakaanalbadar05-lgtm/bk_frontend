@@ -6,6 +6,7 @@ import {
   RiBarChart2Line, RiPhoneLine, RiMailLine,
   RiMenuLine, RiCloseLine, RiSparklingLine,
   RiGraduationCapLine, RiHeartPulseLine, RiAwardLine,
+  RiMoonLine, RiSunLine
 } from 'react-icons/ri'
 
 const NAV_LINKS = ['Fitur', 'Manfaat', 'Cara Kerja', 'Kontak']
@@ -60,6 +61,13 @@ const STEPS = [
 export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'))
+
+  const toggleTheme = () => {
+    const isDarkNow = document.documentElement.classList.toggle('dark')
+    setIsDark(isDarkNow)
+    localStorage.setItem('theme', isDarkNow ? 'dark' : 'light')
+  }
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20)
@@ -71,7 +79,7 @@ export default function LandingPage() {
     <div className="min-h-screen text-white bg-[rgb(var(--bg-main))]">
       {/* Navbar */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-dark-950/90 backdrop-blur-xl border-b border-white/20 py-3' : 'py-5'
+        scrolled ? 'bg-black/10 backdrop-blur-xl border-b border-white/10 py-3' : 'py-5'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
@@ -95,15 +103,23 @@ export default function LandingPage() {
           </div>
 
           <div className="hidden lg:flex items-center gap-3">
+            <button onClick={toggleTheme} className="p-2 rounded-lg text-dark-300 hover:text-white transition-colors" title={isDark ? "Ubah ke Light Mode" : "Ubah ke Dark Mode"}>
+              {isDark ? <RiSunLine className="text-lg text-amber-400" /> : <RiMoonLine className="text-lg text-primary-400" />}
+            </button>
             <Link to="/login" className="btn-ghost text-sm">Masuk</Link>
             <Link to="/login" className="btn-primary text-sm py-2.5">
               Coba Gratis <RiArrowRightLine />
             </Link>
           </div>
 
-          <button className="lg:hidden p-2 rounded-lg glass" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <RiCloseLine className="text-xl" /> : <RiMenuLine className="text-xl" />}
-          </button>
+          <div className="flex items-center gap-2 lg:hidden">
+            <button onClick={toggleTheme} className="p-2 rounded-lg text-dark-300 hover:text-white transition-colors">
+              {isDark ? <RiSunLine className="text-lg text-amber-400" /> : <RiMoonLine className="text-lg text-primary-400" />}
+            </button>
+            <button className="p-2 rounded-lg glass" onClick={() => setMenuOpen(!menuOpen)}>
+              {menuOpen ? <RiCloseLine className="text-xl" /> : <RiMenuLine className="text-xl" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile menu */}

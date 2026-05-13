@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { RiShieldStarLine, RiEyeLine, RiEyeOffLine, RiArrowRightLine, RiSparklingLine } from 'react-icons/ri'
+import { RiShieldStarLine, RiEyeLine, RiEyeOffLine, RiArrowRightLine, RiSparklingLine, RiMoonLine, RiSunLine } from 'react-icons/ri'
 import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
 
@@ -8,8 +8,15 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [showPass, setShowPass] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'))
   const { login } = useAuth()
   const navigate = useNavigate()
+
+  const toggleTheme = () => {
+    const isDarkNow = document.documentElement.classList.toggle('dark')
+    setIsDark(isDarkNow)
+    localStorage.setItem('theme', isDarkNow ? 'dark' : 'light')
+  }
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
@@ -28,7 +35,16 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex bg-[rgb(var(--bg-main))]">
+    <div className="min-h-screen flex bg-[rgb(var(--bg-main))] relative">
+      {/* Theme Toggle */}
+      <button
+        onClick={toggleTheme}
+        className="absolute top-6 right-6 z-50 p-2.5 rounded-xl border border-white/10 bg-white/5 text-dark-300 hover:text-white transition-colors"
+        title={isDark ? "Ubah ke Light Mode" : "Ubah ke Dark Mode"}
+      >
+        {isDark ? <RiSunLine className="text-xl text-amber-400" /> : <RiMoonLine className="text-xl text-primary-400" />}
+      </button>
+
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col items-center justify-center p-12">
         <div className="absolute inset-0 bg-hero-gradient" />
