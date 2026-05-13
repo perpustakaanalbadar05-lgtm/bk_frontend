@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import {
   RiHomeHeartLine, RiMapPinLine, RiCalendarCheckLine,
-  RiAddLine, RiSearchLine, RiCheckDoubleLine, RiFileList3Line, RiAlertLine
+  RiAddLine, RiSearchLine, RiCheckDoubleLine, RiFileList3Line, RiAlertLine,
+  RiScales3Line, RiPrinterLine, RiMailSendLine
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
 
 const MOCK_KASUS = [
-  { id: 1, siswa: 'Ahmad Fauzi', kelas: 'XI IPA 2', kasus: 'Sering membolos', status: 'Selesai', visit: true, date: '11 Mei 2026' },
-  { id: 2, siswa: 'Budi Santoso', kelas: 'XII IPA 1', kasus: 'Penurunan prestasi drastis', status: 'Proses', visit: false, date: '10 Mei 2026' },
-  { id: 3, siswa: 'Riko Prasetyo', kelas: 'X IPA 1', kasus: 'Korban perundungan', status: 'Proses', visit: true, date: '08 Mei 2026' },
-  { id: 4, siswa: 'Dewi Lestari', kelas: 'XI IPS 3', kasus: 'Kondisi ekonomi keluarga', status: 'Terjadwal', visit: true, date: '12 Mei 2026' },
+  { id: 1, siswa: 'Ahmad Fauzi', kelas: 'XI IPA 2', kasus: 'Sering membolos (Alpa > 3x)', poin: 20, status: 'Selesai', visit: true, date: '11 Mei 2026' },
+  { id: 2, siswa: 'Budi Santoso', kelas: 'XII IPA 1', kasus: 'Berkelahi di lingkungan sekolah', poin: 50, status: 'Proses', visit: false, date: '10 Mei 2026' },
+  { id: 3, siswa: 'Riko Prasetyo', kelas: 'X IPA 1', kasus: 'Merokok di kantin', poin: 30, status: 'Proses', visit: true, date: '08 Mei 2026' },
+  { id: 4, siswa: 'Dewi Lestari', kelas: 'XI IPS 3', kasus: 'Terlambat lebih dari 5 kali', poin: 10, status: 'Terjadwal', visit: true, date: '12 Mei 2026' },
 ]
 
 export default function KasusPage() {
@@ -22,9 +23,9 @@ export default function KasusPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl text-white flex items-center gap-2">
-            Penanganan Kasus & Home Visit
+            Buku Kasus & Poin Kedisiplinan
           </h1>
-          <p className="text-dark-200 text-sm">Pencatatan kasus siswa dan penjadwalan kunjungan rumah (Home Visit).</p>
+          <p className="text-dark-200 text-sm">Pencatatan pelanggaran, akumulasi poin, dan pembuatan Surat Panggilan (SP).</p>
         </div>
         <div className="flex gap-2">
           <button className="btn-secondary text-sm py-2"><RiAddLine /> Catat Kasus</button>
@@ -37,19 +38,19 @@ export default function KasusPage() {
         <div className="flex gap-6 w-max">
           <button
             onClick={() => setActiveTab('kasus')}
-            className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2
+            className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2
               ${activeTab === 'kasus' ? 'border-primary-500 text-white' : 'border-transparent text-dark-300 hover:text-dark-300'}
             `}
           >
-            Arsip Kasus Siswa
+            <RiScales3Line className="text-lg" /> Poin & Pelanggaran
           </button>
           <button
             onClick={() => setActiveTab('homevisit')}
-            className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2
+            className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2
               ${activeTab === 'homevisit' ? 'border-amber-500 text-white' : 'border-transparent text-dark-300 hover:text-dark-300'}
             `}
           >
-            Agenda Home Visit
+            <RiHomeHeartLine className="text-lg" /> Agenda Home Visit
           </button>
         </div>
       </div>
@@ -74,7 +75,8 @@ export default function KasusPage() {
                 <tr>
                   <th className="px-6 py-4">Siswa</th>
                   <th className="px-4 py-4">Kasus / Permasalahan</th>
-                  <th className="px-4 py-4">Home Visit</th>
+                  <th className="px-4 py-4">Poin</th>
+                  <th className="px-4 py-4">Tindak Lanjut</th>
                   <th className="px-4 py-4">Status</th>
                   <th className="px-6 py-4 text-center">Aksi</th>
                 </tr>
@@ -88,13 +90,21 @@ export default function KasusPage() {
                     </td>
                     <td className="px-4 py-4 text-dark-300">{k.kasus}</td>
                     <td className="px-4 py-4">
-                      {k.visit ? (
-                        <span className="flex items-center gap-1 text-xs text-amber-400 bg-amber-500/10 px-2 py-1 rounded w-max border border-amber-500/20">
-                          <RiHomeHeartLine /> Diperlukan
-                        </span>
-                      ) : (
-                        <span className="text-xs text-dark-300">-</span>
-                      )}
+                      <span className={`font-bold ${k.poin >= 50 ? 'text-red-400' : 'text-amber-400'}`}>+{k.poin} Poin</span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex flex-col gap-1">
+                        {k.visit && (
+                          <span className="flex items-center gap-1 text-[10px] text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded w-max border border-amber-500/20">
+                            <RiHomeHeartLine /> Home Visit
+                          </span>
+                        )}
+                        {k.poin >= 20 && (
+                          <span className="flex items-center gap-1 text-[10px] text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded w-max border border-red-500/20">
+                            <RiMailSendLine /> SP Orang Tua
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-4">
                        <span className={`badge ${
@@ -106,7 +116,13 @@ export default function KasusPage() {
                        </span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                       <button className="text-primary-400 hover:text-white bg-primary-500/10 hover:bg-primary-500 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Detail</button>
+                       <div className="flex items-center justify-center gap-2">
+                         <button className="text-dark-200 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors" title="Detail Kasus"><RiFileList3Line /></button>
+                         <button onClick={() => {
+                           toast.success(`Surat Panggilan Orang Tua untuk ${k.siswa} siap dicetak!`)
+                           window.print()
+                         }} className="text-red-400 hover:text-white hover:bg-red-500/20 p-1.5 rounded-lg transition-colors" title="Cetak Surat Panggilan"><RiPrinterLine /></button>
+                       </div>
                     </td>
                   </tr>
                 ))}

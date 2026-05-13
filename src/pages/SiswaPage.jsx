@@ -2,7 +2,8 @@ import { useState, useMemo } from 'react'
 import {
   RiUserAddLine, RiSearchLine, RiFilterLine, RiDownloadLine,
   RiEditLine, RiEyeLine, RiDeleteBinLine, RiCloseLine,
-  RiSaveLine, RiUserLine, RiAlertLine, RiCheckLine
+  RiSaveLine, RiUserLine, RiAlertLine, RiCheckLine,
+  RiUploadLine, RiTimeLine
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
 import { useSettings } from '../contexts/SettingsContext'
@@ -146,6 +147,31 @@ function DetailModal({ siswa, onClose }) {
               <div className="text-white text-sm">{siswa.alamat}</div>
             </div>
           )}
+          
+          {/* Timeline Histori Konseling & Kasus (Mock) */}
+          <div className="mt-4 border-t border-white/20 pt-4">
+            <h3 className="text-white font-bold text-sm mb-3">Timeline Histori</h3>
+            <div className="space-y-3 max-h-40 overflow-y-auto pr-2">
+              <div className="flex gap-3 relative before:absolute before:left-[11px] before:top-6 before:bottom-0 before:w-0.5 before:bg-white/10">
+                <div className="w-6 h-6 rounded-full bg-primary-500/20 text-primary-400 flex items-center justify-center flex-shrink-0 z-10 border border-primary-500/30">
+                  <RiTimeLine className="text-xs" />
+                </div>
+                <div>
+                  <div className="text-white text-sm font-semibold">Konseling Individu</div>
+                  <div className="text-dark-300 text-xs">Topik: Motivasi Belajar · 12 Mei 2026</div>
+                </div>
+              </div>
+              <div className="flex gap-3 relative before:absolute before:left-[11px] before:top-6 before:bottom-0 before:w-0.5 before:bg-white/10">
+                <div className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0 z-10 border border-amber-500/30">
+                  <RiAlertLine className="text-xs" />
+                </div>
+                <div>
+                  <div className="text-white text-sm font-semibold">Teguran Kedisiplinan</div>
+                  <div className="text-dark-300 text-xs">Terlambat masuk kelas · 05 Mei 2026</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="p-5 border-t border-white/20">
           <button onClick={onClose} className="w-full btn-secondary py-2.5 text-sm">Tutup</button>
@@ -187,6 +213,31 @@ export default function SiswaPage() {
   const [modalEdit, setModalEdit] = useState(null)
   const [modalDetail, setModalDetail] = useState(null)
   const [modalDelete, setModalDelete] = useState(null)
+  const [selectedIds, setSelectedIds] = useState([])
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === paginated.length) {
+      setSelectedIds([])
+    } else {
+      setSelectedIds(paginated.map(s => s.id))
+    }
+  }
+
+  const toggleSelect = (id) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(prev => prev.filter(i => i !== id))
+    } else {
+      setSelectedIds(prev => [...prev, id])
+    }
+  }
+
+  const handleBulkDelete = () => {
+    if (confirm(`Yakin ingin menghapus ${selectedIds.length} siswa terpilih?`)) {
+      setSiswa(prev => prev.filter(s => !selectedIds.includes(s.id)))
+      setSelectedIds([])
+      toast.success('Data terpilih berhasil dihapus.')
+    }
+  }
 
   const filtered = useMemo(() => {
     return siswa.filter(s => {
@@ -247,7 +298,14 @@ export default function SiswaPage() {
           <p className="text-dark-200 text-sm">Kelola data siswa binaan Guru BK</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={handleExport} className="btn-secondary text-sm py-2"><RiDownloadLine /> Export CSV</button>
+          <label className="btn-secondary text-sm py-2 cursor-pointer">
+            <RiUploadLine /> Import CSV
+            <input type="file" className="hidden" accept=".csv" onChange={(e) => {
+              if(e.target.files.length > 0) toast.success('Fitur import CSV berhasil disimulasikan!')
+              e.target.value = null
+            }} />
+          </label>
+          <button onClick={handleExport} className="btn-secondary text-sm py-2 hidden sm:flex"><RiDownloadLine /> Export</button>
           <button id="siswa-add-btn" onClick={() => setModalAdd(true)} className="btn-primary text-sm py-2"><RiUserAddLine /> Tambah Siswa</button>
         </div>
       </div>
@@ -315,10 +373,29 @@ export default function SiswaPage() {
           </div>
         )}
 
+        {/* Bulk Action Bar */}
+        {selectedIds.length > 0 && (
+          <div className="bg-primary-500/20 border border-primary-500/30 rounded-xl p-3 mb-4 flex items-center justify-between animate-in">
+            <span className="text-sm font-semibold text-white">{selectedIds.length} data terpilih</span>
+            <div className="flex gap-2">
+              <button className="btn-secondary text-xs py-1.5" onClick={() => setSelectedIds([])}>Batal</button>
+              <button className="btn-primary bg-red-600 hover:bg-red-500 border-none text-xs py-1.5 shadow-none" onClick={handleBulkDelete}>
+                <RiDeleteBinLine /> Hapus Terpilih
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/20">
+                <th className="table-header text-left pb-3 pl-3 w-10">
+                  <input type="checkbox" className="accent-primary-500" 
+                    checked={paginated.length > 0 && selectedIds.length === paginated.length} 
+                    onChange={toggleSelectAll} 
+                  />
+                </th>
                 <th className="table-header text-left pb-3">Nama Siswa</th>
                 <th className="table-header text-left pb-3">NIS</th>
                 <th className="table-header text-left pb-3">Kelas</th>
@@ -330,9 +407,15 @@ export default function SiswaPage() {
             </thead>
             <tbody className="divide-y divide-white/5">
               {paginated.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-12 text-dark-300">Tidak ada data siswa yang cocok.</td></tr>
+                <tr><td colSpan={8} className="text-center py-12 text-dark-300">Tidak ada data siswa yang cocok.</td></tr>
               ) : paginated.map(s => (
-                <tr key={s.id} className="hover:bg-white/5 transition-colors">
+                <tr key={s.id} className={`hover:bg-white/5 transition-colors ${selectedIds.includes(s.id) ? 'bg-primary-500/5' : ''}`}>
+                  <td className="table-cell pl-3">
+                    <input type="checkbox" className="accent-primary-500"
+                      checked={selectedIds.includes(s.id)}
+                      onChange={() => toggleSelect(s.id)}
+                    />
+                  </td>
                   <td className="table-cell font-medium text-white">{s.nama}</td>
                   <td className="table-cell font-mono text-xs">{s.nis}</td>
                   <td className="table-cell">{s.kelas}</td>

@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import {
   RiAddLine, RiHeartLine, RiUserLine, RiTimeLine, RiCheckboxCircleLine,
   RiFileLine, RiCloseLine, RiBallPenLine, RiEraserLine, RiCheckLine,
-  RiArrowRightLine, RiFileTextLine, RiAccountCircleLine
+  RiArrowRightLine, RiFileTextLine, RiAccountCircleLine, RiPrinterLine
 } from 'react-icons/ri'
 import SignatureCanvas from 'react-signature-canvas'
 import toast from 'react-hot-toast'
@@ -41,6 +41,7 @@ export default function KonselingPage() {
   const [formData, setFormData] = useState({
     siswa: '', kelas: classes?.[0] || '', topik: '', jenis: 'Individu', ringkasan: ''
   })
+  const [skipSignature, setSkipSignature] = useState(false)
 
   const handleClearSignature = () => {
     if (sigCanvas.current) sigCanvas.current.clear()
@@ -48,8 +49,8 @@ export default function KonselingPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (sigCanvas.current.isEmpty()) {
-      return toast.error("Harap masukkan tanda tangan siswa sebagai validasi jurnal.");
+    if (!skipSignature && sigCanvas.current.isEmpty()) {
+      return toast.error("Harap masukkan tanda tangan siswa sebagai validasi jurnal atau centang 'Lewati Tanda Tangan'.");
     }
 
     const newSession = {
@@ -61,7 +62,7 @@ export default function KonselingPage() {
       jenis: formData.jenis,
       status: 'Selesai',
       durasi: '30 mnt',
-      signature: true
+      signature: !skipSignature
     }
 
     setSessions([newSession, ...sessions])
@@ -143,20 +144,32 @@ export default function KonselingPage() {
                   <label className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
                     <RiAccountCircleLine className="text-base" /> Tanda Tangan Siswa (Validasi)
                   </label>
-                  <button type="button" onClick={handleClearSignature} className="text-xs text-dark-200 hover:text-red-400 flex items-center gap-1 transition-colors">
-                    <RiEraserLine /> Bersihkan
-                  </button>
+                  <div className="flex gap-3">
+                    <label className="flex items-center gap-1 text-xs text-white cursor-pointer">
+                      <input type="checkbox" className="accent-primary-500" checked={skipSignature} onChange={e => setSkipSignature(e.target.checked)} />
+                      Lewati
+                    </label>
+                    <button type="button" onClick={handleClearSignature} className="text-xs text-dark-200 hover:text-red-400 flex items-center gap-1 transition-colors">
+                      <RiEraserLine /> Bersihkan
+                    </button>
+                  </div>
                 </div>
-                <div className="border-2 border-dashed border-white/20 rounded-xl bg-white overflow-hidden h-[180px]">
-                  <SignatureCanvas 
-                    ref={sigCanvas}
-                    penColor='black'
-                    canvasProps={{
-                      className: 'sigCanvas w-full h-full',
-                      style: { width: '100%', height: '100%', cursor: 'crosshair' }
-                    }} 
-                  />
-                </div>
+                {!skipSignature ? (
+                  <div className="border-2 border-dashed border-white/20 rounded-xl bg-white overflow-hidden h-[180px]">
+                    <SignatureCanvas 
+                      ref={sigCanvas}
+                      penColor='black'
+                      canvasProps={{
+                        className: 'sigCanvas w-full h-full',
+                        style: { width: '100%', height: '100%', cursor: 'crosshair' }
+                      }} 
+                    />
+                  </div>
+                ) : (
+                  <div className="h-[180px] border-2 border-dashed border-white/10 rounded-xl flex items-center justify-center bg-white/5">
+                    <span className="text-dark-300 text-sm">Tanda Tangan Dilewati</span>
+                  </div>
+                )}
                 <p className="text-[10px] text-dark-300 mt-2 italic text-center">Silakan minta siswa/konseli untuk menandatangani kotak di atas.</p>
               </div>
             </form>
@@ -272,9 +285,14 @@ export default function KonselingPage() {
                   </td>
                   <td className="table-cell"><span className={STATUS_CLS[s.status]}>{s.status}</span></td>
                   <td className="py-4 px-6 text-center">
-                    <button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-xs text-white hover:bg-primary-600 hover:border-primary-500 transition-all">
-                      <RiFileTextLine className="text-sm" /> Buka Jurnal
-                    </button>
+                    <div className="flex justify-center gap-2">
+                      <button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-xs text-white hover:bg-primary-600 hover:border-primary-500 transition-all hide-on-print">
+                        <RiFileTextLine className="text-sm" /> Detail
+                      </button>
+                      <button onClick={() => window.print()} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-800 border border-white/20 text-xs text-white hover:bg-dark-700 transition-all hide-on-print" title="Cetak Jurnal">
+                        <RiPrinterLine className="text-sm" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
