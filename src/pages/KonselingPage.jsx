@@ -80,9 +80,9 @@ export default function KonselingPage() {
       {/* OVERLAY FORM DRAWER */}
       {showForm && (
         <div className="fixed inset-0 z-[999] flex justify-end">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowForm(false)} />
-          <div className="relative w-full max-w-xl h-full bg-dark-950 border-l border-white/20 shadow-2xl overflow-y-auto animate-in flex flex-col" style={{animationDuration: '0.3s'}}>
-            <div className="p-6 border-b border-white/20 flex items-center justify-between sticky top-0 bg-dark-950/90 backdrop-blur z-10">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setShowForm(false)} />
+          <div className="relative w-full max-w-xl h-full card-feature border-r-0 border-t-0 border-b-0 rounded-none rounded-l-2xl shadow-2xl overflow-y-auto animate-in flex flex-col p-0" style={{animationDuration: '0.3s'}}>
+            <div className="p-6 border-b border-white/10 flex items-center justify-between sticky top-0 bg-dark-900/50 backdrop-blur z-10">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center">
                   <RiBallPenLine className="text-xl text-white" />
@@ -145,8 +145,8 @@ export default function KonselingPage() {
                     <RiAccountCircleLine className="text-base" /> Tanda Tangan Siswa (Validasi)
                   </label>
                   <div className="flex gap-3">
-                    <label className="flex items-center gap-1 text-xs text-white cursor-pointer">
-                      <input type="checkbox" className="accent-primary-500" checked={skipSignature} onChange={e => setSkipSignature(e.target.checked)} />
+                    <label className="flex items-center gap-1 text-xs text-white cursor-pointer select-none">
+                      <input type="checkbox" className="accent-primary-500 cursor-pointer w-3.5 h-3.5 rounded" checked={skipSignature} onChange={e => setSkipSignature(e.target.checked)} />
                       Lewati
                     </label>
                     <button type="button" onClick={handleClearSignature} className="text-xs text-dark-200 hover:text-red-400 flex items-center gap-1 transition-colors">
@@ -155,29 +155,32 @@ export default function KonselingPage() {
                   </div>
                 </div>
                 {!skipSignature ? (
-                  <div className="border-2 border-dashed border-white/20 rounded-xl bg-white overflow-hidden h-[180px]">
+                  <div className="relative border border-white/10 rounded-xl bg-black/40 overflow-hidden h-[180px] shadow-inner group">
+                    <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-10 group-hover:opacity-5 transition-opacity">
+                      <span className="font-display font-black text-4xl text-white">TTD DI SINI</span>
+                    </div>
                     <SignatureCanvas 
                       ref={sigCanvas}
-                      penColor='black'
+                      penColor='white'
                       canvasProps={{
-                        className: 'sigCanvas w-full h-full',
+                        className: 'sigCanvas w-full h-full relative z-10',
                         style: { width: '100%', height: '100%', cursor: 'crosshair' }
                       }} 
                     />
                   </div>
                 ) : (
-                  <div className="h-[180px] border-2 border-dashed border-white/10 rounded-xl flex items-center justify-center bg-white/5">
-                    <span className="text-dark-300 text-sm">Tanda Tangan Dilewati</span>
+                  <div className="h-[180px] border border-dashed border-white/10 rounded-xl flex items-center justify-center bg-black/20">
+                    <span className="text-dark-300 text-sm italic">Sesi ini akan disimpan tanpa digital signature.</span>
                   </div>
                 )}
                 <p className="text-[10px] text-dark-300 mt-2 italic text-center">Silakan minta siswa/konseli untuk menandatangani kotak di atas.</p>
               </div>
             </form>
 
-            <div className="p-6 border-t border-white/20 bg-white/5 flex gap-3">
-              <button type="button" onClick={() => setShowForm(false)} className="btn-secondary flex-1">Batal</button>
-              <button type="button" onClick={handleSubmit} className="btn-primary flex-1 bg-primary-500 gap-2">
-                <RiCheckLine /> Simpan Jurnal
+            <div className="p-6 border-t border-white/10 bg-dark-900/50 flex gap-3 mt-auto">
+              <button type="button" onClick={() => setShowForm(false)} className="btn-secondary flex-1 py-3 text-sm">Batal</button>
+              <button type="button" onClick={handleSubmit} className="btn-primary flex-1 bg-primary-500 py-3 gap-2 text-sm">
+                <RiCheckLine className="text-lg" /> Simpan Jurnal
               </button>
             </div>
           </div>
@@ -245,21 +248,21 @@ export default function KonselingPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/20 bg-dark-900/30">
-                <th className="table-header text-left py-4 px-6">Subjek / Siswa</th>
-                <th className="table-header text-left py-4 px-4">Topik Utama</th>
-                <th className="table-header text-left py-4 px-4 hidden md:table-cell">Klasifikasi</th>
-                <th className="table-header text-center py-4 px-4">Ttd</th>
-                <th className="table-header text-left py-4 px-4">Status</th>
-                <th className="table-header text-center py-4 px-6">Aksi</th>
+              <tr className="border-b border-white/10 bg-black/20">
+                <th className="table-header text-left py-4 px-6 bg-transparent">Subjek / Siswa</th>
+                <th className="table-header text-left py-4 px-4 bg-transparent">Topik Utama</th>
+                <th className="table-header text-left py-4 px-4 hidden md:table-cell bg-transparent">Klasifikasi</th>
+                <th className="table-header text-center py-4 px-4 bg-transparent">Ttd</th>
+                <th className="table-header text-left py-4 px-4 bg-transparent">Status</th>
+                <th className="table-header text-center py-4 px-6 bg-transparent">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {filtered.map(s => (
-                <tr key={s.id} className="hover:bg-white/5 transition-all group">
+                <tr key={s.id} className="hover:bg-white/5 transition-all group cursor-pointer">
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center font-bold text-dark-300 border border-white/20 group-hover:border-primary-500/50 group-hover:text-white transition-colors">
+                      <div className="w-9 h-9 rounded-full bg-black/40 flex items-center justify-center font-bold text-dark-300 border border-white/10 group-hover:border-primary-500/50 group-hover:text-white transition-colors">
                         {s.siswa[0]}
                       </div>
                       <div>

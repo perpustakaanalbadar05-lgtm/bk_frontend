@@ -166,22 +166,22 @@ export default function DashboardPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/20">
-                <th className="table-header text-left pb-3">Nama Siswa</th>
-                <th className="table-header text-left pb-3">Kelas</th>
-                <th className="table-header text-left pb-3 hidden md:table-cell">Topik</th>
-                <th className="table-header text-left pb-3">Status</th>
-                <th className="table-header text-left pb-3 hidden sm:table-cell">Tanggal</th>
+              <tr className="border-b border-white/10 bg-black/20">
+                <th className="table-header text-left py-4 px-4 bg-transparent">Nama Siswa</th>
+                <th className="table-header text-left py-4 px-4 bg-transparent">Kelas</th>
+                <th className="table-header text-left py-4 px-4 hidden md:table-cell bg-transparent">Topik</th>
+                <th className="table-header text-left py-4 px-4 bg-transparent">Status</th>
+                <th className="table-header text-left py-4 px-4 hidden sm:table-cell bg-transparent">Tanggal</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {RECENT_KONSELING.map(({ name, kelas, topik, status, date }) => (
-                <tr key={name} className="hover:bg-white/5 transition-colors">
-                  <td className="table-cell font-medium text-white">{name}</td>
-                  <td className="table-cell">{kelas}</td>
-                  <td className="table-cell hidden md:table-cell">{topik}</td>
-                  <td className="table-cell"><span className={STATUS_STYLE[status]}>{status}</span></td>
-                  <td className="table-cell hidden sm:table-cell text-dark-300">{date}</td>
+                <tr key={name} className="hover:bg-white/5 transition-colors cursor-pointer group">
+                  <td className="table-cell px-4 py-4 font-medium text-white group-hover:text-primary-300 transition-colors">{name}</td>
+                  <td className="table-cell px-4 py-4">{kelas}</td>
+                  <td className="table-cell px-4 py-4 hidden md:table-cell">{topik}</td>
+                  <td className="table-cell px-4 py-4"><span className={STATUS_STYLE[status]}>{status}</span></td>
+                  <td className="table-cell px-4 py-4 hidden sm:table-cell text-dark-300">{date}</td>
                 </tr>
               ))}
             </tbody>

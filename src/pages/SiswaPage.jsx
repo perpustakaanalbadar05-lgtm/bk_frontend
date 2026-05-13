@@ -43,21 +43,21 @@ function SiswaModal({ isOpen, onClose, initial, onSave, classes }) {
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-xl bg-dark-950 border border-white/20 rounded-2xl shadow-2xl animate-in flex flex-col max-h-[90vh]" style={{animationDuration:'0.25s'}}>
-        <div className="flex items-center justify-between p-6 border-b border-white/20">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center">
-              <RiUserLine className="text-xl text-white" />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
+      <div className="relative w-full max-w-xl card-feature flex flex-col max-h-[90vh] p-0" style={{animationDuration:'0.25s'}}>
+        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-primary-500/20 border border-primary-500/30 flex items-center justify-center">
+              <RiUserLine className="text-2xl text-primary-400" />
             </div>
             <div>
               <h2 className="font-display font-bold text-white text-lg">{isEdit ? 'Edit Data Siswa' : 'Tambah Siswa Baru'}</h2>
-              <p className="text-dark-200 text-xs">{isEdit ? `NIS: ${initial.nis}` : 'Isi formulir data siswa binaan'}</p>
+              <p className="text-dark-200 text-xs mt-0.5">{isEdit ? `NIS: ${initial.nis}` : 'Isi formulir data siswa binaan'}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-dark-200 hover:text-white transition-colors"><RiCloseLine className="text-xl" /></button>
         </div>
-        <form onSubmit={handleSubmit} className="overflow-y-auto flex-1 p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="overflow-y-auto flex-1 p-6 space-y-5">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-2">Nama Lengkap *</label>
@@ -98,7 +98,7 @@ function SiswaModal({ isOpen, onClose, initial, onSave, classes }) {
             </div>
           </div>
         </form>
-        <div className="p-5 border-t border-white/20 bg-white/5 flex gap-3">
+        <div className="p-5 border-t border-white/10 bg-dark-900/50 flex gap-3">
           <button type="button" onClick={onClose} className="flex-1 btn-secondary py-2.5 text-sm">Batal</button>
           <button type="button" onClick={handleSubmit} className="flex-1 btn-primary py-2.5 text-sm gap-2">
             <RiSaveLine /> {isEdit ? 'Simpan Perubahan' : 'Tambah Siswa'}
@@ -113,10 +113,10 @@ function DetailModal({ siswa, onClose }) {
   if (!siswa) return null
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-dark-950 border border-white/20 rounded-2xl shadow-2xl animate-in" style={{animationDuration:'0.25s'}}>
-        <div className="p-6 border-b border-white/20 flex justify-between items-center">
-          <h2 className="font-bold text-white text-lg">Detail Siswa</h2>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
+      <div className="relative w-full max-w-md card-feature flex flex-col max-h-[90vh] p-0 animate-in" style={{animationDuration:'0.25s'}}>
+        <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+          <h2 className="font-display font-bold text-white text-lg">Detail Siswa</h2>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-dark-200 hover:text-white"><RiCloseLine /></button>
         </div>
         <div className="p-6 space-y-4">
@@ -318,9 +318,9 @@ export default function SiswaPage() {
           { label: 'Perlu Perhatian', value: siswa.filter(s=>s.status==='Perhatian').length, color: 'text-amber-400' },
           { label: 'Konseling Aktif', value: siswa.reduce((a,s)=>a+s.konseling,0), color: 'text-accent-400' },
         ].map(({ label, value, color }) => (
-          <div key={label} className="card-feature text-center py-4">
-            <div className={`font-display font-black text-3xl ${color} mb-1`}>{value}</div>
-            <div className="text-dark-200 text-xs">{label}</div>
+          <div key={label} className="card-feature text-center py-5">
+            <div className={`font-display font-black text-3xl ${color} mb-1 drop-shadow-md`}>{value}</div>
+            <div className="text-dark-200 text-xs uppercase tracking-wider font-bold">{label}</div>
           </div>
         ))}
       </div>
@@ -375,11 +375,11 @@ export default function SiswaPage() {
 
         {/* Bulk Action Bar */}
         {selectedIds.length > 0 && (
-          <div className="bg-primary-500/20 border border-primary-500/30 rounded-xl p-3 mb-4 flex items-center justify-between animate-in">
-            <span className="text-sm font-semibold text-white">{selectedIds.length} data terpilih</span>
+          <div className="bg-primary-500/10 border border-primary-500/20 rounded-xl p-3 mb-4 flex items-center justify-between animate-in">
+            <span className="text-sm font-semibold text-primary-300">{selectedIds.length} data terpilih</span>
             <div className="flex gap-2">
               <button className="btn-secondary text-xs py-1.5" onClick={() => setSelectedIds([])}>Batal</button>
-              <button className="btn-primary bg-red-600 hover:bg-red-500 border-none text-xs py-1.5 shadow-none" onClick={handleBulkDelete}>
+              <button className="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-colors text-xs font-medium flex items-center gap-2 shadow-none" onClick={handleBulkDelete}>
                 <RiDeleteBinLine /> Hapus Terpilih
               </button>
             </div>
@@ -389,9 +389,9 @@ export default function SiswaPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/20">
+              <tr className="border-b border-white/10">
                 <th className="table-header text-left pb-3 pl-3 w-10">
-                  <input type="checkbox" className="accent-primary-500" 
+                  <input type="checkbox" className="accent-primary-500 cursor-pointer w-4 h-4 rounded" 
                     checked={paginated.length > 0 && selectedIds.length === paginated.length} 
                     onChange={toggleSelectAll} 
                   />
@@ -409,9 +409,9 @@ export default function SiswaPage() {
               {paginated.length === 0 ? (
                 <tr><td colSpan={8} className="text-center py-12 text-dark-300">Tidak ada data siswa yang cocok.</td></tr>
               ) : paginated.map(s => (
-                <tr key={s.id} className={`hover:bg-white/5 transition-colors ${selectedIds.includes(s.id) ? 'bg-primary-500/5' : ''}`}>
+                <tr key={s.id} className={`hover:bg-white/5 transition-colors cursor-pointer group ${selectedIds.includes(s.id) ? 'bg-primary-500/5' : ''}`}>
                   <td className="table-cell pl-3">
-                    <input type="checkbox" className="accent-primary-500"
+                    <input type="checkbox" className="accent-primary-500 cursor-pointer w-4 h-4 rounded"
                       checked={selectedIds.includes(s.id)}
                       onChange={() => toggleSelect(s.id)}
                     />

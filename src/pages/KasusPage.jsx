@@ -71,19 +71,19 @@ export default function KasusPage() {
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-dark-900 border-b border-white/20 text-dark-200 font-semibold text-xs uppercase tracking-widest">
+              <thead className="bg-black/20 border-b border-white/10 text-dark-200 font-semibold text-xs uppercase tracking-widest">
                 <tr>
-                  <th className="px-6 py-4">Siswa</th>
-                  <th className="px-4 py-4">Kasus / Permasalahan</th>
-                  <th className="px-4 py-4">Poin</th>
-                  <th className="px-4 py-4">Tindak Lanjut</th>
-                  <th className="px-4 py-4">Status</th>
-                  <th className="px-6 py-4 text-center">Aksi</th>
+                  <th className="px-6 py-4 bg-transparent">Siswa</th>
+                  <th className="px-4 py-4 bg-transparent">Kasus / Permasalahan</th>
+                  <th className="px-4 py-4 bg-transparent">Poin</th>
+                  <th className="px-4 py-4 bg-transparent">Tindak Lanjut</th>
+                  <th className="px-4 py-4 bg-transparent">Status</th>
+                  <th className="px-6 py-4 text-center bg-transparent">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {MOCK_KASUS.filter(k => k.siswa.toLowerCase().includes(searchTerm.toLowerCase()) || k.kasus.toLowerCase().includes(searchTerm.toLowerCase())).map((k) => (
-                  <tr key={k.id} className="hover:bg-white/5 transition-colors">
+                  <tr key={k.id} className="hover:bg-white/5 transition-colors group cursor-pointer">
                     <td className="px-6 py-4">
                       <div className="font-bold text-white">{k.siswa}</div>
                       <div className="text-xs text-dark-300">{k.kelas}</div>
@@ -135,15 +135,15 @@ export default function KasusPage() {
           {MOCK_KASUS.filter(k => k.visit).map(k => (
              <div key={k.id} className="card-feature group border-amber-500/20 hover:border-amber-500/50 relative overflow-hidden bg-primary-500/10">
                 <div className="flex justify-between items-start mb-4">
-                  <div className="w-12 h-12 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300 shadow-glow-amber">
                     <RiHomeHeartLine />
                   </div>
-                  <span className="text-[10px] uppercase font-bold text-dark-200 bg-white/10 px-2 py-1 rounded">{k.date}</span>
+                  <span className="text-[10px] uppercase font-bold text-dark-200 bg-black/20 border border-white/10 px-2 py-1 rounded">{k.date}</span>
                 </div>
                 <h4 className="font-bold text-white text-lg">{k.siswa}</h4>
                 <p className="text-dark-300 text-xs mt-1 mb-4 flex items-center gap-1"><RiMapPinLine className="text-dark-300" /> Alamat: Jl. Merdeka No. {k.id * 12}</p>
                 
-                <div className="p-3 bg-dark-950/50 rounded-xl border border-white/20 mb-4">
+                <div className="p-3 bg-black/40 rounded-xl border border-white/10 shadow-inner mb-4">
                    <div className="text-[10px] text-dark-300 uppercase font-bold tracking-wider mb-1">Terkait Kasus</div>
                    <div className="text-sm text-amber-100 font-medium">{k.kasus}</div>
                 </div>
