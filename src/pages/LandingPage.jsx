@@ -68,7 +68,7 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-dark-950 text-white">
+    <div className="min-h-screen text-white bg-[rgb(var(--bg-main))]">
       {/* Navbar */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled ? 'bg-dark-950/90 backdrop-blur-xl border-b border-white/20 py-3' : 'py-5'

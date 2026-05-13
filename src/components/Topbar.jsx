@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import {
   RiMenuLine, RiBellLine, RiSearchLine,
-  RiShieldStarLine, RiUser3Line,
+  RiShieldStarLine, RiUser3Line, RiMoonLine, RiSunLine
 } from 'react-icons/ri'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -24,8 +24,17 @@ export default function Topbar({ onMenuClick }) {
   const [searchOpen, setSearchOpen] = useState(false)
   const page = PAGE_TITLES[pathname] || { title: 'SIMBK', sub: '' }
 
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'))
+
+  const toggleTheme = () => {
+    const isDarkNow = document.documentElement.classList.toggle('dark')
+    setIsDark(isDarkNow)
+    // Optional: save to localStorage if user wants
+    localStorage.setItem('theme', isDarkNow ? 'dark' : 'light')
+  }
+
   return (
-    <header className="sticky top-0 z-10 flex items-center gap-4 px-6 py-4 bg-dark-950/80 backdrop-blur-xl border-b border-white/20">
+    <header className="sticky top-0 z-10 flex items-center gap-4 px-6 py-4 bg-black/10 backdrop-blur-xl border-b border-white/10">
       {/* Mobile menu */}
       <button
         onClick={onMenuClick}
@@ -42,7 +51,7 @@ export default function Topbar({ onMenuClick }) {
       </div>
 
       {/* Search */}
-      <div className={`hidden md:flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/20 transition-all duration-300 ${searchOpen ? 'w-64' : 'w-40 cursor-pointer'}`}>
+      <div className={`hidden md:flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 bg-white/5 transition-all duration-300 ${searchOpen ? 'w-64' : 'w-40 cursor-pointer'}`}>
         <RiSearchLine className="text-dark-200 flex-shrink-0" />
         <input
           type="text"
@@ -53,17 +62,26 @@ export default function Topbar({ onMenuClick }) {
         />
       </div>
 
+      {/* Theme Toggle */}
+      <button
+        onClick={toggleTheme}
+        className="p-2.5 rounded-xl border border-white/10 bg-white/5 text-dark-300 hover:text-white transition-colors"
+        title={isDark ? "Ubah ke Light Mode" : "Ubah ke Dark Mode"}
+      >
+        {isDark ? <RiSunLine className="text-lg text-amber-400" /> : <RiMoonLine className="text-lg text-primary-400" />}
+      </button>
+
       {/* Notifications */}
       <button
         id="topbar-notif-btn"
-        className="relative p-2.5 rounded-xl glass border border-white/20 text-dark-300 hover:text-white transition-colors"
+        className="relative p-2.5 rounded-xl border border-white/10 bg-white/5 text-dark-300 hover:text-white transition-colors"
       >
         <RiBellLine className="text-lg" />
         <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-accent-500 rounded-full" />
       </button>
 
       {/* Avatar */}
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl glass border border-white/20">
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/10 bg-white/5">
         <div className="w-7 h-7 rounded-full bg-primary-500 flex items-center justify-center">
           <span className="text-white text-xs font-bold">
             {user?.name?.[0]?.toUpperCase() || 'G'}

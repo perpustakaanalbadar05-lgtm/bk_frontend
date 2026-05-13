@@ -7,6 +7,8 @@ export default {
   theme: {
     extend: {
       colors: {
+        white: 'rgb(var(--color-white) / <alpha-value>)',
+        black: 'rgb(var(--color-black) / <alpha-value>)',
         primary: {
           50: '#f0f4fa',
           100: '#e1eaf4',
@@ -45,17 +47,17 @@ export default {
           900: '#134e4a',
         },
         dark: {
-          50: '#f5f5f9',
-          100: '#ececf4',
-          200: '#dad9eb',
-          300: '#bebcde',
-          400: '#9d99ce',
-          500: '#7e78be',
-          600: '#645eaa',
-          700: '#514c8e',
-          800: '#433f74',
-          900: '#1e1679',
-          950: '#191265', // Deep Blue
+          50: 'rgb(var(--dark-50) / <alpha-value>)',
+          100: 'rgb(var(--dark-100) / <alpha-value>)',
+          200: 'rgb(var(--dark-200) / <alpha-value>)',
+          300: 'rgb(var(--dark-300) / <alpha-value>)',
+          400: 'rgb(var(--dark-400) / <alpha-value>)',
+          500: 'rgb(var(--dark-500) / <alpha-value>)',
+          600: 'rgb(var(--dark-600) / <alpha-value>)',
+          700: 'rgb(var(--dark-700) / <alpha-value>)',
+          800: 'rgb(var(--dark-800) / <alpha-value>)',
+          900: 'rgb(var(--dark-900) / <alpha-value>)',
+          950: 'rgb(var(--dark-950) / <alpha-value>)',
         },
       },
       fontFamily: {

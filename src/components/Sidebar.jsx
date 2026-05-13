@@ -35,7 +35,7 @@ export default function Sidebar({ open, collapsed, onCollapse, onClose }) {
     <aside
       className={`
         fixed top-0 left-0 z-30 h-full flex flex-col
-        bg-dark-900/95 backdrop-blur-xl border-r border-white/20
+        bg-black/10 backdrop-blur-xl border-r border-white/10
         transition-all duration-300 ease-in-out
         ${open ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0
@@ -43,7 +43,7 @@ export default function Sidebar({ open, collapsed, onCollapse, onClose }) {
       `}
     >
       {/* Logo */}
-      <div className={`flex items-center gap-3 p-5 border-b border-white/20 ${collapsed ? 'lg:justify-center lg:px-2' : ''}`}>
+      <div className={`flex items-center gap-3 p-5 border-b border-white/10 ${collapsed ? 'lg:justify-center lg:px-2' : ''}`}>
         <div className="relative flex-shrink-0">
           <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center shadow-glow-sm">
             <RiShieldStarLine className="text-white text-xl" />

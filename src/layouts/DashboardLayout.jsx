@@ -8,7 +8,7 @@ export default function DashboardLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   return (
-    <div className="min-h-screen bg-dark-950 flex">
+    <div className="min-h-screen flex">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
