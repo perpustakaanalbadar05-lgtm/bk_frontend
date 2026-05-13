@@ -6,6 +6,7 @@ import {
 } from 'react-icons/ri'
 import SignatureCanvas from 'react-signature-canvas'
 import toast from 'react-hot-toast'
+import { useSettings } from '../contexts/SettingsContext'
 
 const INITIAL_SESSIONS = [
   { id: 1, siswa: 'Ahmad Fauzi', kelas: 'XI IPA 2', tanggal: '11 Mei 2026', topik: 'Masalah Belajar', jenis: 'Individu', status: 'Selesai', durasi: '45 mnt', signature: true },
@@ -36,8 +37,9 @@ export default function KonselingPage() {
   const sigCanvas = useRef(null)
 
   // Form state
+  const { classes } = useSettings()
   const [formData, setFormData] = useState({
-    siswa: '', kelas: '', topik: '', jenis: 'Individu', ringkasan: ''
+    siswa: '', kelas: classes?.[0] || '', topik: '', jenis: 'Individu', ringkasan: ''
   })
 
   const handleClearSignature = () => {
@@ -64,7 +66,7 @@ export default function KonselingPage() {
 
     setSessions([newSession, ...sessions])
     setShowForm(false)
-    setFormData({ siswa: '', kelas: '', topik: '', jenis: 'Individu', ringkasan: '' })
+    setFormData({ siswa: '', kelas: classes?.[0] || '', topik: '', jenis: 'Individu', ringkasan: '' })
     toast.success("Jurnal Konseling Berhasil Disimpan! Digital signature terekam.");
   }
 
@@ -103,11 +105,13 @@ export default function KonselingPage() {
                     className="input-field text-sm col-span-2"
                     value={formData.siswa} onChange={e => setFormData({...formData, siswa: e.target.value})}
                   />
-                  <input 
-                    type="text" placeholder="Kelas (cth: X IPA 1)" required 
+                  <select 
                     className="input-field text-sm"
                     value={formData.kelas} onChange={e => setFormData({...formData, kelas: e.target.value})}
-                  />
+                  >
+                    <option value="" disabled>Pilih Kelas</option>
+                    {classes.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
                   <select 
                     className="input-field text-sm"
                     value={formData.jenis} onChange={e => setFormData({...formData, jenis: e.target.value})}

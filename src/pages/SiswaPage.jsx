@@ -5,6 +5,7 @@ import {
   RiSaveLine, RiUserLine, RiAlertLine, RiCheckLine
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
+import { useSettings } from '../contexts/SettingsContext'
 
 const INIT_SISWA = [
   { id: 1, nama: 'Ahmad Fauzi', nis: '2024001', kelas: 'XI IPA 2', jk: 'L', status: 'Aktif', konseling: 3, hp: '081234567890', alamat: 'Jl. Merdeka No. 12, Jakarta' },
@@ -23,12 +24,10 @@ const STATUS_CLS = {
   'Alumni': 'badge bg-dark-500/30 text-dark-300 border border-dark-500/30',
 }
 
-const KELAS_OPTIONS = ['X IPA 1','X IPA 2','X IPS 1','XI IPA 1','XI IPA 2','XI IPS 3','XII IPA 1','XII IPS 2']
 const PAGE_SIZE = 5
 
-const emptyForm = { nama:'', nis:'', kelas:'X IPA 1', jk:'L', status:'Aktif', hp:'', alamat:'' }
-
-function SiswaModal({ isOpen, onClose, initial, onSave }) {
+function SiswaModal({ isOpen, onClose, initial, onSave, classes }) {
+  const emptyForm = { nama:'', nis:'', kelas: classes?.[0] || '', jk:'L', status:'Aktif', hp:'', alamat:'' }
   const [form, setForm] = useState(initial || emptyForm)
   const isEdit = !!initial?.id
 
@@ -77,7 +76,7 @@ function SiswaModal({ isOpen, onClose, initial, onSave }) {
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-2">Kelas</label>
               <select className="input-field" value={form.kelas} onChange={e=>set('kelas',e.target.value)}>
-                {KELAS_OPTIONS.map(k=><option key={k} value={k}>{k}</option>)}
+                {classes?.map(k=><option key={k} value={k}>{k}</option>)}
               </select>
             </div>
             <div>
@@ -177,6 +176,7 @@ function ConfirmDelete({ siswa, onClose, onConfirm }) {
 }
 
 export default function SiswaPage() {
+  const { classes } = useSettings()
   const [siswa, setSiswa] = useState(INIT_SISWA)
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState('Semua')
@@ -235,8 +235,8 @@ export default function SiswaPage() {
 
   return (
     <div className="space-y-6">
-      <SiswaModal isOpen={modalAdd} onClose={() => setModalAdd(false)} onSave={handleAdd} />
-      <SiswaModal isOpen={!!modalEdit} onClose={() => setModalEdit(null)} initial={modalEdit} onSave={handleEdit} />
+      <SiswaModal isOpen={modalAdd} onClose={() => setModalAdd(false)} onSave={handleAdd} classes={classes} />
+      <SiswaModal isOpen={!!modalEdit} onClose={() => setModalEdit(null)} initial={modalEdit} onSave={handleEdit} classes={classes} />
       <DetailModal siswa={modalDetail} onClose={() => setModalDetail(null)} />
       <ConfirmDelete siswa={modalDelete} onClose={() => setModalDelete(null)} onConfirm={handleDelete} />
 
@@ -307,7 +307,7 @@ export default function SiswaPage() {
                 <label className="text-xs font-bold uppercase tracking-wider text-dark-200 block mb-2">Kelas</label>
                 <select className="input-field text-sm" value={filterKelas} onChange={e=>{setFilterKelas(e.target.value);setPage(1)}}>
                   <option>Semua</option>
-                  {KELAS_OPTIONS.map(k=><option key={k}>{k}</option>)}
+                  {classes.map(k=><option key={k}>{k}</option>)}
                 </select>
               </div>
             </div>
