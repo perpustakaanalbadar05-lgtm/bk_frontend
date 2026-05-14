@@ -11,6 +11,7 @@ import LaporanPage from './pages/LaporanPage'
 import SettingsPage from './pages/SettingsPage'
 import KlasikalPage from './pages/KlasikalPage'
 import KasusPage from './pages/KasusPage'
+import IsiAkpdPage from './pages/IsiAkpdPage'
 import DashboardLayout from './layouts/DashboardLayout'
 import { AuthProvider } from './contexts/AuthContext'
 import { SettingsProvider } from './contexts/SettingsContext'
@@ -42,6 +43,7 @@ function App() {
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/isi-akpd" element={<IsiAkpdPage />} />
               <Route
                 path="/dashboard"
                 element={

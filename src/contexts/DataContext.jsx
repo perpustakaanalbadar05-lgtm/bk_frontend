@@ -55,6 +55,11 @@ export function DataProvider({ children }) {
     return saved ? JSON.parse(saved) : INITIAL_SCHEDULES
   })
 
+  const [akpdResult, setAkpdResult] = useState(() => {
+    const saved = localStorage.getItem('simbk_data_akpd_result')
+    return saved ? JSON.parse(saved) : null
+  })
+
   useEffect(() => {
     localStorage.setItem('simbk_data_siswa', JSON.stringify(siswa))
   }, [siswa])
@@ -71,12 +76,17 @@ export function DataProvider({ children }) {
     localStorage.setItem('simbk_data_schedules', JSON.stringify(schedules))
   }, [schedules])
 
+  useEffect(() => {
+    localStorage.setItem('simbk_data_akpd_result', JSON.stringify(akpdResult))
+  }, [akpdResult])
+
   return (
     <DataContext.Provider value={{
       siswa, setSiswa,
       sessions, setSessions,
       kasus, setKasus,
-      schedules, setSchedules
+      schedules, setSchedules,
+      akpdResult, setAkpdResult
     }}>
       {children}
     </DataContext.Provider>
