@@ -9,7 +9,9 @@ import {
   RiCheckboxCircleLine, 
   RiArrowRightLine, 
   RiArrowLeftLine,
-  RiSave3Line
+  RiSave3Line,
+  RiSunLine,
+  RiMoonLine
 } from 'react-icons/ri';
 import toast from 'react-hot-toast';
 import { AKPD_MASTER } from '../data/akpdMaster';
@@ -18,6 +20,15 @@ import { computeAkpdResults } from '../utils/akpdCalculator';
 export default function IsiAkpdPage() {
   const navigate = useNavigate();
   
+  // Theme State
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+
+  const toggleTheme = () => {
+    const isDarkNow = document.documentElement.classList.toggle('dark');
+    setIsDark(isDarkNow);
+    localStorage.setItem('theme', isDarkNow ? 'dark' : 'light');
+  };
+
   // Load existing data or default
   const getActiveMeta = () => {
     try {
@@ -66,20 +77,17 @@ export default function IsiAkpdPage() {
     if (!confirmSubmit) return;
 
     try {
-      // Get latest data from local storage
       let currentResult = null;
       const savedStr = localStorage.getItem('simbk_data_akpd_result');
       if (savedStr) {
         currentResult = JSON.parse(savedStr);
       } else {
-        // Instantiate default structure if not present
         currentResult = {
           meta: { ...activeMeta },
           students: []
         };
       }
 
-      // Format new student
       const nextNo = currentResult.students.length + 1;
       const newStudent = {
         no: String(nextNo),
@@ -88,14 +96,12 @@ export default function IsiAkpdPage() {
         responses: selections
       };
 
-      // Append student and compute
       const updatedStudents = [...currentResult.students, newStudent];
       const finalComputed = computeAkpdResults(currentResult.meta, updatedStudents);
 
-      // Save to local storage
       localStorage.setItem('simbk_data_akpd_result', JSON.stringify(finalComputed));
 
-      // Also push to normal Context if window allows or trigger cross-tab event
+      // Trigger sync across tabs
       window.dispatchEvent(new Event('storage'));
 
       setStep(3);
@@ -108,10 +114,8 @@ export default function IsiAkpdPage() {
     }
   };
 
-  // UI Helpers
   const countChecked = selections.reduce((a, b) => a + b, 0);
   
-  // Group questions by Bidang for easy tab navigation
   const listPribadi = AKPD_MASTER.filter(q => q.bidang === 'Pribadi');
   const listSosial = AKPD_MASTER.filter(q => q.bidang === 'Sosial');
   const listBelajar = AKPD_MASTER.filter(q => q.bidang === 'Belajar');
@@ -129,20 +133,29 @@ export default function IsiAkpdPage() {
             <p className="text-dark-300 text-xs">{activeMeta.sekolah} • {activeMeta.tahun}</p>
           </div>
         </div>
-        <span className="badge bg-teal-500/10 text-teal-400 border border-teal-500/20 text-xs px-3 py-1 uppercase font-bold">
-          KELAS {studentInfo.kelas}
-        </span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl border border-white/10 bg-white/5 text-dark-300 hover:text-white transition-colors"
+            title={isDark ? "Ubah ke Light Mode" : "Ubah ke Dark Mode"}
+          >
+            {isDark ? <RiSunLine className="text-base text-amber-400" /> : <RiMoonLine className="text-base text-primary-500" />}
+          </button>
+          <span className="badge bg-teal-500/10 text-teal-500 dark:text-teal-400 border border-teal-500/20 text-xs px-3 py-1.5 uppercase font-bold">
+            KELAS {studentInfo.kelas}
+          </span>
+        </div>
       </div>
     </div>
   );
 
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-[rgb(var(--bg-main))] text-white flex flex-col">
+      <div className="min-h-screen bg-[rgb(var(--bg-main))] text-white flex flex-col transition-colors duration-300">
         {renderHeader()}
         
         <div className="flex-1 flex items-center justify-center p-6">
-          <div className="w-full max-w-md card-feature bg-white/5 p-8 border-white/10">
+          <div className="w-full max-w-md card-feature p-8">
             <h2 className="font-display font-black text-2xl text-white text-center mb-2">Mulai Mengisi Instrumen</h2>
             <p className="text-dark-200 text-sm text-center mb-6">
               Silakan isi identitas Anda untuk memulai asesmen kebutuhan peserta didik (AKPD).
@@ -178,13 +191,13 @@ export default function IsiAkpdPage() {
                   <input 
                     type="text" 
                     disabled
-                    className="input-field py-3 bg-dark-900 opacity-75 border-dashed"
+                    className="input-field py-3 opacity-75 bg-dark-900 border-dashed"
                     value={studentInfo.kelas}
                   />
                 </div>
               </div>
 
-              <div className="bg-primary-500/10 border border-primary-500/20 rounded-xl p-4 text-xs text-dark-300 leading-relaxed">
+              <div className="bg-primary-500/10 border border-primary-500/20 rounded-xl p-4 text-xs text-dark-200 leading-relaxed">
                 <b>Petunjuk Pengisian:</b> Bacalah pernyataan yang muncul di layar. <b>Centang / pilih</b> pernyataan jika hal tersebut merupakan masalah yang saat ini sedang Anda alami atau rasakan.
               </div>
 
@@ -200,19 +213,19 @@ export default function IsiAkpdPage() {
 
   if (step === 2) {
     return (
-      <div className="min-h-screen bg-[rgb(var(--bg-main))] text-white flex flex-col pb-24">
+      <div className="min-h-screen bg-[rgb(var(--bg-main))] text-white flex flex-col pb-24 transition-colors duration-300">
         {renderHeader()}
         
         {/* Sticky progress bar */}
         <div className="sticky top-0 z-40 bg-dark-950/90 backdrop-blur border-b border-white/10 py-3 px-4 shadow-lg">
           <div className="max-w-4xl mx-auto flex justify-between items-center">
             <div className="flex flex-col">
-              <span className="text-[10px] font-bold text-dark-400 uppercase tracking-widest">PROFIL PENGISI</span>
+              <span className="text-[10px] font-bold text-dark-300 uppercase tracking-widest">PROFIL PENGISI</span>
               <span className="text-white text-sm font-bold truncate max-w-[180px] sm:max-w-sm">{studentInfo.nama}</span>
             </div>
             <div className="flex items-center gap-3 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
-              <span className="text-xs text-dark-300 font-medium">Masalah Dipilih:</span>
-              <span className="text-primary-400 font-bold text-sm font-mono bg-primary-500/10 px-2 rounded border border-primary-500/30">{countChecked}</span>
+              <span className="text-xs text-dark-200 font-medium">Masalah Dipilih:</span>
+              <span className="text-primary-500 dark:text-primary-400 font-bold text-sm font-mono bg-primary-500/10 px-2 rounded border border-primary-500/30">{countChecked}</span>
             </div>
           </div>
         </div>
@@ -220,17 +233,17 @@ export default function IsiAkpdPage() {
         <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-8 space-y-8">
           
           {/* Info Banner */}
-          <div className="card-feature p-4 bg-gradient-to-r from-primary-950 to-dark-950 border-primary-500/20 flex items-center gap-3 text-xs sm:text-sm text-dark-200">
-            <RiCheckboxCircleLine className="text-teal-400 text-xl flex-shrink-0" />
+          <div className="card-feature p-4 bg-primary-500/10 border-primary-500/20 flex items-center gap-3 text-xs sm:text-sm text-dark-200 shadow-none hover:transform-none hover:shadow-none">
+            <RiCheckboxCircleLine className="text-teal-500 dark:text-teal-400 text-xl flex-shrink-0" />
             <p>Silakan <b>sentuh atau klik kotak pernyataan</b> di bawah jika Anda menyetujui atau merasakan hal tersebut.</p>
           </div>
 
           {/* Form sections based on Bidang */}
           {[
-            { label: 'A. BIDANG PRIBADI', icon: RiHeartLine, color: 'text-purple-400', border: 'border-purple-500/20', list: listPribadi },
-            { label: 'B. BIDANG SOSIAL', icon: RiGroupLine, color: 'text-cyan-400', border: 'border-cyan-500/20', list: listSosial },
-            { label: 'C. BIDANG BELAJAR', icon: RiBookOpenLine, color: 'text-blue-400', border: 'border-blue-500/20', list: listBelajar },
-            { label: 'D. BIDANG KARIR', icon: RiBriefcaseLine, color: 'text-amber-400', border: 'border-amber-500/20', list: listKarir }
+            { label: 'A. BIDANG PRIBADI', icon: RiHeartLine, color: 'text-purple-500 dark:text-purple-400', list: listPribadi },
+            { label: 'B. BIDANG SOSIAL', icon: RiGroupLine, color: 'text-cyan-500 dark:text-cyan-400', list: listSosial },
+            { label: 'C. BIDANG BELAJAR', icon: RiBookOpenLine, color: 'text-blue-500 dark:text-blue-400', list: listBelajar },
+            { label: 'D. BIDANG KARIR', icon: RiBriefcaseLine, color: 'text-amber-500 dark:text-amber-400', list: listKarir }
           ].map((sect, sectIdx) => (
             <div key={sectIdx} className="space-y-4">
               <div className="flex items-center gap-2 text-white font-display font-black text-base border-b border-white/10 pb-2">
@@ -247,12 +260,12 @@ export default function IsiAkpdPage() {
                       onClick={() => toggleSelection(globalIndex)}
                       className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-4 select-none
                         ${isSelected 
-                          ? 'bg-primary-600/15 border-primary-500 shadow-glow-sm bg-gradient-to-r from-primary-950/50 to-dark-900' 
+                          ? 'bg-primary-500/10 dark:bg-primary-600/15 border-primary-500 shadow-glow-sm dark:bg-gradient-to-r dark:from-primary-950/50 dark:to-dark-900' 
                           : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'}
                       `}
                     >
                       <div className="flex items-start gap-3">
-                        <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded mt-0.5 flex-shrink-0 ${isSelected ? 'bg-primary-500 text-white' : 'bg-dark-900 text-dark-400'}`}>
+                        <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded mt-0.5 flex-shrink-0 ${isSelected ? 'bg-primary-500 text-white' : 'bg-dark-900 text-dark-300'}`}>
                           {item.no}
                         </span>
                         <p className={`text-sm font-medium leading-relaxed ${isSelected ? 'text-white' : 'text-dark-200'}`}>
@@ -262,7 +275,7 @@ export default function IsiAkpdPage() {
                       
                       {/* Checkbox Circle */}
                       <div className={`w-6 h-6 rounded-full flex-shrink-0 border-2 flex items-center justify-center transition-all
-                        ${isSelected ? 'bg-primary-500 border-primary-400 text-white scale-110' : 'border-dark-500 bg-transparent'}
+                        ${isSelected ? 'bg-primary-500 border-primary-400 text-white scale-110' : 'border-dark-300 dark:border-dark-500 bg-transparent'}
                       `}>
                         {isSelected && <RiCheckboxCircleLine className="text-lg" />}
                       </div>
@@ -291,11 +304,11 @@ export default function IsiAkpdPage() {
 
   if (step === 3) {
     return (
-      <div className="min-h-screen bg-[rgb(var(--bg-main))] text-white flex flex-col items-center justify-center p-6">
-        <div className="max-w-md w-full text-center card-feature bg-white/5 border-white/10 p-8 relative overflow-hidden">
+      <div className="min-h-screen bg-[rgb(var(--bg-main))] text-white flex flex-col items-center justify-center p-6 transition-colors duration-300">
+        <div className="max-w-md w-full text-center card-feature p-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-emerald-500/5 animate-pulse pointer-events-none" />
           
-          <div className="w-20 h-20 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-4xl mb-6 shadow-glow">
+          <div className="w-20 h-20 mx-auto rounded-full bg-emerald-500/20 text-emerald-500 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-4xl mb-6 shadow-glow">
             <RiCheckboxCircleLine />
           </div>
           
