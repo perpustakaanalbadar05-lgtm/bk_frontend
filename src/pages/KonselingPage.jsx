@@ -7,14 +7,7 @@ import {
 import SignatureCanvas from 'react-signature-canvas'
 import toast from 'react-hot-toast'
 import { useSettings } from '../contexts/SettingsContext'
-
-const INITIAL_SESSIONS = [
-  { id: 1, siswa: 'Ahmad Fauzi', kelas: 'XI IPA 2', tanggal: '11 Mei 2026', topik: 'Masalah Belajar', jenis: 'Individu', status: 'Selesai', durasi: '45 mnt', signature: true },
-  { id: 2, siswa: 'Siti Rahma', kelas: 'X IPS 1', tanggal: '11 Mei 2026', topik: 'Karir & Studi Lanjut', jenis: 'Individu', status: 'Proses', durasi: '30 mnt', signature: false },
-  { id: 3, siswa: 'Kelas X IPA 1', kelas: 'X IPA 1', tanggal: '10 Mei 2026', topik: 'Orientasi BK', jenis: 'Kelompok', status: 'Selesai', durasi: '60 mnt', signature: true },
-  { id: 4, siswa: 'Dewi Lestari', kelas: 'XI IPS 3', tanggal: '12 Mei 2026', topik: 'Pribadi & Keluarga', jenis: 'Individu', status: 'Terjadwal', durasi: '-', signature: false },
-  { id: 5, siswa: 'Riko Prasetyo', kelas: 'X IPA 1', tanggal: '09 Mei 2026', topik: 'Motivasi Belajar', jenis: 'Individu', status: 'Selesai', durasi: '40 mnt', signature: true },
-]
+import { useData } from '../contexts/DataContext'
 
 const STATUS_CLS = {
   'Selesai': 'badge bg-teal-500/20 text-teal-300 border border-teal-500/30',
@@ -30,7 +23,7 @@ const JENIS_CLS = {
 export default function KonselingPage() {
   const [activeTab, setActiveTab] = useState('semua')
   const [showForm, setShowForm] = useState(false)
-  const [sessions, setSessions] = useState(INITIAL_SESSIONS)
+  const { sessions, setSessions } = useData()
   const tabs = ['semua', 'terjadwal', 'proses', 'selesai']
   
   // Signature ref
@@ -209,9 +202,9 @@ export default function KonselingPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { label: 'Total Sesi', value: sessions.length, icon: RiHeartLine, color: 'text-primary-400' },
-          { label: 'Bulan Ini', value: '12', icon: RiTimeLine, color: 'text-accent-400' },
+          { label: 'Bulan Ini', value: sessions.filter(s => s.tanggal.includes('Mei 2026') || s.tanggal.includes(new Date().toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }))).length, icon: RiTimeLine, color: 'text-accent-400' },
           { label: 'Tervalidasi', value: sessions.filter(s => s.signature).length, icon: RiCheckLine, color: 'text-teal-400' },
-          { label: 'Siswa Unik', value: '38', icon: RiUserLine, color: 'text-amber-400' },
+          { label: 'Siswa Unik', value: new Set(sessions.map(s => s.siswa)).size, icon: RiUserLine, color: 'text-amber-400' },
         ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="card-feature flex items-center gap-4 py-5 px-6 relative overflow-hidden group">
             <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity text-6xl"><Icon /></div>

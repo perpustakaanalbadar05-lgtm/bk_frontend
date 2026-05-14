@@ -5,6 +5,8 @@ import {
   RiSaveLine, RiPrinterLine, RiSearchLine, RiTimeLine
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
+import { useData } from '../contexts/DataContext'
+import { useSettings } from '../contexts/SettingsContext'
 
 const SAMPLE_STUDENTS = [
   { id: 1, name: 'Ahmad Fauzi', nis: '2024001', status: 'Hadir' },
@@ -19,17 +21,69 @@ const SAMPLE_STUDENTS = [
   { id: 10, name: 'Gita Putri', nis: '2024010', status: 'Hadir' },
 ]
 
-const SCHEDULES = [
-  { id: 1, class: 'XI IPA 2', topic: 'Strategi Sukses Ujian', time: 'Senin, 08:00', status: 'Selesai', attended: 32, total: 34 },
-  { id: 2, class: 'X IPS 1', topic: 'Bahaya Bullying', time: 'Selasa, 10:30', status: 'Berlangsung', attended: 0, total: 36 },
-  { id: 3, class: 'XII IPA 1', topic: 'Orientasi Perguruan Tinggi', time: 'Rabu, 13:00', status: 'Terjadwal', attended: 0, total: 35 },
-]
+function JadwalKlasikalModal({ isOpen, onClose, onSave, classes }) {
+  const [form, setForm] = useState({
+    class: classes?.[0] || '',
+    topic: '',
+    time: '',
+    total: 36
+  })
+
+  if (!isOpen) return null
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (!form.class || !form.topic || !form.time) return toast.error('Harap isi semua kolom jadwal!')
+    onSave(form)
+  }
+
+  return (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
+      <div className="relative w-full max-w-md card-feature p-0 flex flex-col overflow-hidden animate-in">
+        <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/5">
+          <h2 className="font-display font-bold text-white text-lg">Buat Jadwal Klasikal</h2>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-dark-200 hover:text-white"><RiCloseLine /></button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Pilih Kelas</label>
+            <select className="input-field text-sm" value={form.class} onChange={e => setForm({...form, class: e.target.value})}>
+              {classes.map(k => <option key={k} value={k}>{k}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Topik Bimbingan / Layanan</label>
+            <input type="text" placeholder="Cth: Bahaya Bullying & Dampaknya" required className="input-field text-sm" value={form.topic} onChange={e => setForm({...form, topic: e.target.value})} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Hari & Jam</label>
+              <input type="text" placeholder="Cth: Senin, 08:00" required className="input-field text-sm" value={form.time} onChange={e => setForm({...form, time: e.target.value})} />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Total Siswa</label>
+              <input type="number" min="1" max="50" className="input-field text-sm" value={form.total} onChange={e => setForm({...form, total: parseInt(e.target.value) || 30})} />
+            </div>
+          </div>
+        </form>
+        <div className="p-4 border-t border-white/10 bg-dark-950/50 flex gap-3">
+          <button type="button" onClick={onClose} className="flex-1 btn-secondary text-sm py-2">Batal</button>
+          <button type="button" onClick={handleSubmit} className="flex-1 btn-primary text-sm py-2 gap-2 bg-primary-500"><RiSaveLine /> Buat Jadwal</button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function KlasikalPage() {
+  const { classes } = useSettings()
+  const { schedules, setSchedules } = useData()
   const [view, setView] = useState('list') // 'list' or 'attendance'
   const [activeClass, setActiveClass] = useState(null)
   const [students, setStudents] = useState(SAMPLE_STUDENTS)
   const [searchTerm, setSearchTerm] = useState('')
+  const [modalOpen, setModalOpen] = useState(false)
 
   const handleOpenAttendance = (schedule) => {
     setActiveClass(schedule)
@@ -47,6 +101,21 @@ export default function KlasikalPage() {
     setView('list')
   }
 
+  const handleSaveSchedule = (form) => {
+    const newSched = {
+      id: Date.now(),
+      class: form.class,
+      topic: form.topic,
+      time: form.time,
+      status: 'Terjadwal',
+      attended: 0,
+      total: form.total
+    }
+    setSchedules([newSched, ...schedules])
+    setModalOpen(false)
+    toast.success('Jadwal Bimbingan Klasikal baru berhasil dibuat!')
+  }
+
   const filteredStudents = students.filter(s => 
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     s.nis.includes(searchTerm)
@@ -54,6 +123,13 @@ export default function KlasikalPage() {
 
   return (
     <div className="space-y-6 animate-in">
+      <JadwalKlasikalModal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        onSave={handleSaveSchedule} 
+        classes={classes} 
+      />
+
       {view === 'list' ? (
         <>
           {/* HEADER */}
@@ -65,7 +141,7 @@ export default function KlasikalPage() {
               </h1>
               <p className="text-dark-200 text-sm">Jadwal masuk kelas & manajemen kehadiran peserta didik secara kolektif.</p>
             </div>
-            <button className="btn-primary gap-2 py-2.5 shadow-glow-indigo">
+            <button onClick={() => setModalOpen(true)} className="btn-primary gap-2 py-2.5 shadow-glow-indigo">
               <RiPresentationLine className="text-lg" /> Buat Jadwal Baru
             </button>
           </div>
@@ -73,8 +149,8 @@ export default function KlasikalPage() {
           {/* STATS */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { label: 'Total Sesi Bulan Ini', val: '14 Kali', icon: RiHistoryLine, color: 'text-indigo-400' },
-              { label: 'Jam Layanan', val: '28 JP', icon: RiTimeLine, color: 'text-emerald-400' },
+              { label: 'Total Sesi Bulan Ini', val: `${schedules.length} Kali`, icon: RiHistoryLine, color: 'text-indigo-400' },
+              { label: 'Jam Layanan', val: `${schedules.length * 2} JP`, icon: RiTimeLine, color: 'text-emerald-400' },
               { label: 'Tingkat Kehadiran', val: '96.5%', icon: RiGroupLine, color: 'text-accent-400' },
             ].map(item => (
               <div key={item.label} className="card-feature flex items-center gap-4 py-5">
@@ -90,7 +166,7 @@ export default function KlasikalPage() {
           {/* CLASS SCHEDULE GRID */}
           <h3 className="text-white font-display font-bold mt-8 mb-2">Agenda Minggu Ini</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {SCHEDULES.map((item) => (
+            {schedules.map((item) => (
               <div key={item.id} className="card-feature group border-white/20 hover:border-primary-500/30 relative overflow-hidden">
                 {item.status === 'Berlangsung' && (
                   <div className="absolute top-0 right-0 bg-emerald-500 text-[9px] font-bold text-white uppercase px-3 py-1 rounded-bl-xl animate-pulse">Live Now</div>

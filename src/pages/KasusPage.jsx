@@ -2,23 +2,110 @@ import { useState } from 'react'
 import {
   RiHomeHeartLine, RiMapPinLine, RiCalendarCheckLine,
   RiAddLine, RiSearchLine, RiCheckDoubleLine, RiFileList3Line, RiAlertLine,
-  RiScales3Line, RiPrinterLine, RiMailSendLine
+  RiScales3Line, RiPrinterLine, RiMailSendLine, RiCloseLine, RiSaveLine
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
+import { useData } from '../contexts/DataContext'
+import { useSettings } from '../contexts/SettingsContext'
 
-const MOCK_KASUS = [
-  { id: 1, siswa: 'Ahmad Fauzi', kelas: 'XI IPA 2', kasus: 'Sering membolos (Alpa > 3x)', poin: 20, status: 'Selesai', visit: true, date: '11 Mei 2026' },
-  { id: 2, siswa: 'Budi Santoso', kelas: 'XII IPA 1', kasus: 'Berkelahi di lingkungan sekolah', poin: 50, status: 'Proses', visit: false, date: '10 Mei 2026' },
-  { id: 3, siswa: 'Riko Prasetyo', kelas: 'X IPA 1', kasus: 'Merokok di kantin', poin: 30, status: 'Proses', visit: true, date: '08 Mei 2026' },
-  { id: 4, siswa: 'Dewi Lestari', kelas: 'XI IPS 3', kasus: 'Terlambat lebih dari 5 kali', poin: 10, status: 'Terjadwal', visit: true, date: '12 Mei 2026' },
-]
+function KasusModal({ isOpen, onClose, onSave, classes, defaultVisit = false }) {
+  const [form, setForm] = useState({
+    siswa: '',
+    kelas: classes?.[0] || '',
+    kasus: '',
+    poin: 10,
+    status: 'Proses',
+    visit: defaultVisit
+  })
+
+  if (!isOpen) return null
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (!form.siswa || !form.kasus) return toast.error('Nama siswa dan deskripsi kasus wajib diisi!')
+    onSave(form)
+  }
+
+  return (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
+      <div className="relative w-full max-w-md card-feature p-0 flex flex-col overflow-hidden animate-in">
+        <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/5">
+          <h2 className="font-display font-bold text-white text-lg">Catat Kasus / Pelanggaran</h2>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-dark-200 hover:text-white"><RiCloseLine /></button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Nama Siswa</label>
+            <input type="text" placeholder="Nama lengkap siswa..." required className="input-field" value={form.siswa} onChange={e => setForm({...form, siswa: e.target.value})} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Kelas</label>
+              <select className="input-field text-sm" value={form.kelas} onChange={e => setForm({...form, kelas: e.target.value})}>
+                {classes.map(k => <option key={k} value={k}>{k}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Akumulasi Poin</label>
+              <input type="number" min="0" max="100" className="input-field" value={form.poin} onChange={e => setForm({...form, poin: parseInt(e.target.value) || 0})} />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Kasus / Bentuk Pelanggaran</label>
+            <textarea rows="3" placeholder="Jelaskan secara singkat..." required className="input-field resize-none" value={form.kasus} onChange={e => setForm({...form, kasus: e.target.value})} />
+          </div>
+          <div className="flex items-center justify-between p-3 rounded-xl glass border border-amber-500/20">
+            <div>
+              <label className="font-semibold text-white text-sm flex items-center gap-1.5"><RiHomeHeartLine className="text-amber-400"/> Butuh Home Visit?</label>
+              <p className="text-dark-200 text-[10px] mt-0.5">Jadwalkan kunjungan rumah orang tua.</p>
+            </div>
+            <input type="checkbox" className="accent-amber-500 w-4 h-4 cursor-pointer" checked={form.visit} onChange={e => setForm({...form, visit: e.target.checked})} />
+          </div>
+        </form>
+        <div className="p-4 border-t border-white/10 bg-dark-950/50 flex gap-3">
+          <button type="button" onClick={onClose} className="flex-1 btn-secondary text-sm py-2">Batal</button>
+          <button type="button" onClick={handleSubmit} className="flex-1 btn-primary text-sm py-2 gap-2 bg-primary-500"><RiSaveLine /> Simpan Kasus</button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function KasusPage() {
+  const { classes } = useSettings()
+  const { kasus, setKasus } = useData()
   const [activeTab, setActiveTab] = useState('kasus') // kasus, homevisit
   const [searchTerm, setSearchTerm] = useState('')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [defaultVisitCheck, setDefaultVisitCheck] = useState(false)
+
+  const handleSaveKasus = (form) => {
+    const newKasus = {
+      id: Date.now(),
+      ...form,
+      date: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
+    }
+    setKasus([newKasus, ...kasus])
+    setModalOpen(false)
+    toast.success('Data Kasus Kedisiplinan berhasil disimpan!')
+  }
+
+  const openAddModal = (withVisit = false) => {
+    setDefaultVisitCheck(withVisit)
+    setModalOpen(true)
+  }
 
   return (
     <div className="space-y-6 animate-in">
+      <KasusModal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        onSave={handleSaveKasus} 
+        classes={classes} 
+        defaultVisit={defaultVisitCheck}
+      />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -28,8 +115,8 @@ export default function KasusPage() {
           <p className="text-dark-200 text-sm">Pencatatan pelanggaran, akumulasi poin, dan pembuatan Surat Panggilan (SP).</p>
         </div>
         <div className="flex gap-2">
-          <button className="btn-secondary text-sm py-2"><RiAddLine /> Catat Kasus</button>
-          <button className="btn-primary text-sm py-2 shadow-glow-amber bg-primary-500"><RiHomeHeartLine /> Jadwal Home Visit</button>
+          <button onClick={() => openAddModal(false)} className="btn-secondary text-sm py-2"><RiAddLine /> Catat Kasus</button>
+          <button onClick={() => openAddModal(true)} className="btn-primary text-sm py-2 shadow-glow-amber bg-primary-500"><RiHomeHeartLine /> Jadwal Home Visit</button>
         </div>
       </div>
 
@@ -67,7 +154,7 @@ export default function KasusPage() {
                 className="w-full bg-white/10 border border-white/20 rounded-xl pl-9 pr-4 py-2 text-sm text-white outline-none focus:border-primary-500"
               />
             </div>
-            <div className="text-xs text-dark-300 hidden sm:block">Total 4 Kasus</div>
+            <div className="text-xs text-dark-300 hidden sm:block">Total {kasus.length} Kasus</div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
@@ -82,7 +169,7 @@ export default function KasusPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {MOCK_KASUS.filter(k => k.siswa.toLowerCase().includes(searchTerm.toLowerCase()) || k.kasus.toLowerCase().includes(searchTerm.toLowerCase())).map((k) => (
+                {kasus.filter(k => k.siswa.toLowerCase().includes(searchTerm.toLowerCase()) || k.kasus.toLowerCase().includes(searchTerm.toLowerCase())).map((k) => (
                   <tr key={k.id} className="hover:bg-white/5 transition-colors group cursor-pointer">
                     <td className="px-6 py-4">
                       <div className="font-bold text-white">{k.siswa}</div>
@@ -132,7 +219,7 @@ export default function KasusPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 animate-in">
-          {MOCK_KASUS.filter(k => k.visit).map(k => (
+          {kasus.filter(k => k.visit).map(k => (
              <div key={k.id} className="card-feature group border-amber-500/20 hover:border-amber-500/50 relative overflow-hidden bg-primary-500/10">
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300 shadow-glow-amber">

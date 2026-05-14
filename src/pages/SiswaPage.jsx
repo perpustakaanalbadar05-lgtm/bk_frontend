@@ -7,17 +7,7 @@ import {
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
 import { useSettings } from '../contexts/SettingsContext'
-
-const INIT_SISWA = [
-  { id: 1, nama: 'Ahmad Fauzi', nis: '2024001', kelas: 'XI IPA 2', jk: 'L', status: 'Aktif', konseling: 3, hp: '081234567890', alamat: 'Jl. Merdeka No. 12, Jakarta' },
-  { id: 2, nama: 'Siti Rahma', nis: '2024002', kelas: 'X IPS 1', jk: 'P', status: 'Aktif', konseling: 1, hp: '082345678901', alamat: 'Jl. Sudirman No. 45, Jakarta' },
-  { id: 3, nama: 'Budi Santoso', nis: '2024003', kelas: 'XII IPA 1', jk: 'L', status: 'Aktif', konseling: 5, hp: '083456789012', alamat: 'Jl. Gatot Subroto No. 7, Jakarta' },
-  { id: 4, nama: 'Dewi Lestari', nis: '2024004', kelas: 'XI IPS 3', jk: 'P', status: 'Perhatian', konseling: 7, hp: '084567890123', alamat: 'Jl. Thamrin No. 3, Jakarta' },
-  { id: 5, nama: 'Riko Prasetyo', nis: '2024005', kelas: 'X IPA 1', jk: 'L', status: 'Aktif', konseling: 0, hp: '085678901234', alamat: 'Jl. Kebon Sirih No. 20, Jakarta' },
-  { id: 6, nama: 'Fitri Handayani', nis: '2024006', kelas: 'XII IPS 2', jk: 'P', status: 'Perhatian', konseling: 4, hp: '086789012345', alamat: 'Jl. Diponegoro No. 15, Jakarta' },
-  { id: 7, nama: 'Hendra Wijaya', nis: '2024007', kelas: 'X IPA 2', jk: 'L', status: 'Aktif', konseling: 2, hp: '087890123456', alamat: 'Jl. Hayam Wuruk No. 8, Jakarta' },
-  { id: 8, nama: 'Rina Marlina', nis: '2024008', kelas: 'XI IPA 1', jk: 'P', status: 'Aktif', konseling: 0, hp: '088901234567', alamat: 'Jl. Mangga Dua No. 55, Jakarta' },
-]
+import { useData } from '../contexts/DataContext'
 
 const STATUS_CLS = {
   'Aktif': 'badge bg-teal-500/20 text-teal-300 border border-teal-500/30',
@@ -203,7 +193,7 @@ function ConfirmDelete({ siswa, onClose, onConfirm }) {
 
 export default function SiswaPage() {
   const { classes } = useSettings()
-  const [siswa, setSiswa] = useState(INIT_SISWA)
+  const { siswa, setSiswa } = useData()
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState('Semua')
   const [filterKelas, setFilterKelas] = useState('Semua')
@@ -300,10 +290,60 @@ export default function SiswaPage() {
         <div className="flex gap-2">
           <label className="btn-secondary text-sm py-2 cursor-pointer">
             <RiUploadLine /> Import CSV
-            <input type="file" className="hidden" accept=".csv" onChange={(e) => {
-              if(e.target.files.length > 0) toast.success('Fitur import CSV berhasil disimulasikan!')
-              e.target.value = null
-            }} />
+            <input 
+              type="file" 
+              className="hidden" 
+              accept=".csv" 
+              onChange={(e) => {
+                const file = e.target.files[0]
+                if (!file) return
+                
+                const reader = new FileReader()
+                reader.onload = (evt) => {
+                  try {
+                    const text = evt.target.result
+                    const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
+                    if (lines.length <= 1) {
+                      return toast.error('Format file CSV tidak valid atau kosong!')
+                    }
+
+                    // Skip headers
+                    const headers = lines[0].split(',').map(h => h.toLowerCase().trim())
+                    const newStudents = []
+                    let baseId = Math.max(0, ...siswa.map(s => s.id)) + 1
+
+                    for (let i = 1; i < lines.length; i++) {
+                      const cols = lines[i].split(',').map(c => c.trim())
+                      if (cols.length < 2) continue // skip incomplete lines
+
+                      // Map standard CSV columns: NIS, Nama, Kelas, JK, Status, Konseling (some can be optional)
+                      // Assumes layout: NIS,Nama,Kelas,J/K,Status,Konseling
+                      newStudents.push({
+                        id: baseId++,
+                        nis: cols[0] || `IMPORT${Date.now()}${i}`,
+                        nama: cols[1] || 'Tanpa Nama',
+                        kelas: cols[2] || classes[0] || 'Umum',
+                        jk: cols[3] ? (cols[3].toUpperCase().includes('P') ? 'P' : 'L') : 'L',
+                        status: cols[4] || 'Aktif',
+                        konseling: parseInt(cols[5]) || 0,
+                        hp: '',
+                        alamat: ''
+                      })
+                    }
+
+                    if (newStudents.length > 0) {
+                      setSiswa(prev => [...newStudents, ...prev])
+                      toast.success(`${newStudents.length} data siswa berhasil diimport!`)
+                    }
+                  } catch (err) {
+                    toast.error('Gagal membaca file CSV.')
+                    console.error(err)
+                  }
+                }
+                reader.readAsText(file)
+                e.target.value = null
+              }} 
+            />
           </label>
           <button onClick={handleExport} className="btn-secondary text-sm py-2 hidden sm:flex"><RiDownloadLine /> Export</button>
           <button id="siswa-add-btn" onClick={() => setModalAdd(true)} className="btn-primary text-sm py-2"><RiUserAddLine /> Tambah Siswa</button>

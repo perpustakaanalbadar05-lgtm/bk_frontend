@@ -9,28 +9,15 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, BarChart, Bar, Legend,
 } from 'recharts'
-
-const STATS = [
-  { label: 'Total Siswa Binaan', value: '312', change: '+12', up: true, icon: RiUserHeartLine, color: 'from-primary-500 to-primary-700', bg: 'primary' },
-  { label: 'Sesi Konseling Bulan Ini', value: '47', change: '+8', up: true, icon: RiHeartLine, color: 'from-accent-500 to-accent-700', bg: 'accent' },
-  { label: 'Program BK Aktif', value: '6', change: '-1', up: false, icon: RiFileTextLine, color: 'from-teal-500 to-teal-700', bg: 'teal' },
-  { label: 'Laporan Tersedia', value: '23', change: '+5', up: true, icon: RiBarChart2Line, color: 'from-amber-500 to-orange-600', bg: 'amber' },
-]
+import { useData } from '../contexts/DataContext'
 
 const CHART_DATA = [
-  { month: 'Jan', konseling: 30, asesmen: 18 },
-  { month: 'Feb', konseling: 42, asesmen: 25 },
-  { month: 'Mar', konseling: 38, asesmen: 30 },
-  { month: 'Apr', konseling: 55, asesmen: 40 },
-  { month: 'Mei', konseling: 47, asesmen: 35 },
-  { month: 'Jun', konseling: 60, asesmen: 48 },
-]
-
-const RECENT_KONSELING = [
-  { name: 'Ahmad Fauzi', kelas: 'XI IPA 2', topik: 'Masalah Belajar', status: 'Selesai', date: '11 Mei 2026' },
-  { name: 'Siti Rahma', kelas: 'X IPS 1', topik: 'Karir & Studi', status: 'Proses', date: '11 Mei 2026' },
-  { name: 'Budi Santoso', kelas: 'XII IPA 1', topik: 'Sosial & Pergaulan', status: 'Selesai', date: '10 Mei 2026' },
-  { name: 'Dewi Lestari', kelas: 'XI IPS 3', topik: 'Pribadi & Keluarga', status: 'Terjadwal', date: '12 Mei 2026' },
+  { month: 'Jan', konseling: 3, asesmen: 18 },
+  { month: 'Feb', konseling: 5, asesmen: 25 },
+  { month: 'Mar', konseling: 4, asesmen: 30 },
+  { month: 'Apr', konseling: 7, asesmen: 40 },
+  { month: 'Mei', konseling: 8, asesmen: 35 },
+  { month: 'Jun', konseling: 10, asesmen: 48 },
 ]
 
 const ALERTS = [
@@ -52,8 +39,24 @@ const ALERT_STYLE = {
 }
 
 export default function DashboardPage() {
+  const { siswa, sessions, kasus, schedules } = useData()
   const now = new Date()
   const greeting = now.getHours() < 12 ? 'Selamat Pagi' : now.getHours() < 17 ? 'Selamat Siang' : 'Selamat Sore'
+
+  const dynamicStats = [
+    { label: 'Total Siswa Binaan', value: siswa.length, change: '+1', up: true, icon: RiUserHeartLine, color: 'from-primary-500 to-primary-700', bg: 'primary' },
+    { label: 'Sesi Konseling', value: sessions.length, change: '+2', up: true, icon: RiHeartLine, color: 'from-accent-500 to-accent-700', bg: 'accent' },
+    { label: 'Jadwal Klasikal', value: schedules.length, change: '+0', up: true, icon: RiFileTextLine, color: 'from-teal-500 to-teal-700', bg: 'teal' },
+    { label: 'Kasus Aktif', value: kasus.filter(k => k.status !== 'Selesai').length, change: '+1', up: true, icon: RiBarChart2Line, color: 'from-amber-500 to-orange-600', bg: 'amber' },
+  ]
+
+  const recentSessions = sessions.slice(0, 4).map(s => ({
+    name: s.siswa,
+    kelas: s.kelas,
+    topik: s.topik,
+    status: s.status,
+    date: s.tanggal
+  }))
 
   return (
     <div className="space-y-6">
