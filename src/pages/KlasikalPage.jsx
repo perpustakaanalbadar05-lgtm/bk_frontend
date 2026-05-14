@@ -137,7 +137,9 @@ export default function KlasikalPage() {
             <div>
               <h1 className="font-display font-bold text-2xl text-white flex items-center gap-2">
                 Bimbingan Klasikal
-                <span className="badge-primary text-[10px] uppercase font-bold tracking-wider bg-primary-500/20 text-primary-300 border-primary-500/30">Grup</span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-primary-500/10 text-primary-600 dark:bg-primary-500/20 dark:text-primary-300 border border-primary-500/20 dark:border-primary-500/30 shadow-sm">
+                  Grup
+                </span>
               </h1>
               <p className="text-dark-200 text-sm">Jadwal masuk kelas & manajemen kehadiran peserta didik secara kolektif.</p>
             </div>

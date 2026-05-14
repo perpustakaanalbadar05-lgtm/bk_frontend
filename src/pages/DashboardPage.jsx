@@ -94,7 +94,7 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {STATS.map(({ label, value, change, up, icon: Icon, color }) => (
+        {dynamicStats.map(({ label, value, change, up, icon: Icon, color }) => (
           <div key={label} className="stat-card">
             <div className="flex items-start justify-between mb-4">
               <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center shadow-lg`}>
@@ -178,8 +178,8 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {RECENT_KONSELING.map(({ name, kelas, topik, status, date }) => (
-                <tr key={name} className="hover:bg-white/5 transition-colors cursor-pointer group">
+              {recentSessions.map(({ name, kelas, topik, status, date }, idx) => (
+                <tr key={idx} className="hover:bg-white/5 transition-colors cursor-pointer group">
                   <td className="table-cell px-4 py-4 font-medium text-white group-hover:text-primary-300 transition-colors">{name}</td>
                   <td className="table-cell px-4 py-4">{kelas}</td>
                   <td className="table-cell px-4 py-4 hidden md:table-cell">{topik}</td>
