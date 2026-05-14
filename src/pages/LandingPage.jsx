@@ -215,7 +215,7 @@ export default function LandingPage() {
       <section id="fitur" className="py-24 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <span className="badge-primary mb-4 inline-flex">✦ Fitur Unggulan</span>
+            <span className="badge badge-primary mb-4 inline-flex">✦ Fitur Unggulan</span>
             <h2 className="section-title mb-4">
               Semua yang Dibutuhkan
               <br />
@@ -246,7 +246,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary-950/20 to-transparent" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <span className="badge-accent mb-4 inline-flex">✦ Cara Kerja</span>
+            <span className="badge badge-accent mb-4 inline-flex">✦ Cara Kerja</span>
             <h2 className="section-title mb-4">
               Mulai dalam <span className="gradient-text">4 Langkah</span>
             </h2>

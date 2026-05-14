@@ -185,7 +185,9 @@ export default function KonselingPage() {
         <div>
           <h1 className="font-display font-bold text-2xl text-white flex items-center gap-2">
             Jurnal Konseling Digital
-            <span className="badge-primary text-[10px] py-0.5">Realtime</span>
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-primary-500/10 text-primary-600 dark:bg-primary-500/20 dark:text-primary-300 border border-primary-500/20 dark:border-primary-500/30 shadow-sm">
+              Realtime
+            </span>
           </h1>
           <p className="text-dark-200 text-sm">Arsip & pencatatan sesi layanan bimbingan lengkap dengan digital signature.</p>
         </div>

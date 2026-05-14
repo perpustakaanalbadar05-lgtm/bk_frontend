@@ -64,7 +64,7 @@ export default function LoginPage() {
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             {['Asesmen Digital', 'Program BK Otomatis', 'Laporan Instan', 'Data Terintegrasi'].map(tag => (
-              <span key={tag} className="badge-primary text-xs">{tag}</span>
+              <span key={tag} className="badge badge-primary text-xs">{tag}</span>
             ))}
           </div>
           <p className="mt-10 text-dark-300 text-sm">CV. Alifba Media — Solusi Digital BK</p>
