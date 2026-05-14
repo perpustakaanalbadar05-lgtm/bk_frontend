@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react'
 import {
   RiAddLine, RiFileTextLine, RiDownloadLine, RiEditLine, RiEyeLine,
   RiMagicLine, RiCheckboxCircleLine, RiRefreshLine, RiCalendarCheckLine,
-  RiSettings4Line, RiPrinterLine, RiFileChartLine, RiAlertLine, RiArrowRightLine
+  RiSettings4Line, RiPrinterLine, RiFileChartLine, RiAlertLine, RiArrowRightLine,
+  RiFileList3Line, RiBuildingLine
 } from 'react-icons/ri'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useData } from '../contexts/DataContext'
+import { useSettings } from '../contexts/SettingsContext'
 
-// In case of no dynamic data, fall back to these standard items.
+// Fallbacks
 const FALLBACK_PROTA = [
   { id: 1, bidang: 'Pribadi', kebutuhan: 'Pengenalan Potensi Diri', layanan: 'Klasikal', sasaran: 'Kelas VII G', waktu: 'Juli' },
   { id: 2, bidang: 'Sosial', kebutuhan: 'Komunikasi Asertif', layanan: 'Bimbingan Kelompok', sasaran: 'Kelas VII G', waktu: 'Agustus' },
@@ -21,14 +23,17 @@ const BULAN_LIST = ['Juli', 'Agustus', 'September', 'Oktober', 'November', 'Dese
 export default function ProgramBKPage() {
   const navigate = useNavigate();
   const { akpdResult } = useData();
-  const [activeTab, setActiveTab] = useState('overview') // overview, generator, viewer
+  const { sekolah } = useSettings(); // Load official metadata!
+  
+  const [activeTab, setActiveTab] = useState('overview')
   const [generating, setGenerating] = useState(false)
   const [showResult, setShowResult] = useState(false)
-  const [programType, setProgramType] = useState('PROTA') // PROTA, PROSEM, RPL
+  const [programType, setProgramType] = useState('ACTION PLAN') // Default directly to the missing Action Plan!
   
   // Generated states
   const [generatedProta, setGeneratedProta] = useState(FALLBACK_PROTA)
   const [generatedProsem, setGeneratedProsem] = useState([])
+  const [generatedActionPlan, setGeneratedActionPlan] = useState([])
 
   const handleGenerate = () => {
     setGenerating(true)
@@ -38,22 +43,32 @@ export default function ProgramBKPage() {
       setShowResult(true)
       
       if (akpdResult) {
-        // 1. Logic to generate PROTA based on real AKPD results!
-        // Filter for problems that need addressing (Prioritas TINGGI or SEDANG).
-        // If none, take top 10 problems sorted by percentage.
+        // Filter prioritized items
         let prioritizedItems = akpdResult.aggregates.filter(a => a.prioritas === 'TINGGI' || a.prioritas === 'SEDANG');
         
         if (prioritizedItems.length === 0) {
-          // Just fallback to top items
           prioritizedItems = [...akpdResult.aggregates].sort((a,b) => b.persentase - a.persentase).slice(0, 12);
         } else {
-          // Sort them by percentage descending
           prioritizedItems.sort((a, b) => b.persentase - a.persentase);
         }
 
-        // Map to PROTA format
+        // 1. Map to Action Plan (Row-Headers matched exactly to original Excel)
+        const actPlan = prioritizedItems.map((item) => ({
+          bidang: item.bidang,
+          tujuan: item.tujuanLayanan || `Peserta didik mampu mengelola hal terkait ${item.bidang}`,
+          komponen: item.komponenLayanan || 'Dasar',
+          layanan: item.strategiLayanan || 'Bimbingan Klasikal',
+          kelas: akpdResult.meta.kelas.replace(/[^0-9]/g, '') || 'VII', // Extract numeric class for simplicity
+          materi: item.materi || item.pernyataan,
+          metode: item.strategiLayanan?.includes('Klasikal') ? 'Diskusi, Ceramah, Tanya Jawab' : 'Konseling Individu / Diskusi Kelompok',
+          media: item.strategiLayanan?.includes('Klasikal') ? 'LCD Projector, PPT Slide, Alat Tulis' : 'Ruang Konseling, Kertas Kerja',
+          evaluasi: 'Evaluasi Proses & Evaluasi Hasil',
+          ekuivalensi: item.strategiLayanan?.includes('Klasikal') ? '2 Jam Pembelajaran' : 'Ekuivalen 1 Jam'
+        }));
+        setGeneratedActionPlan(actPlan);
+
+        // 2. Map to PROTA format
         const dynamicProta = prioritizedItems.map((item, idx) => {
-          // Distribute months sequentially across academic year starting from July (idx % 12)
           const bulan = BULAN_LIST[idx % 12] || 'Juli';
           return {
             id: item.no,
@@ -67,15 +82,13 @@ export default function ProgramBKPage() {
             persentase: item.persentase
           };
         });
-
         setGeneratedProta(dynamicProta);
 
-        // 2. Logic to generate PROSEM (Program Semester Ganjil - Juli to Des)
+        // 3. Map to PROSEM (Semester Ganjil)
         const ganjilProta = dynamicProta.filter(p => 
           ['Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'].includes(p.waktu)
         );
         
-        // Create months map
         const prosemMonths = ['Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'].map(m => {
           const currentMonthTopics = ganjilProta.filter(x => x.waktu === m);
           return {
@@ -89,12 +102,47 @@ export default function ProgramBKPage() {
         setGeneratedProsem(prosemMonths);
       }
 
-      toast.success('Program BK berhasil disusun secara logis berdasarkan skor prioritas AKPD!', {
+      toast.success('Rencana Kegiatan & Program BK berhasil disusun sesuai standar Excel!', {
         icon: '✨',
         duration: 4000
       })
     }, 2000)
   }
+
+  // Shared Signatures Renderer Helper
+  const renderSignatures = () => {
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    
+    return (
+      <div className="mt-12 border-t border-white/10 pt-8 grid grid-cols-1 sm:grid-cols-2 gap-8 text-sm print:text-black text-dark-200">
+        <div className="flex flex-col items-center text-center space-y-16">
+          <div>
+            <p>Mengetahui,</p>
+            <p className="font-bold text-white">Kepala {sekolah.nama || 'Sekolah'}</p>
+          </div>
+          <div>
+            <p className="font-bold text-white underline">{sekolah.kepsek || '..................................................'}</p>
+            <p className="text-xs text-dark-400 font-mono">{sekolah.nip_kepsek ? `NIP. ${sekolah.nip_kepsek}` : 'NIP. -'}</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center text-center space-y-16">
+          <div>
+            <p>{sekolah.alamat?.split(',')[0] || 'Pamekasan'}, {formattedDate}</p>
+            <p className="font-bold text-white">Guru Bimbingan Konseling</p>
+          </div>
+          <div>
+            <p className="font-bold text-white underline">Guru Pembimbing BK</p>
+            <p className="text-xs text-dark-400 font-mono">NIP. ..................................................</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Notification if no School Metadata set
+  const isSekolahConfigured = sekolah && sekolah.nama;
 
   return (
     <div className="space-y-6 animate-in">
@@ -103,9 +151,9 @@ export default function ProgramBKPage() {
         <div>
           <h1 className="font-display font-bold text-3xl text-white flex items-center gap-2">
             Program BK Otomatis
-            <span className="badge-teal bg-emerald-500/10 text-emerald-400 text-xs py-0.5 animate-pulse">Auto Engine</span>
+            <span className="badge-teal bg-emerald-500/10 text-emerald-400 text-xs py-0.5 animate-pulse">Auto Engine v2</span>
           </h1>
-          <p className="text-dark-200 text-sm mt-1">Hasilkan PROTA, PROSEM, dan RPL otomatis dari integrasi data asesmen.</p>
+          <p className="text-dark-200 text-sm mt-1">Menghasilkan dokumen ACTION PLAN, PROTA, PROSEM, dan RPL otomatis.</p>
         </div>
         <div className="flex items-center gap-2">
           <button 
@@ -123,21 +171,32 @@ export default function ProgramBKPage() {
         </div>
       </div>
 
+      {/* Warning Banner if School Settings Empty */}
+      {!isSekolahConfigured && activeTab === 'generator' && (
+        <div className="card-feature py-3 px-4 bg-amber-500/10 border border-amber-500/20 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-xs text-amber-300">
+            <RiBuildingLine className="text-lg" />
+            <span>Profil Sekolah Anda belum dikonfigurasi! Dokumen legalitas tidak akan memuat KOP dan tanda tangan NIP yang benar.</span>
+          </div>
+          <button onClick={() => navigate('/dashboard/settings')} className="text-[10px] bg-amber-500/20 hover:bg-amber-500/30 text-white px-2 py-1 rounded font-bold uppercase">Atur Sekarang</button>
+        </div>
+      )}
+
       {/* MAIN CONTENT: DASHBOARD OVERVIEW */}
       {activeTab === 'overview' && (
         <div className="space-y-6 animate-in">
           {/* Grid Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { label: 'PROTA Dinamis', count: akpdResult ? '1 Dokumen' : '0 Dokumen', color: 'from-blue-500/20 to-indigo-500/20', text: 'text-indigo-400' },
-              { label: 'PROSEM Tersusun', count: akpdResult ? '2 Dokumen' : '0 Dokumen', color: 'from-purple-500/20 to-pink-500/20', text: 'text-pink-400' },
-              { label: 'RPL Prioritas', count: akpdResult ? `${akpdResult.aggregates.filter(x=>x.prioritas!=='RENDAH').length} Dokumen` : '0 Dokumen', color: 'from-teal-500/20 to-emerald-500/20', text: 'text-teal-400' }
+              { label: 'Matriks Action Plan', count: akpdResult ? '1 Matriks' : '0 Matriks', color: 'from-cyan-500/20 to-blue-500/20', text: 'text-cyan-400' },
+              { label: 'PROTA & PROSEM', count: akpdResult ? '2 Dokumen' : '0 Dokumen', color: 'from-purple-500/20 to-pink-500/20', text: 'text-pink-400' },
+              { label: 'RPL Rencana Layanan', count: akpdResult ? `${akpdResult.aggregates.filter(x=>x.prioritas!=='RENDAH').length} Modul` : '0 Modul', color: 'from-teal-500/20 to-emerald-500/20', text: 'text-teal-400' }
             ].map((item, i) => (
               <div key={i} className={`p-5 rounded-2xl bg-gradient-to-br ${item.color} border border-white/20 backdrop-blur-lg`}>
                 <h4 className="text-dark-300 text-xs font-medium uppercase tracking-wider">{item.label}</h4>
                 <p className={`text-3xl font-display font-black mt-2 ${item.text}`}>{item.count}</p>
                 <div className="flex justify-between items-center mt-4 text-xs text-dark-200">
-                  <span>Aktif: {akpdResult ? `${akpdResult.meta.sekolah} (${akpdResult.meta.tahun})` : 'Belum ada data'}</span>
+                  <span>Instansi: {sekolah.nama || (akpdResult ? akpdResult.meta.sekolah : 'Belum diatur')}</span>
                   <RiCheckboxCircleLine className={akpdResult ? "text-teal-400 text-lg" : "text-dark-500 text-lg"} />
                 </div>
               </div>
@@ -152,10 +211,10 @@ export default function ProgramBKPage() {
                 <h3 className="font-display text-2xl font-bold text-white flex items-center gap-2">
                   Data AKPD {akpdResult.meta.kelas} Siap Digunakan!
                 </h3>
-                <p className="text-dark-300 mt-2 max-w-md text-sm">Sistem mendeteksi {akpdResult.aggregates.filter(x=>x.prioritas!=='RENDAH').length} materi kebutuhan prioritas. Klik di bawah untuk menyusun jadwal layanan bimbingan secara otomatis.</p>
+                <p className="text-dark-300 mt-2 max-w-md text-sm">Sistem mendeteksi {akpdResult.aggregates.filter(x=>x.prioritas!=='RENDAH').length} materi prioritas. Hasilkan Action Plan lengkap beserta Tanda Tangan Kepala Sekolah.</p>
               </div>
-              <button onClick={() => setActiveTab('generator')} className="relative z-10 btn-primary gap-3 group whitespace-nowrap bg-primary-500">
-                Susun Program Sekarang <RiMagicLine className="group-hover:animate-spin" />
+              <button onClick={() => setActiveTab('generator')} className="relative z-10 btn-primary gap-3 group whitespace-nowrap bg-primary-500 font-bold">
+                SUSUN PROGRAM SEKARANG <RiMagicLine className="group-hover:animate-spin" />
               </button>
             </div>
           ) : (
@@ -166,11 +225,11 @@ export default function ProgramBKPage() {
                 </div>
                 <div>
                   <h3 className="font-display text-xl font-bold text-white">Data Asesmen AKPD Belum Diunggah</h3>
-                  <p className="text-dark-300 mt-1 max-w-md text-sm">Sistem tidak dapat menyusun rencana program (PROTA/PROSEM) otomatis karena Anda belum mengunggah file Excel hasil AKPD di menu Asesmen.</p>
+                  <p className="text-dark-300 mt-1 max-w-md text-sm">Sistem memerlukan dataset dari menu Asesmen (unggah Excel atau portal digital) untuk menyusun matriks program otomatis.</p>
                 </div>
               </div>
-              <button onClick={() => navigate('/asesmen')} className="btn-secondary border-amber-500/20 text-amber-300 hover:bg-amber-500/10 whitespace-nowrap gap-2 flex items-center">
-                Unggah File di Asesmen <RiArrowRightLine />
+              <button onClick={() => navigate('/dashboard/asesmen')} className="btn-secondary border-amber-500/20 text-amber-300 hover:bg-amber-500/10 whitespace-nowrap gap-2 flex items-center font-bold">
+                Unggah di Asesmen <RiArrowRightLine />
               </button>
             </div>
           )}
@@ -191,14 +250,14 @@ export default function ProgramBKPage() {
                 <>
                   <div className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-xl glass border-white/20 hover:bg-white/5 transition-colors group">
                     <div className="flex items-center gap-4 w-full sm:w-auto">
-                      <div className="p-3 rounded-xl bg-white/10 border border-white/20 text-primary-400 group-hover:text-accent-400 transition-colors">
-                        <RiFileTextLine className="text-xl" />
+                      <div className="p-3 rounded-xl bg-white/10 border border-white/20 text-cyan-400 group-hover:text-accent-400 transition-colors">
+                        <RiFileList3Line className="text-xl" />
                       </div>
                       <div>
-                        <div className="font-medium text-white text-sm">Program Tahunan (PROTA) Kelas {akpdResult.meta.kelas}</div>
+                        <div className="font-medium text-white text-sm">Rencana Kegiatan (ACTION PLAN) Kelas {akpdResult.meta.kelas}</div>
                         <div className="flex items-center gap-2 text-xs text-dark-300 mt-1">
-                          <span className="px-2 py-0.5 rounded bg-dark-700 border border-white/20 font-mono">PROTA</span>
-                          <span>Siap Di-Generate</span>
+                          <span className="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-500/20 font-mono text-cyan-400 font-bold">MATRIKS</span>
+                          <span>Sesuai standar birokrasi Excel</span>
                         </div>
                       </div>
                     </div>
@@ -225,8 +284,8 @@ export default function ProgramBKPage() {
 
               {generating ? (
                 <div className="space-y-4 animate-pulse">
-                  <h2 className="text-2xl font-display font-bold text-white">Sedang Mengolah Data Asesmen...</h2>
-                  <p className="text-dark-200 max-w-md mx-auto text-sm">Mengambil item dengan prioritas TINGGI dan SEDANG, menyusun materi ke dalam bulan efektif, dan menghasilkan Rencana Pelaksanaan Layanan (RPL).</p>
+                  <h2 className="text-2xl font-display font-bold text-white">Sedang Menyusun Dokumen...</h2>
+                  <p className="text-dark-200 max-w-md mx-auto text-sm">Memetakan Bidang Layanan, Rumusan Tujuan, Metode, Media Pembelajaran, Evaluasi, dan data legalitas KOP Sekolah.</p>
                   <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden max-w-sm mx-auto mt-6">
                     <div className="bg-primary-500 h-full animate-shimmer" style={{ width: '100%', backgroundSize: '200% 100%' }} />
                   </div>
@@ -260,11 +319,11 @@ export default function ProgramBKPage() {
                     </div>
                     <div className="sm:col-span-2">
                       <label className="text-xs font-semibold text-dark-300 mb-1.5 block">Output Dokumen Yang Diperlukan</label>
-                      <div className="grid grid-cols-3 gap-2">
-                        {['PROTA', 'PROSEM', 'RPL'].map(item => (
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        {['ACTION PLAN', 'PROTA', 'PROSEM', 'RPL'].map(item => (
                           <label key={item} className="flex items-center gap-2 p-3 rounded-xl glass cursor-pointer hover:bg-white/5 border-white/20">
                             <input type="checkbox" defaultChecked className="accent-primary-500 h-4 w-4" />
-                            <span className="text-white font-medium text-sm">{item}</span>
+                            <span className="text-white font-bold text-[10px] sm:text-xs tracking-wider font-display">{item}</span>
                           </label>
                         ))}
                       </div>
@@ -290,10 +349,10 @@ export default function ProgramBKPage() {
                     <RiCheckboxCircleLine className="text-2xl" />
                   </div>
                   <div>
-                    <h4 className="text-white font-bold font-display text-lg">Penyusunan Berhasil!</h4>
+                    <h4 className="text-white font-bold font-display text-lg">Dokumen Resmi Berhasil Tersusun!</h4>
                     <p className="text-dark-200 text-xs">
                       {akpdResult 
-                        ? `Menyusun ${generatedProta.length} topik layanan terprioritas secara kronologis akademik.` 
+                        ? `Telah digenerate dokumen ${programType} resmi lengkap dengan ttd untuk Kelas ${akpdResult.meta.kelas}.` 
                         : 'Menyusun program berdasarkan template default.'
                       }
                     </p>
@@ -301,44 +360,112 @@ export default function ProgramBKPage() {
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => setShowResult(false)} className="btn-secondary text-xs gap-1 py-2"><RiRefreshLine /> Reset Generator</button>
-                  <button onClick={() => toast.success('Dokumen disimpan ke draf!')} className="btn-primary text-xs bg-emerald-600 hover:bg-emerald-500 border-none shadow-none py-2 gap-1"><RiDownloadLine /> Simpan Permanen</button>
+                  <button onClick={() => window.print()} className="btn-primary text-xs bg-indigo-600 hover:bg-indigo-500 border-none shadow-none py-2 gap-1"><RiPrinterLine /> Cetak Sekarang</button>
                 </div>
               </div>
 
               {/* Viewer Body with Internal Tabs */}
               <div className="card-feature p-0 overflow-hidden">
                 {/* Result Type Switcher */}
-                <div className="flex bg-dark-950 border-b border-white/10">
-                  {['PROTA', 'PROSEM', 'RPL'].map(tab => (
+                <div className="flex bg-dark-950 border-b border-white/10 overflow-x-auto">
+                  {['ACTION PLAN', 'PROTA', 'PROSEM', 'RPL'].map(tab => (
                     <button
                       key={tab}
                       onClick={() => setProgramType(tab)}
-                      className={`flex-1 py-4 text-center font-display font-bold text-sm tracking-wider border-b-2 transition-all
-                        ${programType === tab ? 'border-primary-500 bg-primary-500/5 text-primary-300' : 'border-transparent text-dark-200 hover:text-white hover:bg-white/5'}
+                      className={`flex-1 min-w-[120px] py-4 text-center font-display font-bold text-[11px] sm:text-xs tracking-widest border-b-2 transition-all
+                        ${programType === tab ? 'border-primary-500 bg-primary-500/5 text-primary-300' : 'border-transparent text-dark-300 hover:text-white hover:bg-white/5'}
                       `}
                     >
-                      {tab} {tab === 'PROTA' ? '(Tahun)' : tab === 'PROSEM' ? '(Semester)' : '(Rencana Layanan)'}
+                      {tab}
                     </button>
                   ))}
                 </div>
 
                 {/* Data Renderer */}
-                <div className="p-6">
+                <div className="p-6 bg-dark-950/40 backdrop-blur">
+                  
+                  {/* KOP SEKOLAH PREVIEW */}
+                  <div className="flex items-center gap-4 border-b-2 border-white pb-4 mb-6 text-center sm:text-left flex-col sm:flex-row justify-center sm:justify-start">
+                    <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center border border-white/20 text-2xl font-bold font-display text-white flex-shrink-0">
+                      {sekolah.logo ? <img src={sekolah.logo} className="w-full h-full rounded-full object-cover"/> : <RiBuildingLine/>}
+                    </div>
+                    <div>
+                      <h4 className="text-xs tracking-widest uppercase font-bold text-dark-300">BIMBINGAN DAN KONSELING</h4>
+                      <h2 className="text-lg font-bold text-white font-display uppercase tracking-wider">{sekolah.nama || (akpdResult ? akpdResult.meta.sekolah : 'SMP NEGERI 2 PAMEKASAN')}</h2>
+                      <p className="text-[10px] text-dark-400 max-w-md">{sekolah.alamat || 'Kabupaten Pamekasan, Provinsi Jawa Timur'}</p>
+                    </div>
+                  </div>
+
+                  {/* TAB 1: ACTION PLAN MATRIX */}
+                  {programType === 'ACTION PLAN' && (
+                    <div className="space-y-4 animate-in">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <h5 className="text-white font-bold text-sm uppercase tracking-wide">RENCANA KEGIATAN (ACTION PLAN)</h5>
+                          <p className="text-[10px] text-dark-400 font-mono uppercase">Kelas: {akpdResult ? akpdResult.meta.kelas : 'VII G'} • Tahun Pelajaran: {akpdResult ? akpdResult.meta.tahun : '2022-2023'}</p>
+                        </div>
+                        <button onClick={() => toast.success('Mengunduh spreadsheet action plan...')} className="text-cyan-400 text-xs hover:underline flex items-center gap-1 font-bold uppercase"><RiDownloadLine /> UNDUH EXCEL</button>
+                      </div>
+                      
+                      <div className="overflow-x-auto rounded-xl border border-white/10">
+                        <table className="w-full text-[10px] sm:text-xs text-left text-dark-200 border-collapse min-w-[1000px]">
+                          <thead className="bg-dark-950 text-dark-300 font-bold border-b border-white/10 uppercase">
+                            <tr>
+                              <th className="px-3 py-3 border-r border-white/10 w-20">Bidang Layanan</th>
+                              <th className="px-3 py-3 border-r border-white/10 w-48">Tujuan Layanan</th>
+                              <th className="px-3 py-3 border-r border-white/10 w-24">Komponen</th>
+                              <th className="px-3 py-3 border-r border-white/10 w-32">Strategi</th>
+                              <th className="px-2 py-3 border-r border-white/10 w-12 text-center">Kls</th>
+                              <th className="px-3 py-3 border-r border-white/10 w-40">Topik / Materi</th>
+                              <th className="px-3 py-3 border-r border-white/10">Metode</th>
+                              <th className="px-3 py-3 border-r border-white/10">Media</th>
+                              <th className="px-3 py-3 border-r border-white/10">Evaluasi</th>
+                              <th className="px-2 py-3 text-center">Ekuivalensi</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-white/5">
+                            {(generatedActionPlan.length > 0 ? generatedActionPlan : [
+                              { bidang: 'Pribadi', tujuan: 'Peserta didik bersyukur pada Tuhan YME', komponen: 'Dasar', layanan: 'Bimbingan Klasikal', kelas: 'VII', materi: 'Tuhan selalu hadir', metode: 'Diskusi', media: 'PPT', evaluasi: 'Proses & Hasil', ekuivalensi: '2 Jam' }
+                            ]).map((row, idx) => (
+                              <tr key={idx} className="hover:bg-white/5 transition-colors align-top">
+                                <td className="px-3 py-3 border-r border-white/5 font-bold text-white">{row.bidang}</td>
+                                <td className="px-3 py-3 border-r border-white/5 italic text-dark-300 leading-relaxed">{row.tujuan}</td>
+                                <td className="px-3 py-3 border-r border-white/5 text-dark-300">{row.komponen}</td>
+                                <td className="px-3 py-3 border-r border-white/5 text-cyan-400 font-medium">{row.layanan}</td>
+                                <td className="px-2 py-3 border-r border-white/5 text-center font-mono">{row.kelas}</td>
+                                <td className="px-3 py-3 border-r border-white/5 text-white font-medium">{row.materi}</td>
+                                <td className="px-3 py-3 border-r border-white/5 text-[10px] text-dark-400">{row.metode}</td>
+                                <td className="px-3 py-3 border-r border-white/5 text-[10px] text-dark-400">{row.media}</td>
+                                <td className="px-3 py-3 border-r border-white/5 text-dark-400">{row.evaluasi}</td>
+                                <td className="px-2 py-3 text-center text-[10px] text-dark-300">{row.ekuivalensi}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      {renderSignatures()}
+                    </div>
+                  )}
+
+                  {/* TAB 2: PROTA */}
                   {programType === 'PROTA' && (
                     <div className="space-y-4 animate-in">
                       <div className="flex justify-between items-center">
-                        <h5 className="text-white font-bold text-sm">Rencana Program Tahunan (PROTA) - {akpdResult ? akpdResult.meta.tahun : '2025/2026'}</h5>
-                        <button className="text-primary-400 text-xs hover:underline flex items-center gap-1 font-bold"><RiDownloadLine /> UNDUH EXCEL</button>
+                        <div>
+                          <h5 className="text-white font-bold text-sm uppercase tracking-wide">RENCANA PROGRAM TAHUNAN (PROTA)</h5>
+                          <p className="text-[10px] text-dark-400 font-mono uppercase">Tahun Pelajaran: {akpdResult ? akpdResult.meta.tahun : '2025/2026'}</p>
+                        </div>
+                        <button className="text-primary-400 text-xs hover:underline flex items-center gap-1 font-bold uppercase"><RiDownloadLine /> UNDUH EXCEL</button>
                       </div>
                       <div className="overflow-x-auto rounded-xl border border-white/10">
                         <table className="w-full text-xs md:text-sm text-left text-dark-200 border-collapse">
-                          <thead className="bg-dark-950 text-dark-300 font-bold border-b border-white/10">
+                          <thead className="bg-dark-950 text-dark-300 font-bold border-b border-white/10 uppercase">
                             <tr>
-                              <th className="px-4 py-3 w-24">WAKTU</th>
-                              <th className="px-4 py-3 w-28 text-center">BIDANG</th>
-                              <th className="px-4 py-3">RUMUSAN KEBUTUHAN (MATERI)</th>
-                              <th className="px-4 py-3">STRATEGI LAYANAN</th>
-                              <th className="px-4 py-3 w-28 text-center">PRIORITAS</th>
+                              <th className="px-4 py-3 w-24">Bulan / Waktu</th>
+                              <th className="px-4 py-3 w-28 text-center">Bidang</th>
+                              <th className="px-4 py-3">Rumusan Kebutuhan (Materi)</th>
+                              <th className="px-4 py-3">Strategi Layanan</th>
+                              <th className="px-4 py-3 w-28 text-center">Prioritas</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-white/5">
@@ -374,21 +501,26 @@ export default function ProgramBKPage() {
                           </tbody>
                         </table>
                       </div>
+                      {renderSignatures()}
                     </div>
                   )}
 
+                  {/* TAB 3: PROSEM */}
                   {programType === 'PROSEM' && (
                     <div className="space-y-4 animate-in">
                       <div className="flex justify-between items-center">
-                        <h5 className="text-white font-bold text-sm">Rencana Program Semester Ganjil (PROSEM)</h5>
-                        <button className="text-primary-400 text-xs hover:underline flex items-center gap-1 font-bold"><RiDownloadLine /> UNDUH EXCEL</button>
+                        <div>
+                          <h5 className="text-white font-bold text-sm uppercase tracking-wide">PROGRAM SEMESTER GANJIL (PROSEM)</h5>
+                          <p className="text-[10px] text-dark-400 font-mono uppercase">Juli - Desember</p>
+                        </div>
+                        <button className="text-primary-400 text-xs hover:underline flex items-center gap-1 font-bold uppercase"><RiDownloadLine /> UNDUH EXCEL</button>
                       </div>
                       <div className="overflow-x-auto rounded-xl border border-white/10">
                         <table className="w-full text-xs md:text-sm text-left text-dark-200 border-collapse">
-                          <thead className="bg-dark-950 text-dark-300 border-b border-white/10 text-center">
+                          <thead className="bg-dark-950 text-dark-300 border-b border-white/10 text-center uppercase">
                             <tr>
-                              <th className="px-4 py-3 text-left" rowSpan="2">BULAN</th>
-                              <th className="px-4 py-2 border-b border-white/10" colSpan="4">MINGGU EFEKTIF LAYANAN</th>
+                              <th className="px-4 py-3 text-left" rowSpan="2">Bulan</th>
+                              <th className="px-4 py-2 border-b border-white/10" colSpan="4">Minggu Efektif Layanan</th>
                             </tr>
                             <tr className="text-[10px] bg-dark-900/50">
                               <th className="px-2 py-1 border-r border-white/10">I</th>
@@ -414,15 +546,18 @@ export default function ProgramBKPage() {
                           </tbody>
                         </table>
                       </div>
+                      {renderSignatures()}
                     </div>
                   )}
 
+                  {/* TAB 4: RPL */}
                   {programType === 'RPL' && (
                     <div className="space-y-4 animate-in">
-                      <h5 className="text-white font-bold text-sm mb-3">Draf Rencana Pelaksanaan Layanan (RPL) Tersusun</h5>
+                      <h5 className="text-white font-bold text-sm mb-3 uppercase tracking-wide">DRAF MODUL RPL TERSUSUN (Berdasarkan Action Plan)</h5>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {generatedProta.map((row, idx) => (
-                          <div key={idx} className="p-4 rounded-xl glass border-white/10 bg-white/5 hover:border-primary-500/30 transition-all group flex flex-col justify-between">
+                          <div key={idx} className="p-4 rounded-xl glass border-white/10 bg-white/5 hover:border-primary-500/30 transition-all group flex flex-col justify-between relative overflow-hidden">
+                            {/* Printable Kop Header Mock for single RPL */}
                             <div>
                               <div className="flex justify-between items-start">
                                 <div className="w-full">
@@ -434,10 +569,10 @@ export default function ProgramBKPage() {
                               </div>
                             </div>
                             <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
-                              <span className="text-dark-300 text-[10px] flex items-center gap-1 uppercase font-bold font-mono"><RiCalendarCheckLine className="text-primary-400"/> {row.waktu}</span>
+                              <span className="text-dark-300 text-[10px] flex items-center gap-1 uppercase font-bold font-mono"><RiCalendarCheckLine className="text-primary-400"/> Jadwal: {row.waktu}</span>
                               <div className="flex gap-1">
-                                <button onClick={() => toast.success('Membuka preview cetak...')} className="p-1.5 bg-dark-950 rounded-lg border border-white/10 text-white hover:bg-primary-600 transition-colors" title="Print"><RiPrinterLine className="text-xs" /></button>
-                                <button onClick={() => toast.success('Mengunduh file dokumen...')} className="p-1.5 bg-dark-950 rounded-lg border border-white/10 text-white hover:bg-blue-600 transition-colors" title="Download"><RiDownloadLine className="text-xs" /></button>
+                                <button onClick={() => toast.success('Membuka preview cetak RPL khusus...')} className="p-1.5 bg-dark-950 rounded-lg border border-white/20 text-white hover:bg-primary-600 transition-colors" title="Print"><RiPrinterLine className="text-xs" /></button>
+                                <button onClick={() => toast.success('Mengunduh berkas RPL...')} className="p-1.5 bg-dark-950 rounded-lg border border-white/20 text-white hover:bg-blue-600 transition-colors" title="Download"><RiDownloadLine className="text-xs" /></button>
                               </div>
                             </div>
                           </div>
