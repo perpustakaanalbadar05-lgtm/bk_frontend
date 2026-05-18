@@ -1,17 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import api from '../lib/axios'
+import { useAuth } from './AuthContext'
 
 const DataContext = createContext()
-
-const INIT_SISWA = [
-  { id: 1, nama: 'Ahmad Fauzi', nis: '2024001', kelas: 'XI IPA 2', jk: 'L', status: 'Aktif', konseling: 3, hp: '081234567890', alamat: 'Jl. Merdeka No. 12, Jakarta' },
-  { id: 2, nama: 'Siti Rahma', nis: '2024002', kelas: 'X IPS 1', jk: 'P', status: 'Aktif', konseling: 1, hp: '082345678901', alamat: 'Jl. Sudirman No. 45, Jakarta' },
-  { id: 3, nama: 'Budi Santoso', nis: '2024003', kelas: 'XII IPA 1', jk: 'L', status: 'Aktif', konseling: 5, hp: '083456789012', alamat: 'Jl. Gatot Subroto No. 7, Jakarta' },
-  { id: 4, nama: 'Dewi Lestari', nis: '2024004', kelas: 'XI IPS 3', jk: 'P', status: 'Perhatian', konseling: 7, hp: '084567890123', alamat: 'Jl. Thamrin No. 3, Jakarta' },
-  { id: 5, nama: 'Riko Prasetyo', nis: '2024005', kelas: 'X IPA 1', jk: 'L', status: 'Aktif', konseling: 0, hp: '085678901234', alamat: 'Jl. Kebon Sirih No. 20, Jakarta' },
-  { id: 6, nama: 'Fitri Handayani', nis: '2024006', kelas: 'XII IPS 2', jk: 'P', status: 'Perhatian', konseling: 4, hp: '086789012345', alamat: 'Jl. Diponegoro No. 15, Jakarta' },
-  { id: 7, nama: 'Hendra Wijaya', nis: '2024007', kelas: 'X IPA 2', jk: 'L', status: 'Aktif', konseling: 2, hp: '087890123456', alamat: 'Jl. Hayam Wuruk No. 8, Jakarta' },
-  { id: 8, nama: 'Rina Marlina', nis: '2024008', kelas: 'XI IPA 1', jk: 'P', status: 'Aktif', konseling: 0, hp: '088901234567', alamat: 'Jl. Mangga Dua No. 55, Jakarta' },
-]
 
 const INITIAL_SESSIONS = [
   { id: 1, siswa: 'Ahmad Fauzi', kelas: 'XI IPA 2', tanggal: '11 Mei 2026', topik: 'Masalah Belajar', jenis: 'Individu', status: 'Selesai', durasi: '45 mnt', signature: true },
@@ -35,10 +26,8 @@ const INITIAL_SCHEDULES = [
 ]
 
 export function DataProvider({ children }) {
-  const [siswa, setSiswa] = useState(() => {
-    const saved = localStorage.getItem('simbk_data_siswa')
-    return saved ? JSON.parse(saved) : INIT_SISWA
-  })
+  const { isAuthenticated } = useAuth()
+  const [siswa, setSiswa] = useState([])
 
   const [sessions, setSessions] = useState(() => {
     const saved = localStorage.getItem('simbk_data_sessions')
@@ -61,8 +50,13 @@ export function DataProvider({ children }) {
   })
 
   useEffect(() => {
-    localStorage.setItem('simbk_data_siswa', JSON.stringify(siswa))
-  }, [siswa])
+    if (isAuthenticated) {
+      api.get('/students').then(res => setSiswa(res.data)).catch(console.error)
+      api.get('/sessions').then(res => setSessions(res.data)).catch(console.error)
+      api.get('/kasus').then(res => setKasus(res.data)).catch(console.error)
+      api.get('/schedules').then(res => setSchedules(res.data)).catch(console.error)
+    }
+  }, [isAuthenticated])
 
   useEffect(() => {
     localStorage.setItem('simbk_data_sessions', JSON.stringify(sessions))

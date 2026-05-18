@@ -33,19 +33,8 @@ export const AuthProvider = ({ children }) => {
       setUser(user)
       return user
     } catch (error) {
-      // Demo fallback (allows exploration without backend)
-      console.log("Entering DEMO mode...", credentials)
-      const mockUser = {
-        id: 1,
-        name: 'Guru BK Demo',
-        email: credentials.email || 'guru@demo.com',
-        role: 'admin'
-      }
-      const mockToken = 'demo-token-xyz-123'
-      localStorage.setItem('simbk_token', mockToken)
-      localStorage.setItem('simbk_user', JSON.stringify(mockUser))
-      setUser(mockUser)
-      return mockUser
+      console.error("Login failed:", error)
+      throw error
     }
   }
 
