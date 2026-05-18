@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   RiUserHeartLine, RiHeartLine, RiFileTextLine,
   RiBarChart2Line, RiArrowUpLine, RiArrowDownLine,
@@ -40,8 +40,20 @@ const ALERT_STYLE = {
 
 export default function DashboardPage() {
   const { siswa, sessions, kasus, schedules } = useData()
+  const [backendMessage, setBackendMessage] = useState('')
   const now = new Date()
   const greeting = now.getHours() < 12 ? 'Selamat Pagi' : now.getHours() < 17 ? 'Selamat Siang' : 'Selamat Sore'
+
+  useEffect(() => {
+    fetch('/api/user')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.message) {
+          setBackendMessage(data.message)
+        }
+      })
+      .catch(err => console.error('Failed to connect to backend:', err))
+  }, [])
 
   const dynamicStats = [
     { label: 'Total Siswa Binaan', value: siswa.length, change: '+1', up: true, icon: RiUserHeartLine, color: 'from-primary-500 to-primary-700', bg: 'primary' },
@@ -68,6 +80,12 @@ export default function DashboardPage() {
             <RiCalendarLine className="inline mr-1" />
             {now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
+          {backendMessage && (
+            <div className="mt-2 text-xs text-teal-400 bg-teal-500/10 px-2 py-1 rounded-md border border-teal-500/20 inline-block">
+              <RiCheckboxCircleLine className="inline mr-1" />
+              {backendMessage}
+            </div>
+          )}
         </div>
         <div className="flex gap-2">
           <button id="dashboard-add-siswa" className="btn-secondary text-sm py-2">

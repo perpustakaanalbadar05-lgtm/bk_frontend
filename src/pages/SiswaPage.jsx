@@ -3,11 +3,13 @@ import {
   RiUserAddLine, RiSearchLine, RiFilterLine, RiDownloadLine,
   RiEditLine, RiEyeLine, RiDeleteBinLine, RiCloseLine,
   RiSaveLine, RiUserLine, RiAlertLine, RiCheckLine,
-  RiUploadLine, RiTimeLine
+  RiUploadLine, RiTimeLine, RiHeartLine, RiScales3Line,
+  RiBallPenLine, RiCheckboxCircleLine, RiFileTextLine, RiErrorWarningLine
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
 import { useSettings } from '../contexts/SettingsContext'
 import { useData } from '../contexts/DataContext'
+import { useNavigate } from 'react-router-dom'
 
 const STATUS_CLS = {
   'Aktif': 'badge bg-teal-500/20 text-teal-300 border border-teal-500/30',
@@ -100,71 +102,237 @@ function SiswaModal({ isOpen, onClose, initial, onSave, classes }) {
 }
 
 function DetailModal({ siswa, onClose }) {
+  const navigate = useNavigate()
+  const { sessions, kasus, akpdResult } = useData()
+  const [activeSubTab, setActiveSubTab] = useState('pribadi') // pribadi, konseling, kasus, akpd
+
   if (!siswa) return null
+
+  // Dynamic queries to build unified profile
+  const sName = siswa.nama.toLowerCase().trim()
+  
+  const studentSessions = sessions.filter(s => 
+    s.siswa.toLowerCase().trim() === sName || sName.includes(s.siswa.toLowerCase().trim())
+  )
+
+  const studentKasus = kasus.filter(k => 
+    k.siswa.toLowerCase().trim() === sName || sName.includes(k.siswa.toLowerCase().trim())
+  )
+
+  const akpdRecord = akpdResult?.records?.find(r => 
+    r.nama.toLowerCase().trim() === sName || sName.includes(r.nama.toLowerCase().trim())
+  )
+
+  // Badge calculations
+  const totalPoin = studentKasus.reduce((acc, cur) => acc + (cur.poin || 0), 0)
+
   return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
-      <div className="relative w-full max-w-md card-feature flex flex-col max-h-[90vh] p-0 animate-in" style={{animationDuration:'0.25s'}}>
-        <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
-          <h2 className="font-display font-bold text-white text-lg">Detail Siswa</h2>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-dark-200 hover:text-white"><RiCloseLine /></button>
-        </div>
-        <div className="p-6 space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-primary-500 flex items-center justify-center text-2xl font-bold text-white">{siswa.nama[0]}</div>
-            <div>
-              <div className="font-bold text-white text-xl">{siswa.nama}</div>
-              <div className="text-dark-200 text-sm font-mono">{siswa.nis}</div>
-              <span className={STATUS_CLS[siswa.status]}>{siswa.status}</span>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { l: 'Kelas', v: siswa.kelas },
-              { l: 'Jenis Kelamin', v: siswa.jk === 'L' ? '👦 Laki-laki' : '👧 Perempuan' },
-              { l: 'No. HP', v: siswa.hp || '-' },
-              { l: 'Total Konseling', v: `${siswa.konseling} sesi` },
-            ].map(({ l, v }) => (
-              <div key={l} className="p-3 rounded-xl glass">
-                <div className="text-dark-300 text-xs uppercase font-bold tracking-wider mb-1">{l}</div>
-                <div className="text-white font-semibold text-sm">{v}</div>
+    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-dark-950/60 backdrop-blur-sm animate-in">
+      <div className="absolute inset-0" onClick={onClose} />
+      <div className="relative w-full max-w-2xl card-feature bg-[rgb(var(--bg-main))] border border-white/10 flex flex-col max-h-[90vh] p-0 overflow-hidden shadow-2xl rounded-2xl animate-in" style={{animationDuration:'0.3s'}}>
+        
+        {/* HEADER: Visual Card Profile */}
+        <div className="bg-gradient-to-r from-primary-900/50 to-dark-900 border-b border-white/10 p-6 relative overflow-hidden flex-shrink-0">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 rounded-full blur-2xl translate-x-10 -translate-y-10 pointer-events-none" />
+          
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-primary-500/20 border-2 border-primary-500/30 flex items-center justify-center text-3xl font-black text-white drop-shadow">
+                {siswa.nama[0]}
               </div>
-            ))}
+              <div>
+                <h2 className="font-display font-bold text-white text-xl flex items-center gap-2 leading-none">
+                  {siswa.nama}
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wider border ${
+                    siswa.status === 'Aktif' ? 'bg-teal-500/20 text-teal-300 border-teal-500/30' :
+                    siswa.status === 'Perhatian' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-dark-600/30 text-dark-300'
+                  }`}>
+                    {siswa.status}
+                  </span>
+                </h2>
+                <p className="text-dark-300 text-sm mt-1 font-mono">{siswa.kelas} • NIS: {siswa.nis}</p>
+              </div>
+            </div>
+            <button onClick={onClose} className="p-2 absolute top-0 right-0 sm:relative rounded-full hover:bg-white/10 text-dark-200 hover:text-white transition-colors"><RiCloseLine className="text-2xl" /></button>
           </div>
-          {siswa.alamat && (
-            <div className="p-3 rounded-xl glass">
-              <div className="text-dark-300 text-xs uppercase font-bold tracking-wider mb-1">Alamat</div>
-              <div className="text-white text-sm">{siswa.alamat}</div>
+        </div>
+
+        {/* NAVIGATION TABS */}
+        <div className="flex border-b border-white/10 bg-black/20 px-3 overflow-x-auto flex-shrink-0">
+          {[
+            { id: 'pribadi', label: 'Data Pribadi', icon: RiUserLine },
+            { id: 'konseling', label: `Konseling (${studentSessions.length})`, icon: RiHeartLine },
+            { id: 'kasus', label: `Kasus (${studentKasus.length})`, icon: RiScales3Line },
+            { id: 'akpd', label: 'Diagnosa AKPD', icon: RiFileTextLine }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveSubTab(tab.id)}
+              className={`py-3 px-4 text-xs font-bold uppercase tracking-wider whitespace-nowrap flex items-center gap-1.5 border-b-2 transition-all ${
+                activeSubTab === tab.id 
+                  ? 'border-primary-500 text-white bg-white/5' 
+                  : 'border-transparent text-dark-300 hover:text-white'
+              }`}
+            >
+              <tab.icon className="text-sm" /> {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* TAB CONTENTS */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-black/10">
+          
+          {/* Tab 1: Data Pribadi */}
+          {activeSubTab === 'pribadi' && (
+            <div className="space-y-4 animate-in">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {[
+                  { label: 'Jenis Kelamin', val: siswa.jk === 'L' ? '👦 Laki-laki' : '👧 Perempuan' },
+                  { label: 'Kontak / HP', val: siswa.hp || '-' },
+                  { label: 'Status Binaan', val: siswa.status === 'Aktif' ? 'Aktif Layanan Umum' : 'Perlu Penanganan Khusus' },
+                  { label: 'Total Masalah Terdeteksi', val: akpdRecord ? `${akpdRecord.totalScore} Indikator` : 'Belum Mengisi AKPD' }
+                ].map((item, idx) => (
+                  <div key={idx} className="p-4 rounded-2xl bg-white/5 border border-white/10 group hover:border-white/20 transition-colors">
+                    <span className="text-[10px] text-dark-300 font-bold uppercase tracking-wider">{item.label}</span>
+                    <div className="text-white font-semibold mt-1">{item.val}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                <span className="text-[10px] text-dark-300 font-bold uppercase tracking-wider">Alamat Lengkap</span>
+                <p className="text-white font-medium text-sm mt-1 italic leading-relaxed">{siswa.alamat || 'Informasi alamat belum dilengkapi.'}</p>
+              </div>
             </div>
           )}
-          
-          {/* Timeline Histori Konseling & Kasus (Mock) */}
-          <div className="mt-4 border-t border-white/20 pt-4">
-            <h3 className="text-white font-bold text-sm mb-3">Timeline Histori</h3>
-            <div className="space-y-3 max-h-40 overflow-y-auto pr-2">
-              <div className="flex gap-3 relative before:absolute before:left-[11px] before:top-6 before:bottom-0 before:w-0.5 before:bg-white/10">
-                <div className="w-6 h-6 rounded-full bg-primary-500/20 text-primary-400 flex items-center justify-center flex-shrink-0 z-10 border border-primary-500/30">
-                  <RiTimeLine className="text-xs" />
+
+          {/* Tab 2: Konseling (Riwayat Sesi) */}
+          {activeSubTab === 'konseling' && (
+            <div className="space-y-3 animate-in">
+              {studentSessions.length === 0 ? (
+                <div className="py-12 text-center bg-white/5 border border-dashed border-white/10 rounded-2xl">
+                  <RiHeartLine className="text-4xl text-dark-600 mx-auto mb-3" />
+                  <p className="text-dark-300 text-sm">Belum ada catatan riwayat sesi konseling.</p>
                 </div>
-                <div>
-                  <div className="text-white text-sm font-semibold">Konseling Individu</div>
-                  <div className="text-dark-300 text-xs">Topik: Motivasi Belajar · 12 Mei 2026</div>
-                </div>
-              </div>
-              <div className="flex gap-3 relative before:absolute before:left-[11px] before:top-6 before:bottom-0 before:w-0.5 before:bg-white/10">
-                <div className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0 z-10 border border-amber-500/30">
-                  <RiAlertLine className="text-xs" />
-                </div>
-                <div>
-                  <div className="text-white text-sm font-semibold">Teguran Kedisiplinan</div>
-                  <div className="text-dark-300 text-xs">Terlambat masuk kelas · 05 Mei 2026</div>
-                </div>
-              </div>
+              ) : (
+                studentSessions.map((ses, idx) => (
+                  <div key={idx} className="p-4 bg-white/5 border border-white/10 rounded-xl flex justify-between items-start gap-3 hover:border-primary-500/30 transition-colors">
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs text-dark-400 font-mono font-bold">{ses.tanggal}</span>
+                        <span className="badge text-[9px] py-0 px-1.5 bg-accent-500/20 text-accent-300 border-accent-500/30">{ses.jenis}</span>
+                      </div>
+                      <h4 className="text-white font-bold text-sm mt-1">{ses.topik}</h4>
+                      <div className="text-[10px] text-dark-300 mt-1 italic">Durasi: {ses.durasi}</div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      <span className={`badge text-[9px] ${ses.status === 'Selesai' ? 'bg-teal-500/20 text-teal-300' : 'bg-amber-500/20 text-amber-300'}`}>{ses.status}</span>
+                      {ses.signature && (
+                        <span className="flex items-center gap-0.5 text-[9px] text-emerald-400 uppercase font-black"><RiBallPenLine /> Signed</span>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
-          </div>
+          )}
+
+          {/* Tab 3: Rekam Kedisiplinan (Kasus) */}
+          {activeSubTab === 'kasus' && (
+            <div className="space-y-3 animate-in">
+              {/* Poin Aggregator Banner */}
+              <div className="bg-gradient-to-r from-amber-900/30 to-amber-950/30 p-4 rounded-2xl border border-amber-500/20 flex items-center justify-between gap-4 mb-2">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Akumulasi Poin Pelanggaran</span>
+                  <p className="text-white text-xs mt-0.5">Ambang batas pembinaan intensif adalah 50 Poin.</p>
+                </div>
+                <div className={`text-3xl font-black font-display ${totalPoin >= 50 ? 'text-red-400 animate-pulse' : 'text-amber-400'}`}>
+                  {totalPoin} P
+                </div>
+              </div>
+
+              {studentKasus.length === 0 ? (
+                <div className="py-12 text-center bg-white/5 border border-dashed border-white/10 rounded-2xl">
+                  <RiCheckboxCircleLine className="text-4xl text-teal-500 mx-auto mb-3 opacity-60" />
+                  <p className="text-dark-300 text-sm">Siswa ini memiliki rekam jejak kedisiplinan bersih.</p>
+                </div>
+              ) : (
+                studentKasus.map((kas, idx) => (
+                  <div key={idx} className="p-4 bg-white/5 border border-white/10 rounded-xl flex justify-between items-start gap-3 hover:border-amber-500/30 transition-colors">
+                    <div>
+                      <span className="text-xs text-dark-400 font-mono font-bold">{kas.date}</span>
+                      <h4 className="text-white font-bold text-sm mt-0.5">{kas.kasus}</h4>
+                      <div className="flex gap-1 mt-2 flex-wrap">
+                        {kas.visit && <span className="badge text-[8px] bg-amber-500/20 text-amber-300">🏠 Home Visit Scheduled</span>}
+                        {kas.poin >= 20 && <span className="badge text-[8px] bg-red-500/20 text-red-300">✉️ SP Orang Tua</span>}
+                      </div>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <div className="font-bold text-amber-400 text-sm">+{kas.poin} P</div>
+                      <span className={`badge text-[8px] mt-1 block ${kas.status === 'Selesai' ? 'bg-teal-500/20 text-teal-300' : 'bg-primary-500/20 text-primary-300'}`}>{kas.status}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* Tab 4: Diagnosa AKPD (Live Instrument Join) */}
+          {activeSubTab === 'akpd' && (
+            <div className="space-y-3 animate-in">
+              {akpdRecord ? (
+                <div className="space-y-4">
+                  {/* Diagnostic Summary Header */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white/5 p-4 border border-white/10 rounded-2xl text-center">
+                      <span className="text-[10px] text-dark-300 font-bold uppercase block tracking-wider mb-1">Total Poin Masalah</span>
+                      <span className="text-3xl font-mono font-black text-white">{akpdRecord.totalScore}</span>
+                      <span className="text-xs text-dark-400 block">dari 50 item</span>
+                    </div>
+                    <div className={`p-4 rounded-2xl text-center flex flex-col items-center justify-center border ${
+                      akpdRecord.totalScore > 15 
+                        ? 'bg-red-500/10 border-red-500/20 text-red-400' 
+                        : akpdRecord.totalScore > 7 
+                          ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' 
+                          : 'bg-teal-500/10 border-teal-500/20 text-teal-400'
+                    }`}>
+                      <span className="text-[10px] font-bold uppercase tracking-wider block text-white/70 mb-1">Status Urgensi</span>
+                      <span className="text-xl font-black flex items-center gap-1">
+                        {akpdRecord.totalScore > 15 ? '⚠️ URGENT' : akpdRecord.totalScore > 7 ? '⚠️ SEDANG' : '✅ STABIL'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Status Diagnostic Info */}
+                  <div className="bg-white/5 border border-white/10 p-4 rounded-2xl text-xs leading-relaxed text-dark-200 flex gap-3 items-start">
+                    <RiErrorWarningLine className="text-2xl text-primary-500 flex-shrink-0" />
+                    <div>
+                      <span className="font-bold text-white uppercase">Pemberitahuan Layanan:</span>
+                      <p className="mt-0.5">Siswa ini telah menyelesaikan pengisian online AKPD. Hasil analisis mendeteksi bahwa materi terkait masalah pribadinya berkonsentrasi pada aspek yang memerlukan {akpdRecord.totalScore > 10 ? 'bimbingan individual secara terjadwal.' : 'dukungan bimbingan klasikal berkala.'}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2 mt-3">
+                    <button onClick={() => navigate('/dashboard/asesmen')} className="btn-primary w-full bg-primary-500 text-xs py-2 font-bold uppercase flex items-center justify-center gap-2 shadow-md">
+                      <RiFileTextLine /> LIHAT DETAIL DIAGNOSA SISWA
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-12 text-center bg-white/5 border border-dashed border-white/10 rounded-2xl">
+                  <RiFileTextLine className="text-4xl text-dark-600 mx-auto mb-3 opacity-50" />
+                  <h4 className="text-white font-bold text-sm">Belum Terdeteksi Data AKPD</h4>
+                  <p className="text-dark-300 text-xs mt-1 max-w-xs mx-auto">Siswa ini belum melengkapi instrumen AKPD baik secara digital maupun via unggahan Excel.</p>
+                  <button onClick={() => navigate('/dashboard/asesmen')} className="mt-4 px-3 py-1.5 bg-primary-500/20 hover:bg-primary-500 text-primary-300 hover:text-white text-xs rounded-lg border border-primary-500/30 font-bold transition-all">Bagikan Link AKPD</button>
+                </div>
+              )}
+            </div>
+          )}
+
         </div>
-        <div className="p-5 border-t border-white/20">
-          <button onClick={onClose} className="w-full btn-secondary py-2.5 text-sm">Tutup</button>
+
+        {/* FOOTER ACTIONS */}
+        <div className="p-4 border-t border-white/10 bg-dark-900/50 flex gap-3 flex-shrink-0">
+          <button onClick={onClose} className="w-full btn-secondary py-2.5 text-sm font-bold">Kembali</button>
         </div>
       </div>
     </div>
