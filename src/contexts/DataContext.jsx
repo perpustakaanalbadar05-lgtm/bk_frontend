@@ -1,86 +1,141 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import api from '../lib/axios'
 import { useAuth } from './AuthContext'
 
 const DataContext = createContext()
 
-const INITIAL_SESSIONS = [
-  { id: 1, siswa: 'Ahmad Fauzi', kelas: 'XI IPA 2', tanggal: '11 Mei 2026', topik: 'Masalah Belajar', jenis: 'Individu', status: 'Selesai', durasi: '45 mnt', signature: true },
-  { id: 2, siswa: 'Siti Rahma', kelas: 'X IPS 1', tanggal: '11 Mei 2026', topik: 'Karir & Studi Lanjut', jenis: 'Individu', status: 'Proses', durasi: '30 mnt', signature: false },
-  { id: 3, siswa: 'Kelas X IPA 1', kelas: 'X IPA 1', tanggal: '10 Mei 2026', topik: 'Orientasi BK', jenis: 'Kelompok', status: 'Selesai', durasi: '60 mnt', signature: true },
-  { id: 4, siswa: 'Dewi Lestari', kelas: 'XI IPS 3', tanggal: '12 Mei 2026', topik: 'Pribadi & Keluarga', jenis: 'Individu', status: 'Terjadwal', durasi: '-', signature: false },
-  { id: 5, siswa: 'Riko Prasetyo', kelas: 'X IPA 1', tanggal: '09 Mei 2026', topik: 'Motivasi Belajar', jenis: 'Individu', status: 'Selesai', durasi: '40 mnt', signature: true },
-]
-
-const INITIAL_KASUS = [
-  { id: 1, siswa: 'Ahmad Fauzi', kelas: 'XI IPA 2', kasus: 'Sering membolos (Alpa > 3x)', poin: 20, status: 'Selesai', visit: true, date: '11 Mei 2026' },
-  { id: 2, siswa: 'Budi Santoso', kelas: 'XII IPA 1', kasus: 'Berkelahi di lingkungan sekolah', poin: 50, status: 'Proses', visit: false, date: '10 Mei 2026' },
-  { id: 3, siswa: 'Riko Prasetyo', kelas: 'X IPA 1', kasus: 'Merokok di kantin', poin: 30, status: 'Proses', visit: true, date: '08 Mei 2026' },
-  { id: 4, siswa: 'Dewi Lestari', kelas: 'XI IPS 3', kasus: 'Terlambat lebih dari 5 kali', poin: 10, status: 'Terjadwal', visit: true, date: '12 Mei 2026' },
-]
-
-const INITIAL_SCHEDULES = [
-  { id: 1, class: 'XI IPA 2', topic: 'Strategi Sukses Ujian', time: 'Senin, 08:00', status: 'Selesai', attended: 32, total: 34 },
-  { id: 2, class: 'X IPS 1', topic: 'Bahaya Bullying', time: 'Selasa, 10:30', status: 'Berlangsung', attended: 0, total: 36 },
-  { id: 3, class: 'XII IPA 1', topic: 'Orientasi Perguruan Tinggi', time: 'Rabu, 13:00', status: 'Terjadwal', attended: 0, total: 35 },
-]
-
 export function DataProvider({ children }) {
   const { isAuthenticated } = useAuth()
-  const [siswa, setSiswa] = useState([])
 
-  const [sessions, setSessions] = useState(() => {
-    const saved = localStorage.getItem('simbk_data_sessions')
-    return saved ? JSON.parse(saved) : INITIAL_SESSIONS
-  })
-
-  const [kasus, setKasus] = useState(() => {
-    const saved = localStorage.getItem('simbk_data_kasus')
-    return saved ? JSON.parse(saved) : INITIAL_KASUS
-  })
-
-  const [schedules, setSchedules] = useState(() => {
-    const saved = localStorage.getItem('simbk_data_schedules')
-    return saved ? JSON.parse(saved) : INITIAL_SCHEDULES
-  })
+  const [siswa, setSiswa]         = useState([])
+  const [sessions, setSessions]   = useState([])
+  const [kasus, setKasus]         = useState([])
+  const [schedules, setSchedules] = useState([])
+  const [dataLoading, setDataLoading] = useState(false)
 
   const [akpdResult, setAkpdResult] = useState(() => {
-    const saved = localStorage.getItem('simbk_data_akpd_result')
-    return saved ? JSON.parse(saved) : null
+    try {
+      const saved = localStorage.getItem('simbk_data_akpd_result')
+      return saved ? JSON.parse(saved) : null
+    } catch { return null }
   })
 
+  // Fetch all data from API when authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      api.get('/students').then(res => setSiswa(res.data)).catch(console.error)
-      api.get('/sessions').then(res => setSessions(res.data)).catch(console.error)
-      api.get('/kasus').then(res => setKasus(res.data)).catch(console.error)
-      api.get('/schedules').then(res => setSchedules(res.data)).catch(console.error)
+    if (!isAuthenticated) {
+      setSiswa([]); setSessions([]); setKasus([]); setSchedules([])
+      return
     }
+    setDataLoading(true)
+    Promise.all([
+      api.get('/students'),
+      api.get('/sessions'),
+      api.get('/kasus'),
+      api.get('/schedules'),
+    ]).then(([s, ses, k, sc]) => {
+      setSiswa(s.data)
+      setSessions(ses.data)
+      setKasus(k.data)
+      setSchedules(sc.data)
+    }).catch(console.error)
+      .finally(() => setDataLoading(false))
   }, [isAuthenticated])
 
-  useEffect(() => {
-    localStorage.setItem('simbk_data_sessions', JSON.stringify(sessions))
-  }, [sessions])
-
-  useEffect(() => {
-    localStorage.setItem('simbk_data_kasus', JSON.stringify(kasus))
-  }, [kasus])
-
-  useEffect(() => {
-    localStorage.setItem('simbk_data_schedules', JSON.stringify(schedules))
-  }, [schedules])
-
+  // Persist akpdResult only (not API data)
   useEffect(() => {
     localStorage.setItem('simbk_data_akpd_result', JSON.stringify(akpdResult))
   }, [akpdResult])
 
+  // ── STUDENT MUTATIONS ──────────────────────────────────────
+  const addStudent = useCallback(async (form) => {
+    const res = await api.post('/students', form)
+    setSiswa(prev => [res.data, ...prev])
+    return res.data
+  }, [])
+
+  const updateStudent = useCallback(async (id, form) => {
+    const res = await api.put(`/students/${id}`, form)
+    setSiswa(prev => prev.map(s => s.id === id ? res.data : s))
+    return res.data
+  }, [])
+
+  const deleteStudent = useCallback(async (id) => {
+    await api.delete(`/students/${id}`)
+    setSiswa(prev => prev.filter(s => s.id !== id))
+  }, [])
+
+  const bulkDeleteStudents = useCallback(async (ids) => {
+    await Promise.all(ids.map(id => api.delete(`/students/${id}`)))
+    setSiswa(prev => prev.filter(s => !ids.includes(s.id)))
+  }, [])
+
+  // ── SESSION MUTATIONS ──────────────────────────────────────
+  const addSession = useCallback(async (form) => {
+    const res = await api.post('/sessions', form)
+    setSessions(prev => [res.data, ...prev])
+    return res.data
+  }, [])
+
+  const updateSession = useCallback(async (id, form) => {
+    const res = await api.put(`/sessions/${id}`, form)
+    setSessions(prev => prev.map(s => s.id === id ? res.data : s))
+    return res.data
+  }, [])
+
+  const deleteSession = useCallback(async (id) => {
+    await api.delete(`/sessions/${id}`)
+    setSessions(prev => prev.filter(s => s.id !== id))
+  }, [])
+
+  // ── KASUS MUTATIONS ────────────────────────────────────────
+  const addKasus = useCallback(async (form) => {
+    const res = await api.post('/kasus', form)
+    setKasus(prev => [res.data, ...prev])
+    return res.data
+  }, [])
+
+  const updateKasus = useCallback(async (id, form) => {
+    const res = await api.put(`/kasus/${id}`, form)
+    setKasus(prev => prev.map(k => k.id === id ? res.data : k))
+    return res.data
+  }, [])
+
+  const deleteKasus = useCallback(async (id) => {
+    await api.delete(`/kasus/${id}`)
+    setKasus(prev => prev.filter(k => k.id !== id))
+  }, [])
+
+  // ── SCHEDULE MUTATIONS ─────────────────────────────────────
+  const addSchedule = useCallback(async (form) => {
+    const res = await api.post('/schedules', form)
+    setSchedules(prev => [res.data, ...prev])
+    return res.data
+  }, [])
+
+  const updateSchedule = useCallback(async (id, form) => {
+    const res = await api.put(`/schedules/${id}`, form)
+    setSchedules(prev => prev.map(s => s.id === id ? res.data : s))
+    return res.data
+  }, [])
+
+  const deleteSchedule = useCallback(async (id) => {
+    await api.delete(`/schedules/${id}`)
+    setSchedules(prev => prev.filter(s => s.id !== id))
+  }, [])
+
   return (
     <DataContext.Provider value={{
-      siswa, setSiswa,
-      sessions, setSessions,
-      kasus, setKasus,
-      schedules, setSchedules,
-      akpdResult, setAkpdResult
+      // State
+      siswa, sessions, kasus, schedules, dataLoading,
+      akpdResult, setAkpdResult,
+      // Student
+      addStudent, updateStudent, deleteStudent, bulkDeleteStudents,
+      // Session
+      addSession, updateSession, deleteSession,
+      // Kasus
+      addKasus, updateKasus, deleteKasus,
+      // Schedule
+      addSchedule, updateSchedule, deleteSchedule,
     }}>
       {children}
     </DataContext.Provider>

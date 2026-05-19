@@ -7,35 +7,35 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // Validate token with server on every app load
   useEffect(() => {
-    try {
-      const savedUser = localStorage.getItem('simbk_user')
-      const savedToken = localStorage.getItem('simbk_token')
-      if (savedUser && savedToken) {
-        setUser(JSON.parse(savedUser))
+    const initAuth = async () => {
+      const token = localStorage.getItem('simbk_token')
+      if (!token) {
+        setLoading(false)
+        return
       }
-    } catch (err) {
-      console.warn("Gagal parse local storage data:", err)
-      localStorage.removeItem('simbk_user')
-      localStorage.removeItem('simbk_token')
-    } finally {
-      setLoading(false)
+      try {
+        const res = await api.get('/user')
+        setUser(res.data)
+      } catch {
+        // Token invalid or expired — clean up
+        localStorage.removeItem('simbk_token')
+        localStorage.removeItem('simbk_user')
+      } finally {
+        setLoading(false)
+      }
     }
+    initAuth()
   }, [])
 
   const login = async (credentials) => {
-    try {
-      // Real backend attempt
-      const response = await api.post('/auth/login', credentials)
-      const { token, user } = response.data
-      localStorage.setItem('simbk_token', token)
-      localStorage.setItem('simbk_user', JSON.stringify(user))
-      setUser(user)
-      return user
-    } catch (error) {
-      console.error("Login failed:", error)
-      throw error
-    }
+    const response = await api.post('/auth/login', credentials)
+    const { token, user } = response.data
+    localStorage.setItem('simbk_token', token)
+    localStorage.setItem('simbk_user', JSON.stringify(user))
+    setUser(user)
+    return user
   }
 
   const logout = async () => {
@@ -47,8 +47,13 @@ export const AuthProvider = ({ children }) => {
     setUser(null)
   }
 
+  const updateUser = (updatedUser) => {
+    setUser(updatedUser)
+    localStorage.setItem('simbk_user', JSON.stringify(updatedUser))
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, updateUser, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   )
