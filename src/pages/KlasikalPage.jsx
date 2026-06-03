@@ -246,10 +246,10 @@ export default function KlasikalPage() {
 
           {/* QUICK STATS IN ATTENDANCE */}
           <div className="flex flex-wrap gap-2 mb-5">
-            <div className="bg-white/10/80 px-4 py-2 rounded-xl border border-white/20 text-xs text-white"><span className="text-dark-200">Hadir:</span> <b className="text-emerald-400 text-sm ml-1">{students.filter(s=>s.status==='Hadir').length}</b></div>
-            <div className="bg-white/10/80 px-4 py-2 rounded-xl border border-white/20 text-xs text-white"><span className="text-dark-200">Izin:</span> <b className="text-blue-400 text-sm ml-1">{students.filter(s=>s.status==='Izin').length}</b></div>
-            <div className="bg-white/10/80 px-4 py-2 rounded-xl border border-white/20 text-xs text-white"><span className="text-dark-200">Sakit:</span> <b className="text-amber-400 text-sm ml-1">{students.filter(s=>s.status==='Sakit').length}</b></div>
-            <div className="bg-white/10/80 px-4 py-2 rounded-xl border border-white/20 text-xs text-white"><span className="text-dark-200">Alfa:</span> <b className="text-red-400 text-sm ml-1">{students.filter(s=>s.status==='Alfa').length}</b></div>
+            <div className="bg-white/10/80 px-4 py-2 rounded-xl border border-white/20 text-xs text-white"><span className="text-dark-200">Hadir:</span> <b className="text-emerald-400 text-sm ml-1">{classStudents.filter(s=>s.status==='Hadir').length}</b></div>
+            <div className="bg-white/10/80 px-4 py-2 rounded-xl border border-white/20 text-xs text-white"><span className="text-dark-200">Izin:</span> <b className="text-blue-400 text-sm ml-1">{classStudents.filter(s=>s.status==='Izin').length}</b></div>
+            <div className="bg-white/10/80 px-4 py-2 rounded-xl border border-white/20 text-xs text-white"><span className="text-dark-200">Sakit:</span> <b className="text-amber-400 text-sm ml-1">{classStudents.filter(s=>s.status==='Sakit').length}</b></div>
+            <div className="bg-white/10/80 px-4 py-2 rounded-xl border border-white/20 text-xs text-white"><span className="text-dark-200">Alfa:</span> <b className="text-red-400 text-sm ml-1">{classStudents.filter(s=>s.status==='Alfa').length}</b></div>
           </div>
 
           {/* ATTENDANCE TABLE GRID */}
