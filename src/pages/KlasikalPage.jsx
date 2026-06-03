@@ -1,25 +1,12 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   RiPresentationLine, RiTeamLine, RiCalendarCheckLine, RiFileTextLine,
   RiCheckLine, RiCloseLine, RiGroupLine, RiHistoryLine, RiArrowRightLine,
-  RiSaveLine, RiPrinterLine, RiSearchLine, RiTimeLine
+  RiSaveLine, RiPrinterLine, RiSearchLine, RiTimeLine, RiLoader4Line
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
 import { useData } from '../contexts/DataContext'
 import { useSettings } from '../contexts/SettingsContext'
-
-const SAMPLE_STUDENTS = [
-  { id: 1, name: 'Ahmad Fauzi', nis: '2024001', status: 'Hadir' },
-  { id: 2, name: 'Annisa Zahra', nis: '2024002', status: 'Hadir' },
-  { id: 3, name: 'Bagus Pratama', nis: '2024003', status: 'Hadir' },
-  { id: 4, name: 'Budi Santoso', nis: '2024004', status: 'Sakit' },
-  { id: 5, name: 'Citra Ayu', nis: '2024005', status: 'Hadir' },
-  { id: 6, name: 'Dedi Kusuma', nis: '2024006', status: 'Hadir' },
-  { id: 7, name: 'Dewi Lestari', nis: '2024007', status: 'Izin' },
-  { id: 8, name: 'Eko Wahyudi', nis: '2024008', status: 'Hadir' },
-  { id: 9, name: 'Fahmi Idris', nis: '2024009', status: 'Hadir' },
-  { id: 10, name: 'Gita Putri', nis: '2024010', status: 'Hadir' },
-]
 
 function JadwalKlasikalModal({ isOpen, onClose, onSave, classes }) {
   const [form, setForm] = useState({
@@ -78,46 +65,61 @@ function JadwalKlasikalModal({ isOpen, onClose, onSave, classes }) {
 
 export default function KlasikalPage() {
   const { classes } = useSettings()
-  const { schedules, setSchedules } = useData()
-  const [view, setView] = useState('list') // 'list' or 'attendance'
+  const { schedules, addSchedule, updateSchedule, siswa } = useData()
+  const [view, setView] = useState('list')
   const [activeClass, setActiveClass] = useState(null)
-  const [students, setStudents] = useState(SAMPLE_STUDENTS)
+  const [attendance, setAttendance] = useState({})
   const [searchTerm, setSearchTerm] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  // Real students filtered by active class
+  const classStudents = useMemo(() => {
+    if (!activeClass) return []
+    return siswa
+      .filter(s => s.kelas === activeClass.class)
+      .map(s => ({ id: s.id, name: s.nama, nis: s.nis, status: attendance[s.id] || 'Hadir' }))
+  }, [siswa, activeClass, attendance])
 
   const handleOpenAttendance = (schedule) => {
     setActiveClass(schedule)
+    setAttendance({})
     setView('attendance')
   }
 
   const handleStatusChange = (studentId, newStatus) => {
-    setStudents(students.map(s => s.id === studentId ? { ...s, status: newStatus } : s))
+    setAttendance(prev => ({ ...prev, [studentId]: newStatus }))
   }
 
-  const handleSaveAttendance = () => {
-    toast.success(`Daftar hadir kelas ${activeClass.class} berhasil disimpan!`, {
-      icon: '📋',
-    })
-    setView('list')
-  }
-
-  const handleSaveSchedule = (form) => {
-    const newSched = {
-      id: Date.now(),
-      class: form.class,
-      topic: form.topic,
-      time: form.time,
-      status: 'Terjadwal',
-      attended: 0,
-      total: form.total
+  const handleSaveAttendance = async () => {
+    const hadirCount = classStudents.filter(s => (attendance[s.id] || 'Hadir') === 'Hadir').length
+    setSaving(true)
+    try {
+      await updateSchedule(activeClass.id, { status: 'Selesai', attended: hadirCount })
+      toast.success(`Presensi kelas ${activeClass.class} berhasil disimpan!`, { icon: '📋' })
+      setView('list')
+    } catch {
+      toast.error('Gagal menyimpan presensi.')
+    } finally {
+      setSaving(false)
     }
-    setSchedules([newSched, ...schedules])
-    setModalOpen(false)
-    toast.success('Jadwal Bimbingan Klasikal baru berhasil dibuat!')
   }
 
-  const filteredStudents = students.filter(s => 
-    s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+  const handleSaveSchedule = async (form) => {
+    setSaving(true)
+    try {
+      await addSchedule({ ...form, status: 'Terjadwal', attended: 0 })
+      setModalOpen(false)
+      toast.success('Jadwal Bimbingan Klasikal baru berhasil dibuat!')
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Gagal membuat jadwal.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const filteredStudents = classStudents.filter(s =>
+    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.nis.includes(searchTerm)
   )
 

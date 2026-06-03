@@ -27,10 +27,11 @@ function App() {
             <Toaster
               position="top-right"
               toastOptions={{
+                className: 'bg-white dark:bg-dark-900 text-dark-950 dark:text-white border border-dark-200 dark:border-white/10 shadow-lg',
                 style: {
-                  background: '#191265',
-                  color: '#ffffff',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: 'rgb(var(--bg-main))',
+                  color: 'inherit',
+                  border: '1px solid rgba(150, 150, 150, 0.2)'
                 },
                 success: {
                   iconTheme: { primary: '#14b8a6', secondary: '#ffffff' },

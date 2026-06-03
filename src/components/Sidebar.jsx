@@ -7,6 +7,8 @@ import {
 } from 'react-icons/ri'
 import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
+import ConfirmDialog from './ConfirmDialog'
+import { useState } from 'react'
 
 const NAV_ITEMS = [
   { to: '/dashboard', icon: RiDashboardLine, label: 'Dashboard', end: true },
@@ -23,26 +25,35 @@ const NAV_ITEMS = [
 export default function Sidebar({ open, collapsed, onCollapse, onClose }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [confirmLogout, setConfirmLogout] = useState(false)
 
   const handleLogout = async () => {
-    const confirmLogout = confirm("Apakah Anda yakin ingin keluar?")
-    if (!confirmLogout) return
     await logout()
     toast.success('Berhasil keluar dari SIMBK')
     navigate('/login')
   }
 
   return (
-    <aside
-      className={`
-        fixed top-0 left-0 z-30 h-full flex flex-col
-        bg-black/10 backdrop-blur-xl border-r border-white/10
-        transition-all duration-500 ease-out
-        ${open ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0
-        ${collapsed ? 'lg:w-20' : 'w-72 lg:w-72'}
-      `}
-    >
+    <>
+      <ConfirmDialog
+        isOpen={confirmLogout}
+        onClose={() => setConfirmLogout(false)}
+        onConfirm={handleLogout}
+        title="Keluar dari SIMBK?"
+        message="Sesi Anda akan diakhiri. Pastikan semua data sudah tersimpan."
+        confirmLabel="Ya, Keluar"
+        confirmClass="bg-red-600 hover:bg-red-500 text-white"
+      />
+      <aside
+        className={`
+          fixed top-0 left-0 z-30 h-full flex flex-col
+          bg-black/10 backdrop-blur-xl border-r border-white/10
+          transition-all duration-500 ease-out
+          ${open ? 'translate-x-0' : '-translate-x-full'}
+          lg:translate-x-0
+          ${collapsed ? 'lg:w-20' : 'w-72 lg:w-72'}
+        `}
+      >
       {/* Floating Border Toggle Pill for Desktop (Highly Smooth) */}
       <button
         onClick={onCollapse}
@@ -133,8 +144,8 @@ export default function Sidebar({ open, collapsed, onCollapse, onClose }) {
             
             {/* Micro-interaction Logout Trigger when collapsed */}
             {collapsed && (
-              <div 
-                onClick={handleLogout} 
+              <div
+                onClick={() => setConfirmLogout(true)}
                 className="absolute inset-0 bg-red-600 hover:bg-red-500 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 text-white"
               >
                 <RiLogoutBoxLine className="text-lg" />
@@ -151,7 +162,7 @@ export default function Sidebar({ open, collapsed, onCollapse, onClose }) {
           {/* Expanded Standard Logout Button */}
           {!collapsed && (
             <button
-              onClick={handleLogout}
+              onClick={() => setConfirmLogout(true)}
               className="p-2 rounded-lg text-dark-300 hover:text-red-400 hover:bg-red-500/10 transition-all active:scale-95 flex-shrink-0"
               title="Keluar Akun"
             >
@@ -161,5 +172,6 @@ export default function Sidebar({ open, collapsed, onCollapse, onClose }) {
         </div>
       </div>
     </aside>
+    </>
   )
 }

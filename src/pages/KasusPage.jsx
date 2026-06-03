@@ -1,29 +1,32 @@
 import { useState } from 'react'
 import {
   RiHomeHeartLine, RiMapPinLine, RiCalendarCheckLine,
-  RiAddLine, RiSearchLine, RiCheckDoubleLine, RiFileList3Line, RiAlertLine,
-  RiScales3Line, RiPrinterLine, RiMailSendLine, RiCloseLine, RiSaveLine
+  RiAddLine, RiSearchLine, RiCheckDoubleLine, RiFileList3Line,
+  RiScales3Line, RiPrinterLine, RiCloseLine, RiSaveLine,
+  RiLoader4Line, RiDeleteBinLine
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
 import { useData } from '../contexts/DataContext'
 import { useSettings } from '../contexts/SettingsContext'
+import ConfirmDialog from '../components/ConfirmDialog'
 
 function KasusModal({ isOpen, onClose, onSave, classes, defaultVisit = false }) {
   const [form, setForm] = useState({
-    siswa: '',
-    kelas: classes?.[0] || '',
-    kasus: '',
-    poin: 10,
-    status: 'Proses',
-    visit: defaultVisit
+    siswa: '', kelas: classes?.[0] || '', kasus: '', poin: 10, status: 'Proses', visit: defaultVisit
   })
+  const [saving, setSaving] = useState(false)
 
   if (!isOpen) return null
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e?.preventDefault()
     if (!form.siswa || !form.kasus) return toast.error('Nama siswa dan deskripsi kasus wajib diisi!')
-    onSave(form)
+    setSaving(true)
+    try {
+      await onSave(form)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -47,9 +50,17 @@ function KasusModal({ isOpen, onClose, onSave, classes, defaultVisit = false }) 
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Akumulasi Poin</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Poin Pelanggaran</label>
               <input type="number" min="0" max="100" className="input-field" value={form.poin} onChange={e => setForm({...form, poin: parseInt(e.target.value) || 0})} />
             </div>
+          </div>
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Status</label>
+            <select className="input-field text-sm" value={form.status} onChange={e => setForm({...form, status: e.target.value})}>
+              <option value="Proses">Proses</option>
+              <option value="Selesai">Selesai</option>
+              <option value="Terjadwal">Terjadwal</option>
+            </select>
           </div>
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Kasus / Bentuk Pelanggaran</label>
@@ -65,7 +76,10 @@ function KasusModal({ isOpen, onClose, onSave, classes, defaultVisit = false }) 
         </form>
         <div className="p-4 border-t border-white/10 bg-dark-950/50 flex gap-3">
           <button type="button" onClick={onClose} className="flex-1 btn-secondary text-sm py-2">Batal</button>
-          <button type="button" onClick={handleSubmit} className="flex-1 btn-primary text-sm py-2 gap-2 bg-primary-500"><RiSaveLine /> Simpan Kasus</button>
+          <button type="button" onClick={handleSubmit} disabled={saving} className="flex-1 btn-primary text-sm py-2 gap-2 bg-primary-500 disabled:opacity-60">
+            {saving ? <RiLoader4Line className="animate-spin" /> : <RiSaveLine />}
+            {saving ? 'Menyimpan...' : 'Simpan Kasus'}
+          </button>
         </div>
       </div>
     </div>
@@ -74,21 +88,49 @@ function KasusModal({ isOpen, onClose, onSave, classes, defaultVisit = false }) 
 
 export default function KasusPage() {
   const { classes } = useSettings()
-  const { kasus, setKasus } = useData()
-  const [activeTab, setActiveTab] = useState('kasus') // kasus, homevisit
+  const { kasus, siswa, addKasus, updateKasus, deleteKasus } = useData()
+  const [activeTab, setActiveTab] = useState('kasus')
   const [searchTerm, setSearchTerm] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [defaultVisitCheck, setDefaultVisitCheck] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
-  const handleSaveKasus = (form) => {
-    const newKasus = {
-      id: Date.now(),
-      ...form,
-      date: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
+  const getStudentAddress = (namaStr) => {
+    const found = siswa.find(s => s.nama?.toLowerCase() === namaStr?.toLowerCase())
+    return found?.alamat || 'Alamat belum tercatat di data siswa.'
+  }
+
+  const handleSaveKasus = async (form) => {
+    try {
+      const payload = {
+        ...form,
+        date: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
+      }
+      await addKasus(payload)
+      setModalOpen(false)
+      toast.success('Data Kasus Kedisiplinan berhasil disimpan!')
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Gagal menyimpan kasus.')
+      throw err
     }
-    setKasus([newKasus, ...kasus])
-    setModalOpen(false)
-    toast.success('Data Kasus Kedisiplinan berhasil disimpan!')
+  }
+
+  const handleMarkDone = async (k) => {
+    try {
+      await updateKasus(k.id, { status: 'Selesai' })
+      toast.success('Status kunjungan diperbarui!')
+    } catch {
+      toast.error('Gagal memperbarui status.')
+    }
+  }
+
+  const handleDelete = async () => {
+    try {
+      await deleteKasus(deleteTarget.id)
+      toast.success('Kasus berhasil dihapus.')
+    } catch {
+      toast.error('Gagal menghapus kasus.')
+    }
   }
 
   const openAddModal = (withVisit = false) => {
@@ -96,63 +138,63 @@ export default function KasusPage() {
     setModalOpen(true)
   }
 
+  const filteredKasus = kasus.filter(k =>
+    k.siswa?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    k.kasus?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
     <div className="space-y-6 animate-in">
-      <KasusModal 
-        isOpen={modalOpen} 
-        onClose={() => setModalOpen(false)} 
-        onSave={handleSaveKasus} 
-        classes={classes} 
+      <KasusModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSave={handleSaveKasus}
+        classes={classes}
         defaultVisit={defaultVisitCheck}
+      />
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Hapus Kasus?"
+        message={`Kasus "${deleteTarget?.siswa}" akan dihapus permanen.`}
+        confirmLabel="Hapus"
       />
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="font-display font-bold text-2xl text-white flex items-center gap-2">
-            Buku Kasus & Poin Kedisiplinan
-          </h1>
-          <p className="text-dark-200 text-sm">Pencatatan pelanggaran, akumulasi poin, dan pembuatan Surat Panggilan (SP).</p>
+          <h1 className="font-display font-bold text-2xl text-white">Buku Kasus & Poin Kedisiplinan</h1>
+          <p className="text-dark-200 text-sm">Pencatatan pelanggaran, akumulasi poin, dan agenda Home Visit.</p>
         </div>
         <div className="flex gap-2">
           <button onClick={() => openAddModal(false)} className="btn-secondary text-sm py-2"><RiAddLine /> Catat Kasus</button>
-          <button onClick={() => openAddModal(true)} className="btn-primary text-sm py-2 shadow-glow-amber bg-primary-500"><RiHomeHeartLine /> Jadwal Home Visit</button>
+          <button onClick={() => openAddModal(true)} className="btn-primary text-sm py-2 bg-primary-500"><RiHomeHeartLine /> Jadwal Home Visit</button>
         </div>
       </div>
 
       {/* Tabs */}
       <div className="flex overflow-x-auto pb-2 border-b border-white/20">
         <div className="flex gap-6 w-max">
-          <button
-            onClick={() => setActiveTab('kasus')}
-            className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2
-              ${activeTab === 'kasus' ? 'border-primary-500 text-white' : 'border-transparent text-dark-300 hover:text-dark-300'}
-            `}
-          >
+          <button onClick={() => setActiveTab('kasus')}
+            className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 ${activeTab === 'kasus' ? 'border-primary-500 text-white' : 'border-transparent text-dark-300 hover:text-white'}`}>
             <RiScales3Line className="text-lg" /> Poin & Pelanggaran
           </button>
-          <button
-            onClick={() => setActiveTab('homevisit')}
-            className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2
-              ${activeTab === 'homevisit' ? 'border-amber-500 text-white' : 'border-transparent text-dark-300 hover:text-dark-300'}
-            `}
-          >
+          <button onClick={() => setActiveTab('homevisit')}
+            className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 ${activeTab === 'homevisit' ? 'border-amber-500 text-white' : 'border-transparent text-dark-300 hover:text-white'}`}>
             <RiHomeHeartLine className="text-lg" /> Agenda Home Visit
           </button>
         </div>
       </div>
 
-      {/* Content */}
       {activeTab === 'kasus' ? (
         <div className="card-feature p-0 overflow-hidden animate-in">
           <div className="p-5 border-b border-white/20 flex justify-between items-center bg-white/5">
             <div className="relative w-full max-w-xs">
               <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-200" />
-              <input
-                type="text" placeholder="Cari nama siswa atau kasus..."
+              <input type="text" placeholder="Cari nama siswa atau kasus..."
                 value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
-                className="w-full bg-white/10 border border-white/20 rounded-xl pl-9 pr-4 py-2 text-sm text-white outline-none focus:border-primary-500"
-              />
+                className="w-full bg-white/10 border border-white/20 rounded-xl pl-9 pr-4 py-2 text-sm text-white outline-none focus:border-primary-500" />
             </div>
             <div className="text-xs text-dark-300 hidden sm:block">Total {kasus.length} Kasus</div>
           </div>
@@ -161,7 +203,7 @@ export default function KasusPage() {
               <thead className="bg-black/20 border-b border-white/10 text-dark-200 font-semibold text-xs uppercase tracking-widest">
                 <tr>
                   <th className="px-6 py-4 bg-transparent">Siswa</th>
-                  <th className="px-4 py-4 bg-transparent">Kasus / Permasalahan</th>
+                  <th className="px-4 py-4 bg-transparent">Kasus</th>
                   <th className="px-4 py-4 bg-transparent">Poin</th>
                   <th className="px-4 py-4 bg-transparent">Tindak Lanjut</th>
                   <th className="px-4 py-4 bg-transparent">Status</th>
@@ -169,13 +211,13 @@ export default function KasusPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {kasus.filter(k => k.siswa.toLowerCase().includes(searchTerm.toLowerCase()) || k.kasus.toLowerCase().includes(searchTerm.toLowerCase())).map((k) => (
+                {filteredKasus.map((k) => (
                   <tr key={k.id} className="hover:bg-white/5 transition-colors group cursor-pointer">
                     <td className="px-6 py-4">
                       <div className="font-bold text-white">{k.siswa}</div>
-                      <div className="text-xs text-dark-300">{k.kelas}</div>
+                      <div className="text-xs text-dark-300">{k.kelas} • {k.date}</div>
                     </td>
-                    <td className="px-4 py-4 text-dark-300">{k.kasus}</td>
+                    <td className="px-4 py-4 text-dark-300 max-w-xs">{k.kasus}</td>
                     <td className="px-4 py-4">
                       <span className={`font-bold ${k.poin >= 50 ? 'text-red-400' : 'text-amber-400'}`}>+{k.poin} Poin</span>
                     </td>
@@ -188,31 +230,27 @@ export default function KasusPage() {
                         )}
                         {k.poin >= 20 && (
                           <span className="flex items-center gap-1 text-[10px] text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded w-max border border-red-500/20">
-                            <RiMailSendLine /> SP Orang Tua
+                            SP Orang Tua
                           </span>
                         )}
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                       <span className={`badge ${
-                         k.status === 'Selesai' ? 'bg-teal-500/20 text-teal-400 border-teal-500/30' :
-                         k.status === 'Proses' ? 'bg-primary-500/20 text-primary-400 border-primary-500/30' :
-                         'bg-dark-600/30 text-dark-200 border-white/20'
-                       }`}>
-                         {k.status}
-                       </span>
+                      <span className={`badge ${k.status === 'Selesai' ? 'bg-teal-500/20 text-teal-400 border-teal-500/30' : k.status === 'Proses' ? 'bg-primary-500/20 text-primary-400 border-primary-500/30' : 'bg-dark-600/30 text-dark-200 border-white/20'}`}>
+                        {k.status}
+                      </span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                       <div className="flex items-center justify-center gap-2">
-                         <button className="text-dark-200 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors" title="Detail Kasus"><RiFileList3Line /></button>
-                         <button onClick={() => {
-                           toast.success(`Surat Panggilan Orang Tua untuk ${k.siswa} siap dicetak!`)
-                           window.print()
-                         }} className="text-red-400 hover:text-white hover:bg-red-500/20 p-1.5 rounded-lg transition-colors" title="Cetak Surat Panggilan"><RiPrinterLine /></button>
-                       </div>
+                      <div className="flex items-center justify-center gap-2">
+                        <button onClick={() => window.print()} className="text-dark-200 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors" title="Cetak SP"><RiPrinterLine /></button>
+                        <button onClick={() => setDeleteTarget(k)} className="text-red-400 hover:text-white hover:bg-red-500/20 p-1.5 rounded-lg transition-colors" title="Hapus"><RiDeleteBinLine /></button>
+                      </div>
                     </td>
                   </tr>
                 ))}
+                {filteredKasus.length === 0 && (
+                  <tr><td colSpan={6} className="text-center py-12 text-dark-300">Tidak ada kasus ditemukan.</td></tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -220,31 +258,41 @@ export default function KasusPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 animate-in">
           {kasus.filter(k => k.visit).map(k => (
-             <div key={k.id} className="card-feature group border-amber-500/20 hover:border-amber-500/50 relative overflow-hidden bg-primary-500/10">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300 shadow-glow-amber">
-                    <RiHomeHeartLine />
-                  </div>
-                  <span className="text-[10px] uppercase font-bold text-dark-200 bg-black/20 border border-white/10 px-2 py-1 rounded">{k.date}</span>
+            <div key={k.id} className="card-feature group border-amber-500/20 hover:border-amber-500/50 relative overflow-hidden">
+              <div className="flex justify-between items-start mb-4">
+                <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300">
+                  <RiHomeHeartLine />
                 </div>
-                <h4 className="font-bold text-white text-lg">{k.siswa}</h4>
-                <p className="text-dark-300 text-xs mt-1 mb-4 flex items-center gap-1"><RiMapPinLine className="text-dark-300" /> Alamat: Jl. Merdeka No. {k.id * 12}</p>
-                
-                <div className="p-3 bg-black/40 rounded-xl border border-white/10 shadow-inner mb-4">
-                   <div className="text-[10px] text-dark-300 uppercase font-bold tracking-wider mb-1">Terkait Kasus</div>
-                   <div className="text-sm text-amber-100 font-medium">{k.kasus}</div>
-                </div>
-
-                <div className="flex gap-2">
-                  <button className="flex-1 btn-primary bg-amber-600 hover:bg-amber-500 border-none py-2 text-xs shadow-glow-amber" onClick={() => toast.success('Status kunjungan diperbarui!')}>
+                <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded border ${k.status === 'Selesai' ? 'bg-teal-500/10 text-teal-400 border-teal-500/20' : 'text-dark-200 bg-black/20 border-white/10'}`}>
+                  {k.status === 'Selesai' ? '✅ Selesai' : k.date}
+                </span>
+              </div>
+              <h4 className="font-bold text-white text-lg">{k.siswa}</h4>
+              <p className="text-dark-300 text-xs mt-1 mb-3 flex items-center gap-1">
+                <RiMapPinLine /> {getStudentAddress(k.siswa)}
+              </p>
+              <div className="p-3 bg-black/40 rounded-xl border border-white/10 shadow-inner mb-4">
+                <div className="text-[10px] text-dark-300 uppercase font-bold tracking-wider mb-1">Terkait Kasus</div>
+                <div className="text-sm text-amber-100 font-medium">{k.kasus}</div>
+              </div>
+              <div className="flex gap-2">
+                {k.status !== 'Selesai' && (
+                  <button className="flex-1 btn-primary bg-amber-600 hover:bg-amber-500 border-none py-2 text-xs" onClick={() => handleMarkDone(k)}>
                     <RiCheckDoubleLine /> Tandai Selesai
                   </button>
-                  <button className="btn-secondary py-2 px-3 text-dark-300 hover:text-white" title="Laporan Kunjungan">
-                    <RiFileList3Line />
-                  </button>
-                </div>
-             </div>
+                )}
+                <button onClick={() => setDeleteTarget(k)} className="btn-secondary py-2 px-3 text-red-400 hover:text-white hover:bg-red-500/20 text-xs">
+                  <RiDeleteBinLine />
+                </button>
+              </div>
+            </div>
           ))}
+          {kasus.filter(k => k.visit).length === 0 && (
+            <div className="col-span-full py-16 text-center text-dark-300">
+              <RiHomeHeartLine className="text-5xl mx-auto mb-3 opacity-30" />
+              <p>Belum ada agenda home visit.</p>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -4,7 +4,8 @@ import {
   RiEditLine, RiEyeLine, RiDeleteBinLine, RiCloseLine,
   RiSaveLine, RiUserLine, RiAlertLine, RiCheckLine,
   RiUploadLine, RiTimeLine, RiHeartLine, RiScales3Line,
-  RiBallPenLine, RiCheckboxCircleLine, RiFileTextLine, RiErrorWarningLine
+  RiBallPenLine, RiCheckboxCircleLine, RiFileTextLine, RiErrorWarningLine,
+  RiLoader4Line
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
 import { useSettings } from '../contexts/SettingsContext'
@@ -361,7 +362,7 @@ function ConfirmDelete({ siswa, onClose, onConfirm }) {
 
 export default function SiswaPage() {
   const { classes } = useSettings()
-  const { siswa, setSiswa } = useData()
+  const { siswa, addStudent, updateStudent, deleteStudent, bulkDeleteStudents, dataLoading } = useData()
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState('Semua')
   const [filterKelas, setFilterKelas] = useState('Semua')
@@ -372,6 +373,7 @@ export default function SiswaPage() {
   const [modalDetail, setModalDetail] = useState(null)
   const [modalDelete, setModalDelete] = useState(null)
   const [selectedIds, setSelectedIds] = useState([])
+  const [saving, setSaving] = useState(false)
 
   const toggleSelectAll = () => {
     if (selectedIds.length === paginated.length) {
@@ -389,11 +391,16 @@ export default function SiswaPage() {
     }
   }
 
-  const handleBulkDelete = () => {
-    if (confirm(`Yakin ingin menghapus ${selectedIds.length} siswa terpilih?`)) {
-      setSiswa(prev => prev.filter(s => !selectedIds.includes(s.id)))
+  const handleBulkDelete = async () => {
+    setSaving(true)
+    try {
+      await bulkDeleteStudents(selectedIds)
       setSelectedIds([])
       toast.success('Data terpilih berhasil dihapus.')
+    } catch {
+      toast.error('Gagal menghapus data terpilih.')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -409,38 +416,61 @@ export default function SiswaPage() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
-  const handleAdd = (form) => {
-    const newId = Math.max(0, ...siswa.map(s => s.id)) + 1
-    setSiswa(prev => [{ ...form, id: newId, konseling: 0 }, ...prev])
-    setModalAdd(false)
-    toast.success(`Siswa ${form.nama} berhasil ditambahkan!`)
+  const handleAdd = async (form) => {
+    setSaving(true)
+    try {
+      await addStudent(form)
+      setModalAdd(false)
+      toast.success(`Siswa ${form.nama} berhasil ditambahkan!`)
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Gagal menambahkan siswa.')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  const handleEdit = (form) => {
-    setSiswa(prev => prev.map(s => s.id === modalEdit.id ? { ...s, ...form } : s))
-    setModalEdit(null)
-    toast.success('Data siswa berhasil diperbarui!')
+  const handleEdit = async (form) => {
+    setSaving(true)
+    try {
+      await updateStudent(modalEdit.id, form)
+      setModalEdit(null)
+      toast.success('Data siswa berhasil diperbarui!')
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Gagal memperbarui data.')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  const handleDelete = (id) => {
-    setSiswa(prev => prev.filter(s => s.id !== id))
-    toast.success('Data siswa berhasil dihapus.')
+  const handleDelete = async (id) => {
+    try {
+      await deleteStudent(id)
+      toast.success('Data siswa berhasil dihapus.')
+    } catch {
+      toast.error('Gagal menghapus siswa.')
+    }
   }
 
   const handleExport = () => {
-    const rows = [['NIS','Nama','Kelas','J/K','Status','Konseling']]
-    filtered.forEach(s => rows.push([s.nis, s.nama, s.kelas, s.jk, s.status, s.konseling]))
-    const csv = rows.map(r => r.join(',')).join('\n')
-    const blob = new Blob([csv], { type: 'text/csv' })
+    const rows = [['NIS','Nama','Kelas','J/K','Status','Konseling','HP','Alamat']]
+    filtered.forEach(s => rows.push([s.nis, s.nama, s.kelas, s.jk, s.status, s.konseling || 0, s.hp || '', s.alamat || '']))
+    const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
-    a.href = url; a.download = 'data-siswa.csv'; a.click()
+    a.href = url; a.download = `data-siswa-${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.csv`; a.click()
     URL.revokeObjectURL(url)
     toast.success('Data berhasil diekspor ke CSV!')
   }
 
   const resetFilter = () => { setFilterStatus('Semua'); setFilterKelas('Semua'); setShowFilter(false) }
   const activeFilterCount = [filterStatus !== 'Semua', filterKelas !== 'Semua'].filter(Boolean).length
+
+  if (dataLoading) return (
+    <div className="flex items-center justify-center h-64">
+      <RiLoader4Line className="text-5xl text-primary-400 animate-spin" />
+    </div>
+  )
 
   return (
     <div className="space-y-6">
