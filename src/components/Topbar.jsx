@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import {
-  RiMenuLine, RiBellLine, RiSearchLine,
-  RiShieldStarLine, RiUser3Line, RiMoonLine, RiSunLine
+  RiMenuLine, RiBellLine, RiSearchLine, RiCheckDoubleLine,
+  RiShieldStarLine, RiUser3Line, RiMoonLine, RiSunLine, RiCloseLine
 } from 'react-icons/ri'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -29,8 +29,21 @@ export default function Topbar({ onMenuClick }) {
   const toggleTheme = () => {
     const isDarkNow = document.documentElement.classList.toggle('dark')
     setIsDark(isDarkNow)
-    // Optional: save to localStorage if user wants
     localStorage.setItem('theme', isDarkNow ? 'dark' : 'light')
+  }
+
+  // Notifikasi State
+  const [notifOpen, setNotifOpen] = useState(false)
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: 'Asesmen AKPD', text: '5 siswa belum mengisi asesmen AKPD semester ini.', time: '1 jam lalu', read: false, type: 'warning' },
+    { id: 2, title: 'Laporan Otomatis', text: 'Laporan rekapitulasi bulan berjalan siap diunduh.', time: '2 jam lalu', read: false, type: 'info' },
+    { id: 3, title: 'Peringatan Kasus', text: 'Terdapat 2 kasus baru yang perlu tindak lanjut (Home Visit).', time: '1 hari lalu', read: true, type: 'alert' },
+  ])
+
+  const unreadCount = notifications.filter(n => !n.read).length
+
+  const markAllRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })))
   }
 
   return (
@@ -72,13 +85,55 @@ export default function Topbar({ onMenuClick }) {
       </button>
 
       {/* Notifications */}
-      <button
-        id="topbar-notif-btn"
-        className="relative p-2.5 rounded-xl border border-white/10 bg-white/5 text-dark-300 hover:text-white transition-colors"
-      >
-        <RiBellLine className="text-lg" />
-        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-accent-500 rounded-full" />
-      </button>
+      <div className="relative">
+        <button
+          onClick={() => setNotifOpen(!notifOpen)}
+          id="topbar-notif-btn"
+          className="relative p-2.5 rounded-xl border border-white/10 bg-white/5 text-dark-300 hover:text-white transition-colors"
+        >
+          <RiBellLine className="text-lg" />
+          {unreadCount > 0 && (
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-accent-500 rounded-full animate-pulse" />
+          )}
+        </button>
+
+        {notifOpen && (
+          <>
+            <div className="fixed inset-0 z-30" onClick={() => setNotifOpen(false)} />
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-dark-900 border border-white/10 rounded-2xl shadow-2xl z-40 overflow-hidden animate-in">
+              <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+                <h3 className="font-display font-bold text-white text-sm">Pemberitahuan</h3>
+                {unreadCount > 0 && (
+                  <button onClick={markAllRead} className="text-xs text-primary-400 hover:text-primary-300 flex items-center gap-1">
+                    <RiCheckDoubleLine /> Tandai dibaca
+                  </button>
+                )}
+              </div>
+              <div className="max-h-80 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="p-8 text-center text-dark-400 text-sm">Tidak ada pemberitahuan.</div>
+                ) : (
+                  notifications.map(n => (
+                    <div key={n.id} className={`p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer ${!n.read ? 'bg-primary-500/5' : ''}`}>
+                      <div className="flex gap-3">
+                        <div className={`w-2 h-2 mt-1.5 rounded-full flex-shrink-0 ${!n.read ? 'bg-accent-500' : 'bg-transparent border border-dark-400'}`} />
+                        <div>
+                          <h4 className={`text-sm font-semibold ${!n.read ? 'text-white' : 'text-dark-200'}`}>{n.title}</h4>
+                          <p className="text-xs text-dark-300 mt-1 leading-relaxed">{n.text}</p>
+                          <span className="text-[10px] text-dark-400 font-mono mt-2 block">{n.time}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+              <div className="p-3 border-t border-white/10 text-center bg-black/20 hover:bg-black/40 transition-colors cursor-pointer text-xs font-bold text-dark-200">
+                Lihat Semua Notifikasi
+              </div>
+            </div>
+          </>
+        )}
+      </div>
 
       {/* Avatar */}
       <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/10 bg-white/5">

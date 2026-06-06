@@ -25,9 +25,10 @@ import {
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts'
 import toast from 'react-hot-toast'
 import { useData } from '../contexts/DataContext'
+import { useSettings } from '../contexts/SettingsContext'
 import { parseAkpdExcel } from '../utils/akpdParser'
 import { computeAkpdResults } from '../utils/akpdCalculator'
-import { AKPD_MASTER, saveCustomAkpd } from '../data/akpdMaster'
+import { AKPD_MASTER, AKPD_MASTER_SMA, saveCustomAkpd } from '../data/akpdMaster'
 import { GAYA_BELAJAR_MASTER, KECERDASAN_MASTER, KEPRIBADIAN_MASTER, BAKAT_MINAT_MASTER, saveCustomAssessment } from '../data/assessmentMasters'
 import { generateExcelTemplate } from '../utils/generateExcelTemplate'
 
@@ -54,6 +55,7 @@ export default function AsesmenPage() {
     kepribadianResult, setKepribadianResult,
     bakatMinatResult, setBakatMinatResult
   } = useData()
+  const { sekolah, classes } = useSettings()
   const [loading, setLoading] = useState(false)
   const [viewMode, setViewMode] = useState('profil-kelas') // profil-kelas, daftar-siswa
   const fileInputRef = useRef(null)
@@ -64,17 +66,19 @@ export default function AsesmenPage() {
 
   // New Session Form
   const [sessionForm, setSessionForm] = useState({
-    sekolah: 'SMP Negeri 2 Pamekasan',
-    kelas: '',
-    tahun: '2022-2023'
+    tingkat: 'SMP/MTs',
+    sekolah: sekolah?.nama || 'SMP Negeri 2 Pamekasan',
+    kelas: classes?.[0] || '',
+    tahun: sekolah?.tahun || '2022-2023'
   })
 
   // Template Download Modal
   const [showTemplateModal, setShowTemplateModal] = useState(false)
   const [templateForm, setTemplateForm] = useState({
-    sekolah: 'Nama Sekolah',
-    kelas: '',
-    tahun: new Date().getFullYear() + '/' + (new Date().getFullYear() + 1)
+    tingkat: 'SMP/MTs',
+    sekolah: sekolah?.nama || 'Nama Sekolah',
+    kelas: classes?.[0] || '',
+    tahun: sekolah?.tahun || new Date().getFullYear() + '/' + (new Date().getFullYear() + 1)
   })
 
   // Edit Pertanyaan Form
@@ -87,7 +91,9 @@ export default function AsesmenPage() {
       case 'kecerdasan': return { result: kecerdasanResult, setResult: setKecerdasanResult, master: KECERDASAN_MASTER, type: tabId, storageKey: 'simbk_data_kecerdasan_result', title: 'Kecerdasan Majemuk' };
       case 'kepribadian': return { result: kepribadianResult, setResult: setKepribadianResult, master: KEPRIBADIAN_MASTER, type: tabId, storageKey: 'simbk_data_kepribadian_result', title: 'Kepribadian' };
       case 'bakat-minat': return { result: bakatMinatResult, setResult: setBakatMinatResult, master: BAKAT_MINAT_MASTER, type: tabId, storageKey: 'simbk_data_bakat-minat_result', title: 'Bakat & Karier' };
-      default: return { result: akpdResult, setResult: setAkpdResult, master: AKPD_MASTER, type: 'akpd', storageKey: 'simbk_data_akpd_result', title: 'Asesmen AKPD' };
+      default: 
+        const isSma = (akpdResult?.meta?.tingkat === 'SMA/SMK/MA') || sessionForm.tingkat === 'SMA/SMK/MA' || templateForm.tingkat === 'SMA/SMK/MA';
+        return { result: akpdResult, setResult: setAkpdResult, master: isSma ? AKPD_MASTER_SMA : AKPD_MASTER, type: 'akpd', storageKey: 'simbk_data_akpd_result', title: 'Asesmen AKPD' };
     }
   }
 
@@ -138,8 +144,9 @@ export default function AsesmenPage() {
     const emptyResult = computeAkpdResults({
       sekolah: sessionForm.sekolah,
       kelas: sessionForm.kelas.toUpperCase(),
-      tahun: sessionForm.tahun
-    }, [], getAssessmentConfig().master);
+      tahun: sessionForm.tahun,
+      tingkat: sessionForm.tingkat
+    }, [], sessionForm.tingkat === 'SMA/SMK/MA' ? AKPD_MASTER_SMA : AKPD_MASTER);
 
     getAssessmentConfig().setResult(emptyResult);
     setShowNewSessionModal(false);
@@ -323,28 +330,47 @@ export default function AsesmenPage() {
           <p className="text-dark-300 text-xs mb-6">Memulai wadah asesmen kosong untuk diisi oleh siswa Anda secara online mandiri tanpa berkas Excel awal.</p>
 
           <form onSubmit={handleCreateEmptySession} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-dark-300 mb-1.5 uppercase tracking-wider">Asal Sekolah</label>
-              <input 
-                type="text" 
-                required 
-                className="input-field py-2.5 text-sm"
-                value={sessionForm.sekolah}
-                onChange={e => setSessionForm({...sessionForm, sekolah: e.target.value})}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-dark-300 mb-1.5 uppercase tracking-wider">Tingkatan</label>
+                <select
+                  required
+                  className="input-field py-2.5 text-sm appearance-none"
+                  value={sessionForm.tingkat}
+                  onChange={e => setSessionForm({...sessionForm, tingkat: e.target.value})}
+                >
+                  <option value="SMP/MTs">SMP / MTs / Sederajat</option>
+                  <option value="SMA/SMK/MA">SMA / SMK / MA / Sederajat</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-dark-300 mb-1.5 uppercase tracking-wider">Asal Sekolah</label>
+                <input 
+                  type="text" 
+                  required 
+                  className="input-field py-2.5 text-sm"
+                  value={sessionForm.sekolah}
+                  onChange={e => setSessionForm({...sessionForm, sekolah: e.target.value})}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-dark-300 mb-1.5 uppercase tracking-wider">Target Kelas</label>
-                <input 
-                  type="text" 
+                <select 
                   required 
-                  placeholder="Contoh: VII G"
-                  className="input-field py-2.5 text-sm"
+                  className="input-field py-2.5 text-sm appearance-none"
                   value={sessionForm.kelas}
                   onChange={e => setSessionForm({...sessionForm, kelas: e.target.value})}
-                />
+                >
+                  <option value="" disabled>Pilih Kelas...</option>
+                  {classes?.length ? classes.map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  )) : (
+                    <option value="" disabled>Belum ada kelas di Pengaturan</option>
+                  )}
+                </select>
               </div>
               <div>
                 <label className="block text-xs font-bold text-dark-300 mb-1.5 uppercase tracking-wider">Tahun Pelajaran</label>
@@ -743,28 +769,47 @@ export default function AsesmenPage() {
             </p>
 
             <form onSubmit={handleDownloadTemplate} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-dark-300 mb-1.5 uppercase tracking-wider">Nama Sekolah</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="SMP Negeri 1 ..."
-                  className="input-field py-2.5 text-sm"
-                  value={templateForm.sekolah}
-                  onChange={e => setTemplateForm({...templateForm, sekolah: e.target.value})}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-dark-300 mb-1.5 uppercase tracking-wider">Tingkatan</label>
+                  <select
+                    required
+                    className="input-field py-2.5 text-sm appearance-none"
+                    value={templateForm.tingkat}
+                    onChange={e => setTemplateForm({...templateForm, tingkat: e.target.value})}
+                  >
+                    <option value="SMP/MTs">SMP / MTs</option>
+                    <option value="SMA/SMK/MA">SMA / SMK / MA</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-dark-300 mb-1.5 uppercase tracking-wider">Nama Sekolah</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="SMP Negeri 1 ..."
+                    className="input-field py-2.5 text-sm"
+                    value={templateForm.sekolah}
+                    onChange={e => setTemplateForm({...templateForm, sekolah: e.target.value})}
+                  />
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-dark-300 mb-1.5 uppercase tracking-wider">Kelas *</label>
-                  <input
-                    type="text"
+                  <select
                     required
-                    placeholder="Contoh: VII G"
-                    className="input-field py-2.5 text-sm"
+                    className="input-field py-2.5 text-sm appearance-none"
                     value={templateForm.kelas}
                     onChange={e => setTemplateForm({...templateForm, kelas: e.target.value})}
-                  />
+                  >
+                    <option value="" disabled>Pilih Kelas...</option>
+                    {classes?.length ? classes.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    )) : (
+                      <option value="" disabled>Belum ada kelas di Pengaturan</option>
+                    )}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-dark-300 mb-1.5 uppercase tracking-wider">Tahun Pelajaran</label>

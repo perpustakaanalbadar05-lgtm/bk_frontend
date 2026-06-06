@@ -6,7 +6,7 @@
  * dan kompatibel penuh dengan akpdParser.js (sheet ENTRI, kolom 1-50).
  */
 import * as XLSX from 'xlsx';
-import { AKPD_MASTER } from '../data/akpdMaster';
+import { AKPD_MASTER, AKPD_MASTER_SMA } from '../data/akpdMaster';
 import {
   GAYA_BELAJAR_MASTER,
   KECERDASAN_MASTER,
@@ -17,13 +17,15 @@ import {
 /**
  * Pilih master data sesuai tipe asesmen
  */
-const getMaster = (type) => {
+const getMaster = (type, meta = {}) => {
   switch (type) {
     case 'gaya-belajar': return { master: GAYA_BELAJAR_MASTER, title: 'Gaya Belajar' };
     case 'kecerdasan':   return { master: KECERDASAN_MASTER,   title: 'Kecerdasan Majemuk' };
     case 'kepribadian':  return { master: KEPRIBADIAN_MASTER,  title: 'Kepribadian' };
     case 'bakat-minat':  return { master: BAKAT_MINAT_MASTER,  title: 'Bakat & Karier' };
-    default:             return { master: AKPD_MASTER,          title: 'AKPD' };
+    default:             
+      const isSma = meta.tingkat === 'SMA/SMK/MA';
+      return { master: isSma ? AKPD_MASTER_SMA : AKPD_MASTER, title: 'AKPD' };
   }
 };
 
@@ -33,7 +35,7 @@ const getMaster = (type) => {
  * @param {object} meta - { sekolah, kelas, tahun }
  */
 export const generateExcelTemplate = (type = 'akpd', meta = {}) => {
-  const { master, title } = getMaster(type);
+  const { master, title } = getMaster(type, meta);
   const numItems = master.length;
   const sekolah  = meta.sekolah || 'Nama Sekolah';
   const kelas    = meta.kelas   || 'Nama Kelas';

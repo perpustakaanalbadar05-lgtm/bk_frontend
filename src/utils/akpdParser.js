@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import { computeAkpdResults } from './akpdCalculator';
+import { AKPD_MASTER, AKPD_MASTER_SMA } from '../data/akpdMaster';
 
 export const parseAkpdExcel = async (file) => {
   return new Promise((resolve, reject) => {
@@ -84,8 +85,13 @@ export const parseAkpdExcel = async (file) => {
           throw new Error("Tidak ada data siswa yang terdeteksi di sheet ENTRI!");
         }
 
-        // Use central compute function
-        const computed = computeAkpdResults({ sekolah, kelas, tahun }, students);
+        let tingkat = 'SMP/MTs';
+        if (sekolah.toUpperCase().includes('SMA') || sekolah.toUpperCase().includes('SMK') || sekolah.toUpperCase().includes('MAN ')) {
+          tingkat = 'SMA/SMK/MA';
+        }
+
+        // Use central compute function with appropriate master
+        const computed = computeAkpdResults({ sekolah, kelas, tahun, tingkat }, students, tingkat === 'SMA/SMK/MA' ? AKPD_MASTER_SMA : AKPD_MASTER);
         resolve(computed);
 
       } catch (error) {

@@ -259,8 +259,8 @@ export default function LaporanPage() {
       {/* MODAL: GENERATED OFFICIAL REPORT VIEW & PRINTING (THE ENGINE) */}
       {/* ========================================================== */}
       {generatedDoc && (
-        <div className="fixed inset-0 z-[999] bg-dark-950/90 backdrop-blur-sm flex justify-center items-start overflow-y-auto p-4 md:p-8 animate-in print:p-0 print:bg-transparent">
-          <div className="w-full max-w-4xl bg-white text-black rounded-2xl shadow-2xl relative flex flex-col my-4 overflow-hidden border border-slate-300 animate-in print:m-0 print:border-none print:shadow-none">
+        <div className="fixed inset-0 z-[999] bg-dark-950/90 backdrop-blur-sm flex justify-center items-start overflow-y-auto p-4 md:p-8 animate-in print:static print:block print:p-0 print:bg-transparent print:overflow-visible">
+          <div className="w-full max-w-4xl bg-white text-black rounded-2xl shadow-2xl relative flex flex-col my-4 overflow-hidden border border-slate-300 animate-in print:max-w-none print:m-0 print:border-none print:shadow-none print:overflow-visible">
             
             {/* Sticky Top bar control */}
             <div className="bg-slate-900 text-white p-4 flex justify-between items-center gap-3 hide-on-print">
