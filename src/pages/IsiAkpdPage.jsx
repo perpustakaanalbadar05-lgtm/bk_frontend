@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   RiShieldCheckLine, 
   RiHeartLine, 
@@ -15,10 +15,24 @@ import {
 } from 'react-icons/ri';
 import toast from 'react-hot-toast';
 import { AKPD_MASTER } from '../data/akpdMaster';
+import { GAYA_BELAJAR_MASTER, KECERDASAN_MASTER, KEPRIBADIAN_MASTER, BAKAT_MINAT_MASTER } from '../data/assessmentMasters';
 import { computeAkpdResults } from '../utils/akpdCalculator';
 
 export default function IsiAkpdPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const type = searchParams.get('type') || 'akpd';
+
+  const getAssessmentConfig = () => {
+    switch (type) {
+      case 'gaya-belajar': return { title: 'GAYA BELAJAR', key: 'simbk_data_gaya-belajar_result', master: GAYA_BELAJAR_MASTER };
+      case 'kecerdasan': return { title: 'KECERDASAN MAJEMUK', key: 'simbk_data_kecerdasan_result', master: KECERDASAN_MASTER };
+      case 'kepribadian': return { title: 'KEPRIBADIAN', key: 'simbk_data_kepribadian_result', master: KEPRIBADIAN_MASTER };
+      case 'bakat-minat': return { title: 'BAKAT & MINAT', key: 'simbk_data_bakat-minat_result', master: BAKAT_MINAT_MASTER };
+      default: return { title: 'AKPD', key: 'simbk_data_akpd_result', master: AKPD_MASTER };
+    }
+  };
+  const config = getAssessmentConfig();
   
   // Theme State
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
@@ -32,7 +46,7 @@ export default function IsiAkpdPage() {
   // Load existing data or default
   const getActiveMeta = () => {
     try {
-      const saved = localStorage.getItem('simbk_data_akpd_result');
+      const saved = localStorage.getItem(config.key);
       if (saved) {
         const parsed = JSON.parse(saved);
         return parsed.meta;
@@ -51,8 +65,8 @@ export default function IsiAkpdPage() {
     kelas: activeMeta.kelas
   });
 
-  // Selected indices (from 50 statements) - Store 1 if selected, 0 if not
-  const [selections, setSelections] = useState(Array(50).fill(0));
+  // Selected indices
+  const [selections, setSelections] = useState(Array(config.master.length).fill(0));
 
   const toggleSelection = (idx) => {
     setSelections(prev => {
@@ -78,7 +92,7 @@ export default function IsiAkpdPage() {
 
     try {
       let currentResult = null;
-      const savedStr = localStorage.getItem('simbk_data_akpd_result');
+      const savedStr = localStorage.getItem(config.key);
       if (savedStr) {
         currentResult = JSON.parse(savedStr);
       } else {
@@ -97,9 +111,9 @@ export default function IsiAkpdPage() {
       };
 
       const updatedStudents = [...currentResult.students, newStudent];
-      const finalComputed = computeAkpdResults(currentResult.meta, updatedStudents);
+      const finalComputed = computeAkpdResults(currentResult.meta, updatedStudents, config.master);
 
-      localStorage.setItem('simbk_data_akpd_result', JSON.stringify(finalComputed));
+      localStorage.setItem(config.key, JSON.stringify(finalComputed));
 
       // Trigger sync across tabs
       window.dispatchEvent(new Event('storage'));
@@ -116,10 +130,14 @@ export default function IsiAkpdPage() {
 
   const countChecked = selections.reduce((a, b) => a + b, 0);
   
-  const listPribadi = AKPD_MASTER.filter(q => q.bidang === 'Pribadi');
-  const listSosial = AKPD_MASTER.filter(q => q.bidang === 'Sosial');
-  const listBelajar = AKPD_MASTER.filter(q => q.bidang === 'Belajar');
-  const listKarir = AKPD_MASTER.filter(q => q.bidang === 'Karir');
+  const sectionsMap = {};
+  config.master.forEach(item => {
+    if (!sectionsMap[item.bidang]) {
+      sectionsMap[item.bidang] = { label: item.bidang, list: [] };
+    }
+    sectionsMap[item.bidang].list.push(item);
+  });
+  const sections = Object.values(sectionsMap);
 
   const renderHeader = () => (
     <div className="bg-dark-950 border-b border-white/10 py-6 px-4">
@@ -129,7 +147,7 @@ export default function IsiAkpdPage() {
             <RiShieldCheckLine />
           </div>
           <div>
-            <h1 className="font-display font-bold text-white text-lg leading-tight">PORTAL ASESMEN AKPD</h1>
+            <h1 className="font-display font-bold text-white text-lg leading-tight">PORTAL ASESMEN {config.title}</h1>
             <p className="text-dark-300 text-xs">{activeMeta.sekolah} • {activeMeta.tahun}</p>
           </div>
         </div>
@@ -158,7 +176,7 @@ export default function IsiAkpdPage() {
           <div className="w-full max-w-md card-feature p-8">
             <h2 className="font-display font-black text-2xl text-white text-center mb-2">Mulai Mengisi Instrumen</h2>
             <p className="text-dark-200 text-sm text-center mb-6">
-              Silakan isi identitas Anda untuk memulai asesmen kebutuhan peserta didik (AKPD).
+              Silakan isi identitas Anda untuk memulai asesmen {config.title}.
             </p>
 
             <form onSubmit={handleStart} className="space-y-5">
@@ -239,15 +257,10 @@ export default function IsiAkpdPage() {
           </div>
 
           {/* Form sections based on Bidang */}
-          {[
-            { label: 'A. BIDANG PRIBADI', icon: RiHeartLine, color: 'text-purple-500 dark:text-purple-400', list: listPribadi },
-            { label: 'B. BIDANG SOSIAL', icon: RiGroupLine, color: 'text-cyan-500 dark:text-cyan-400', list: listSosial },
-            { label: 'C. BIDANG BELAJAR', icon: RiBookOpenLine, color: 'text-blue-500 dark:text-blue-400', list: listBelajar },
-            { label: 'D. BIDANG KARIR', icon: RiBriefcaseLine, color: 'text-amber-500 dark:text-amber-400', list: listKarir }
-          ].map((sect, sectIdx) => (
+          {sections.map((sect, sectIdx) => (
             <div key={sectIdx} className="space-y-4">
               <div className="flex items-center gap-2 text-white font-display font-black text-base border-b border-white/10 pb-2">
-                <sect.icon className={sect.color} />
+                <RiHeartLine className="text-primary-500" />
                 {sect.label}
               </div>
               <div className="grid grid-cols-1 gap-3">
@@ -314,7 +327,7 @@ export default function IsiAkpdPage() {
           
           <h2 className="font-display font-black text-2xl text-white mb-2">Kirim Berhasil!</h2>
           <p className="text-dark-200 text-sm mb-6 leading-relaxed">
-            Terima kasih, <b>{studentInfo.nama}</b>. Jawaban instrumen AKPD Anda telah terekam dengan aman oleh Guru BK Anda.
+            Terima kasih, <b>{studentInfo.nama}</b>. Jawaban instrumen {config.title} Anda telah terekam dengan aman oleh Guru BK Anda.
           </p>
           
           <div className="bg-dark-950/60 p-4 rounded-xl border border-white/5 mb-8 text-xs text-dark-300">
@@ -323,7 +336,7 @@ export default function IsiAkpdPage() {
 
           <button 
             onClick={() => {
-              setSelections(Array(50).fill(0));
+              setSelections(Array(config.master.length).fill(0));
               setStudentInfo({ nama: '', jk: 'L', kelas: activeMeta.kelas });
               setStep(1);
             }} 

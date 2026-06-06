@@ -223,7 +223,31 @@ export default function LaporanPage() {
                   <span className="text-dark-300 text-xs font-mono">{tanggal} · {ukuran}</span>
                 </div>
               </div>
-              <button onClick={() => toast.success(`Mengunduh dokumen arsip: ${judul}`)} className="btn-secondary text-xs py-1.5 px-3 gap-1.5 flex-shrink-0 font-bold">
+              <button onClick={() => {
+                setIsGenerating(true);
+                toast.success(`Menyiapkan arsip: ${judul}...`);
+                setTimeout(() => {
+                  setIsGenerating(false);
+                  const completedSessions = sessions.filter(s => s.status === 'Selesai').length;
+                  const totalPoin = kasus.reduce((sum, k) => sum + (k.poin || 0), 0);
+                  const completedVisits = kasus.filter(k => k.visit && k.status === 'Selesai').length;
+                  
+                  setGeneratedDoc({
+                    tipe: tipe,
+                    tanggal: tanggal,
+                    judul: judul.toUpperCase(),
+                    stats: {
+                      totalSiswa: siswa.length,
+                      sesiKonseling: sessions.length,
+                      sesiSelesai: completedSessions,
+                      totalKasus: kasus.length,
+                      totalPoin: totalPoin,
+                      kunjunganRumah: kasus.filter(k => k.visit).length,
+                      kunjunganSelesai: completedVisits
+                    }
+                  });
+                }, 1000);
+              }} className="btn-secondary text-xs py-1.5 px-3 gap-1.5 flex-shrink-0 font-bold">
                 <RiDownloadLine /> Unduh
               </button>
             </div>
@@ -235,11 +259,11 @@ export default function LaporanPage() {
       {/* MODAL: GENERATED OFFICIAL REPORT VIEW & PRINTING (THE ENGINE) */}
       {/* ========================================================== */}
       {generatedDoc && (
-        <div className="fixed inset-0 z-[999] bg-dark-950/90 backdrop-blur-sm flex justify-center items-start overflow-y-auto p-4 md:p-8 hide-on-print animate-in">
-          <div className="w-full max-w-4xl bg-white text-black rounded-2xl shadow-2xl relative flex flex-col my-4 overflow-hidden border border-slate-300 animate-in">
+        <div className="fixed inset-0 z-[999] bg-dark-950/90 backdrop-blur-sm flex justify-center items-start overflow-y-auto p-4 md:p-8 animate-in print:p-0 print:bg-transparent">
+          <div className="w-full max-w-4xl bg-white text-black rounded-2xl shadow-2xl relative flex flex-col my-4 overflow-hidden border border-slate-300 animate-in print:m-0 print:border-none print:shadow-none">
             
             {/* Sticky Top bar control */}
-            <div className="bg-slate-900 text-white p-4 flex justify-between items-center gap-3">
+            <div className="bg-slate-900 text-white p-4 flex justify-between items-center gap-3 hide-on-print">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-emerald-600 text-white rounded-lg flex items-center justify-center"><RiCheckDoubleLine /></div>
                 <div>

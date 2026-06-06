@@ -8,9 +8,18 @@ const api = axios.create({
   },
 })
 
-// Request interceptor to add auth token
+// Request interceptor to add auth token and handle method spoofing for cPanel
 api.interceptors.request.use(
   (config) => {
+    // Method spoofing to bypass strict cPanel security blocking PUT/DELETE
+    const method = config.method?.toLowerCase();
+    if (['put', 'patch', 'delete'].includes(method)) {
+      config.headers['X-HTTP-Method-Override'] = method.toUpperCase();
+      const separator = config.url.includes('?') ? '&' : '?';
+      config.url = `${config.url}${separator}_method=${method.toUpperCase()}`;
+      config.method = 'post';
+    }
+
     const token = localStorage.getItem('simbk_token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`

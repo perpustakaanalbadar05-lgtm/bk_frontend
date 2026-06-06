@@ -181,13 +181,13 @@ export default function KonselingPage() {
                   </div>
                 </div>
                 {!skipSignature ? (
-                  <div className="relative border border-white/10 rounded-xl bg-black/40 overflow-hidden h-[160px] shadow-inner group">
+                  <div className="relative rounded-xl overflow-hidden h-[160px] shadow-inner group" style={{ backgroundColor: '#1e293b', border: '1px solid rgba(255,255,255,0.1)' }}>
                     <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-10">
-                      <span className="font-display font-black text-4xl text-white">TTD DI SINI</span>
+                      <span className="font-display font-black text-4xl" style={{ color: '#ffffff' }}>TTD DI SINI</span>
                     </div>
                     <SignatureCanvas
                       ref={sigCanvas}
-                      penColor='white'
+                      penColor='#ffffff'
                       canvasProps={{ className: 'sigCanvas w-full h-full relative z-10', style: { width: '100%', height: '100%', cursor: 'crosshair' } }}
                     />
                   </div>
@@ -245,7 +245,7 @@ export default function KonselingPage() {
 
       {/* Table */}
       <div className="card-feature p-0 overflow-hidden">
-        <div className="flex items-center justify-between p-5 border-b border-white/20 bg-white/5">
+        <div className="flex items-center justify-between p-5 border-b border-white/20 bg-white/5 hide-on-print">
           <div className="flex gap-1">
             {tabs.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
@@ -267,7 +267,7 @@ export default function KonselingPage() {
                 <th className="table-header text-left py-4 px-4 hidden sm:table-cell bg-transparent">Durasi</th>
                 <th className="table-header text-center py-4 px-4 bg-transparent">TTD</th>
                 <th className="table-header text-left py-4 px-4 bg-transparent">Status</th>
-                <th className="table-header text-center py-4 px-6 bg-transparent">Aksi</th>
+                <th className="table-header text-center py-4 px-6 bg-transparent hide-on-print">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -295,7 +295,7 @@ export default function KonselingPage() {
                     )}
                   </td>
                   <td className="table-cell"><span className={STATUS_CLS[s.status]}>{s.status}</span></td>
-                  <td className="py-4 px-6 text-center">
+                  <td className="py-4 px-6 text-center hide-on-print">
                     <div className="flex justify-center gap-2">
                       <button onClick={() => window.print()} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-xs text-white hover:bg-dark-700 transition-all" title="Cetak">
                         <RiPrinterLine className="text-sm" />

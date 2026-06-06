@@ -5,7 +5,7 @@ import { AKPD_MASTER } from '../data/akpdMaster';
  * @param {Object} meta - Metadata: { sekolah, kelas, tahun }
  * @param {Array} students - List of objects: { no, nama, jk, responses: Array(50) }
  */
-export const computeAkpdResults = (meta, students) => {
+export const computeAkpdResults = (meta, students, masterData = AKPD_MASTER) => {
   // Ensure students responses map to numbers
   const cleanStudents = students.map(s => ({
     ...s,
@@ -14,7 +14,7 @@ export const computeAkpdResults = (meta, students) => {
   }));
 
   // Initialize aggregates
-  const aggregates = AKPD_MASTER.map(item => ({
+  const aggregates = masterData.map(item => ({
     ...item,
     jmlResponden: 0,
     persentase: 0,
@@ -46,22 +46,23 @@ export const computeAkpdResults = (meta, students) => {
     }
   });
 
-  // Sum of Bidang Layanan
-  const bidangSummary = {
-    'Pribadi': { count: 0, persentase: 0, label: 'Pribadi' },
-    'Sosial': { count: 0, persentase: 0, label: 'Sosial' },
-    'Belajar': { count: 0, persentase: 0, label: 'Belajar' },
-    'Karir': { count: 0, persentase: 0, label: 'Karir' }
-  };
-
-  aggregates.forEach(item => {
-    if (bidangSummary[item.bidang]) {
-      bidangSummary[item.bidang].count += item.jmlResponden;
+  // Sum of Bidang Layanan (Dynamic based on masterData)
+  const bidangSummaryMap = {};
+  
+  masterData.forEach(item => {
+    if (!bidangSummaryMap[item.bidang]) {
+      bidangSummaryMap[item.bidang] = { count: 0, persentase: 0, label: item.bidang };
     }
   });
 
-  Object.keys(bidangSummary).forEach(key => {
-    bidangSummary[key].persentase = totalSelectedProblems > 0 ? (bidangSummary[key].count / totalSelectedProblems) * 100 : 0;
+  aggregates.forEach(item => {
+    if (bidangSummaryMap[item.bidang]) {
+      bidangSummaryMap[item.bidang].count += item.jmlResponden;
+    }
+  });
+
+  Object.keys(bidangSummaryMap).forEach(key => {
+    bidangSummaryMap[key].persentase = totalSelectedProblems > 0 ? (bidangSummaryMap[key].count / totalSelectedProblems) * 100 : 0;
   });
 
   return {
@@ -72,6 +73,6 @@ export const computeAkpdResults = (meta, students) => {
     },
     students: cleanStudents,
     aggregates,
-    bidangSummary: Object.values(bidangSummary)
+    bidangSummary: Object.values(bidangSummaryMap)
   };
 };

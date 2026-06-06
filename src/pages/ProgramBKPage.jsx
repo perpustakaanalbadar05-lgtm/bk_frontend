@@ -485,7 +485,11 @@ export default function ProgramBKPage() {
                                     <RiPrinterLine className="text-sm" />
                                   </button>
                                   <button 
-                                    onClick={() => toast.success(`Mengunduh file format RPL: ${row.kebutuhan}`)} 
+                                    onClick={() => {
+                                      setSelectedRpl(row);
+                                      toast.success(`Menyiapkan dokumen RPL: ${row.kebutuhan}...`);
+                                      setTimeout(() => window.print(), 500);
+                                    }} 
                                     className="p-1.5 bg-slate-100 hover:bg-teal-600 hover:text-white dark:bg-dark-900 rounded-lg border border-slate-200 dark:border-white/20 text-slate-700 dark:text-white transition-all active:scale-95 shadow-sm" 
                                     title="Download PDF"
                                   >
@@ -510,11 +514,11 @@ export default function ProgramBKPage() {
       {/* MODAL: PREVIEW & CETAK RPL 1-HALAMAN RESMI */}
       {/* ========================================= */}
       {selectedRpl && (
-        <div className="fixed inset-0 z-[999] bg-dark-950/90 backdrop-blur-sm flex justify-center items-start overflow-y-auto p-4 md:p-8 hide-on-print animate-in">
+        <div className="fixed inset-0 z-[999] bg-dark-950/90 backdrop-blur-sm flex justify-center items-start overflow-y-auto p-4 md:p-8 animate-in print:p-0 print:bg-transparent">
           <div className="w-full max-w-4xl bg-white text-black rounded-2xl shadow-2xl relative flex flex-col overflow-hidden my-4">
             
             {/* Modal Sticky Top Bar Controls */}
-            <div className="bg-slate-900 text-white p-4 flex justify-between items-center gap-3 shadow-md z-10">
+            <div className="bg-slate-900 text-white p-4 flex justify-between items-center gap-3 shadow-md z-10 hide-on-print">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-primary-500 text-white rounded-lg flex items-center justify-center"><RiFileTextLine /></div>
                 <div>

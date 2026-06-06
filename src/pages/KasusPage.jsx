@@ -3,7 +3,7 @@ import {
   RiHomeHeartLine, RiMapPinLine, RiCalendarCheckLine,
   RiAddLine, RiSearchLine, RiCheckDoubleLine, RiFileList3Line,
   RiScales3Line, RiPrinterLine, RiCloseLine, RiSaveLine,
-  RiLoader4Line, RiDeleteBinLine
+  RiLoader4Line, RiDeleteBinLine, RiChatVoiceLine, RiPhoneLine
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
 import { useData } from '../contexts/DataContext'
@@ -12,7 +12,7 @@ import ConfirmDialog from '../components/ConfirmDialog'
 
 function KasusModal({ isOpen, onClose, onSave, classes, defaultVisit = false }) {
   const [form, setForm] = useState({
-    siswa: '', kelas: classes?.[0] || '', kasus: '', poin: 10, status: 'Proses', visit: defaultVisit
+    siswa: '', kelas: classes?.[0] || '', kasus: '', poin: 10, status: 'Proses', visit: defaultVisit, konseling: false, panggilan: false
   })
   const [saving, setSaving] = useState(false)
 
@@ -66,12 +66,29 @@ function KasusModal({ isOpen, onClose, onSave, classes, defaultVisit = false }) 
             <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Kasus / Bentuk Pelanggaran</label>
             <textarea rows="3" placeholder="Jelaskan secara singkat..." required className="input-field resize-none" value={form.kasus} onChange={e => setForm({...form, kasus: e.target.value})} />
           </div>
-          <div className="flex items-center justify-between p-3 rounded-xl glass border border-amber-500/20">
-            <div>
-              <label className="font-semibold text-white text-sm flex items-center gap-1.5"><RiHomeHeartLine className="text-amber-400"/> Butuh Home Visit?</label>
-              <p className="text-dark-200 text-[10px] mt-0.5">Jadwalkan kunjungan rumah orang tua.</p>
+          <div className="space-y-2">
+            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-2">Tindakan Lanjutan (Opsional)</label>
+            <div className="flex items-center justify-between p-3 rounded-xl glass border border-amber-500/20">
+              <div>
+                <label className="font-semibold text-white text-sm flex items-center gap-1.5"><RiHomeHeartLine className="text-amber-400"/> Home Visit</label>
+                <p className="text-dark-200 text-[10px] mt-0.5">Jadwalkan kunjungan rumah orang tua.</p>
+              </div>
+              <input type="checkbox" className="accent-amber-500 w-4 h-4 cursor-pointer" checked={form.visit} onChange={e => setForm({...form, visit: e.target.checked})} />
             </div>
-            <input type="checkbox" className="accent-amber-500 w-4 h-4 cursor-pointer" checked={form.visit} onChange={e => setForm({...form, visit: e.target.checked})} />
+            <div className="flex items-center justify-between p-3 rounded-xl glass border border-blue-500/20">
+              <div>
+                <label className="font-semibold text-white text-sm flex items-center gap-1.5"><RiChatVoiceLine className="text-blue-400"/> Konseling</label>
+                <p className="text-dark-200 text-[10px] mt-0.5">Jadwalkan sesi konseling khusus.</p>
+              </div>
+              <input type="checkbox" className="accent-blue-500 w-4 h-4 cursor-pointer" checked={form.konseling} onChange={e => setForm({...form, konseling: e.target.checked})} />
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-xl glass border border-purple-500/20">
+              <div>
+                <label className="font-semibold text-white text-sm flex items-center gap-1.5"><RiPhoneLine className="text-purple-400"/> Panggilan Orang Tua</label>
+                <p className="text-dark-200 text-[10px] mt-0.5">Undang orang tua wali ke sekolah.</p>
+              </div>
+              <input type="checkbox" className="accent-purple-500 w-4 h-4 cursor-pointer" checked={form.panggilan} onChange={e => setForm({...form, panggilan: e.target.checked})} />
+            </div>
           </div>
         </form>
         <div className="p-4 border-t border-white/10 bg-dark-950/50 flex gap-3">
@@ -169,27 +186,27 @@ export default function KasusPage() {
         </div>
         <div className="flex gap-2">
           <button onClick={() => openAddModal(false)} className="btn-secondary text-sm py-2"><RiAddLine /> Catat Kasus</button>
-          <button onClick={() => openAddModal(true)} className="btn-primary text-sm py-2 bg-primary-500"><RiHomeHeartLine /> Jadwal Home Visit</button>
+          <button onClick={() => openAddModal(true)} className="btn-primary text-sm py-2 bg-primary-500"><RiCalendarCheckLine /> Catat Tindakan Lanjutan</button>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex overflow-x-auto pb-2 border-b border-white/20">
+      <div className="flex overflow-x-auto pb-2 border-b border-white/20 hide-on-print">
         <div className="flex gap-6 w-max">
           <button onClick={() => setActiveTab('kasus')}
             className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 ${activeTab === 'kasus' ? 'border-primary-500 text-white' : 'border-transparent text-dark-300 hover:text-white'}`}>
             <RiScales3Line className="text-lg" /> Poin & Pelanggaran
           </button>
-          <button onClick={() => setActiveTab('homevisit')}
-            className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 ${activeTab === 'homevisit' ? 'border-amber-500 text-white' : 'border-transparent text-dark-300 hover:text-white'}`}>
-            <RiHomeHeartLine className="text-lg" /> Agenda Home Visit
+          <button onClick={() => setActiveTab('tindakan')}
+            className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 ${activeTab === 'tindakan' ? 'border-amber-500 text-white' : 'border-transparent text-dark-300 hover:text-white'}`}>
+            <RiCalendarCheckLine className="text-lg" /> Agenda Tindakan
           </button>
         </div>
       </div>
 
       {activeTab === 'kasus' ? (
         <div className="card-feature p-0 overflow-hidden animate-in">
-          <div className="p-5 border-b border-white/20 flex justify-between items-center bg-white/5">
+          <div className="p-5 border-b border-white/20 flex justify-between items-center bg-white/5 hide-on-print">
             <div className="relative w-full max-w-xs">
               <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-200" />
               <input type="text" placeholder="Cari nama siswa atau kasus..."
@@ -207,7 +224,7 @@ export default function KasusPage() {
                   <th className="px-4 py-4 bg-transparent">Poin</th>
                   <th className="px-4 py-4 bg-transparent">Tindak Lanjut</th>
                   <th className="px-4 py-4 bg-transparent">Status</th>
-                  <th className="px-6 py-4 text-center bg-transparent">Aksi</th>
+                  <th className="px-6 py-4 text-center bg-transparent hide-on-print">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -228,6 +245,16 @@ export default function KasusPage() {
                             <RiHomeHeartLine /> Home Visit
                           </span>
                         )}
+                        {k.konseling && (
+                          <span className="flex items-center gap-1 text-[10px] text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded w-max border border-blue-500/20">
+                            <RiChatVoiceLine /> Konseling
+                          </span>
+                        )}
+                        {k.panggilan && (
+                          <span className="flex items-center gap-1 text-[10px] text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded w-max border border-purple-500/20">
+                            <RiPhoneLine /> Panggilan Ortu
+                          </span>
+                        )}
                         {k.poin >= 20 && (
                           <span className="flex items-center gap-1 text-[10px] text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded w-max border border-red-500/20">
                             SP Orang Tua
@@ -240,7 +267,7 @@ export default function KasusPage() {
                         {k.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-6 py-4 text-center hide-on-print">
                       <div className="flex items-center justify-center gap-2">
                         <button onClick={() => window.print()} className="text-dark-200 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors" title="Cetak SP"><RiPrinterLine /></button>
                         <button onClick={() => setDeleteTarget(k)} className="text-red-400 hover:text-white hover:bg-red-500/20 p-1.5 rounded-lg transition-colors" title="Hapus"><RiDeleteBinLine /></button>
@@ -257,11 +284,13 @@ export default function KasusPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 animate-in">
-          {kasus.filter(k => k.visit).map(k => (
+          {kasus.filter(k => k.visit || k.konseling || k.panggilan).map(k => (
             <div key={k.id} className="card-feature group border-amber-500/20 hover:border-amber-500/50 relative overflow-hidden">
               <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300">
-                  <RiHomeHeartLine />
+                <div className="flex gap-2">
+                  {k.visit && <div className="w-8 h-8 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center text-sm" title="Home Visit"><RiHomeHeartLine /></div>}
+                  {k.konseling && <div className="w-8 h-8 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 flex items-center justify-center text-sm" title="Konseling"><RiChatVoiceLine /></div>}
+                  {k.panggilan && <div className="w-8 h-8 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-500 flex items-center justify-center text-sm" title="Panggilan Orang Tua"><RiPhoneLine /></div>}
                 </div>
                 <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded border ${k.status === 'Selesai' ? 'bg-teal-500/10 text-teal-400 border-teal-500/20' : 'text-dark-200 bg-black/20 border-white/10'}`}>
                   {k.status === 'Selesai' ? '✅ Selesai' : k.date}
@@ -287,10 +316,10 @@ export default function KasusPage() {
               </div>
             </div>
           ))}
-          {kasus.filter(k => k.visit).length === 0 && (
+          {kasus.filter(k => k.visit || k.konseling || k.panggilan).length === 0 && (
             <div className="col-span-full py-16 text-center text-dark-300">
-              <RiHomeHeartLine className="text-5xl mx-auto mb-3 opacity-30" />
-              <p>Belum ada agenda home visit.</p>
+              <RiCalendarCheckLine className="text-5xl mx-auto mb-3 opacity-30" />
+              <p>Belum ada agenda tindakan lanjutan.</p>
             </div>
           )}
         </div>

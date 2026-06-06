@@ -23,6 +23,16 @@ export function SettingsProvider({ children }) {
     }
   })
 
+  // Theme: default is light
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem('simbk_theme')
+    return saved || 'light'
+  })
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark')
+  }
+
   useEffect(() => {
     localStorage.setItem('simbk_classes', JSON.stringify(classes))
   }, [classes])
@@ -31,8 +41,18 @@ export function SettingsProvider({ children }) {
     localStorage.setItem('simbk_sekolah', JSON.stringify(sekolah))
   }, [sekolah])
 
+  useEffect(() => {
+    localStorage.setItem('simbk_theme', theme)
+    const html = document.documentElement
+    if (theme === 'dark') {
+      html.classList.add('dark')
+    } else {
+      html.classList.remove('dark')
+    }
+  }, [theme])
+
   return (
-    <SettingsContext.Provider value={{ classes, setClasses, sekolah, setSekolah }}>
+    <SettingsContext.Provider value={{ classes, setClasses, sekolah, setSekolah, theme, toggleTheme }}>
       {children}
     </SettingsContext.Provider>
   )

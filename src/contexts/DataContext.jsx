@@ -13,12 +13,18 @@ export function DataProvider({ children }) {
   const [schedules, setSchedules] = useState([])
   const [dataLoading, setDataLoading] = useState(false)
 
-  const [akpdResult, setAkpdResult] = useState(() => {
+  const getLocal = (key) => {
     try {
-      const saved = localStorage.getItem('simbk_data_akpd_result')
+      const saved = localStorage.getItem(key)
       return saved ? JSON.parse(saved) : null
     } catch { return null }
-  })
+  }
+
+  const [akpdResult, setAkpdResult] = useState(() => getLocal('simbk_data_akpd_result'))
+  const [gayaBelajarResult, setGayaBelajarResult] = useState(() => getLocal('simbk_data_gaya-belajar_result'))
+  const [kecerdasanResult, setKecerdasanResult] = useState(() => getLocal('simbk_data_kecerdasan_result'))
+  const [kepribadianResult, setKepribadianResult] = useState(() => getLocal('simbk_data_kepribadian_result'))
+  const [bakatMinatResult, setBakatMinatResult] = useState(() => getLocal('simbk_data_bakat-minat_result'))
 
   // Fetch all data from API when authenticated
   useEffect(() => {
@@ -45,6 +51,22 @@ export function DataProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('simbk_data_akpd_result', JSON.stringify(akpdResult))
   }, [akpdResult])
+
+  useEffect(() => {
+    localStorage.setItem('simbk_data_gaya-belajar_result', JSON.stringify(gayaBelajarResult))
+  }, [gayaBelajarResult])
+
+  useEffect(() => {
+    localStorage.setItem('simbk_data_kecerdasan_result', JSON.stringify(kecerdasanResult))
+  }, [kecerdasanResult])
+
+  useEffect(() => {
+    localStorage.setItem('simbk_data_kepribadian_result', JSON.stringify(kepribadianResult))
+  }, [kepribadianResult])
+
+  useEffect(() => {
+    localStorage.setItem('simbk_data_bakat-minat_result', JSON.stringify(bakatMinatResult))
+  }, [bakatMinatResult])
 
   // ── STUDENT MUTATIONS ──────────────────────────────────────
   const addStudent = useCallback(async (form) => {
@@ -128,6 +150,10 @@ export function DataProvider({ children }) {
       // State
       siswa, sessions, kasus, schedules, dataLoading,
       akpdResult, setAkpdResult,
+      gayaBelajarResult, setGayaBelajarResult,
+      kecerdasanResult, setKecerdasanResult,
+      kepribadianResult, setKepribadianResult,
+      bakatMinatResult, setBakatMinatResult,
       // Student
       addStudent, updateStudent, deleteStudent, bulkDeleteStudents,
       // Session
