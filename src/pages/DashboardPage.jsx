@@ -13,14 +13,6 @@ import { useData } from '../contexts/DataContext'
 import { useNavigate } from 'react-router-dom'
 import api from '../lib/axios'
 
-const CHART_DATA = [
-  { month: 'Jan', konseling: 3, asesmen: 18 },
-  { month: 'Feb', konseling: 5, asesmen: 25 },
-  { month: 'Mar', konseling: 4, asesmen: 30 },
-  { month: 'Apr', konseling: 7, asesmen: 40 },
-  { month: 'Mei', konseling: 8, asesmen: 35 },
-  { month: 'Jun', konseling: 10, asesmen: 48 },
-]
 
 const ALERTS = [
   { text: '5 siswa belum mengisi asesmen AKPD', type: 'warning' },
@@ -41,7 +33,7 @@ const ALERT_STYLE = {
 }
 
 export default function DashboardPage() {
-  const { siswa, sessions, kasus, schedules } = useData()
+  const { siswa, sessions, kasus, schedules, akpdResult, gayaBelajarResult, kecerdasanResult, kepribadianResult, bakatMinatResult } = useData()
   const navigate = useNavigate()
   const [isConnected, setIsConnected] = useState(false)
   const now = new Date()
@@ -59,6 +51,61 @@ export default function DashboardPage() {
     { label: 'Jadwal Klasikal', value: schedules.length, change: '+0', up: true, icon: RiFileTextLine, color: 'from-teal-500 to-teal-700', bg: 'teal' },
     { label: 'Kasus Aktif', value: kasus.filter(k => k.status !== 'Selesai').length, change: '+1', up: true, icon: RiBarChart2Line, color: 'from-amber-500 to-orange-600', bg: 'amber' },
   ]
+
+  // ── Hitung chart data dari data nyata ──────────────────────
+  const BULAN_ID = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des']
+  const tahunIni = now.getFullYear()
+
+  // Jumlah responden asesmen per bulan: gabungkan semua asesmen dari localStorage
+  const allAsesmenStudents = [
+    ...(akpdResult?.students || []),
+    ...(gayaBelajarResult?.students || []),
+    ...(kecerdasanResult?.students || []),
+    ...(kepribadianResult?.students || []),
+    ...(bakatMinatResult?.students || []),
+  ]
+
+  // Hitung konseling per bulan (dari field tanggal: '06 Jun 2025')
+  const konselingPerBulan = {}
+  sessions.forEach(s => {
+    if (!s.tanggal) return
+    // Format tanggal: '06 Jun 2025' atau ISO
+    let bln = -1
+    try {
+      const d = new Date(s.tanggal)
+      if (!isNaN(d)) { bln = d.getMonth() }
+      else {
+        const parts = s.tanggal.split(' ')
+        if (parts.length >= 2) {
+          bln = BULAN_ID.findIndex(b => parts[1].startsWith(b))
+        }
+      }
+    } catch {}
+    if (bln >= 0) konselingPerBulan[bln] = (konselingPerBulan[bln] || 0) + 1
+  })
+
+  // Jumlah sesi klasikal per bulan (dari field date)
+  const klasikalPerBulan = {}
+  schedules.forEach(s => {
+    if (!s.date) return
+    try {
+      const d = new Date(s.date)
+      if (!isNaN(d)) klasikalPerBulan[d.getMonth()] = (klasikalPerBulan[d.getMonth()] || 0) + 1
+    } catch {}
+  })
+
+  // Tampilkan 6 bulan terakhir
+  const bulanAktif = []
+  for (let i = 5; i >= 0; i--) {
+    const idx = (now.getMonth() - i + 12) % 12
+    bulanAktif.push(idx)
+  }
+
+  const chartData = bulanAktif.map(blnIdx => ({
+    month: BULAN_ID[blnIdx],
+    konseling: konselingPerBulan[blnIdx] || 0,
+    klasikal: klasikalPerBulan[blnIdx] || 0,
+  }))
 
   const recentSessions = sessions.slice(0, 4).map(s => ({
     name: s.siswa,
@@ -126,48 +173,55 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Charts */}
+        {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Area Chart */}
         <div className="card-feature">
-          <h3 className="font-display font-bold text-white mb-1">Tren Layanan BK</h3>
-          <p className="text-dark-200 text-xs mb-5">Konseling & asesmen per bulan</p>
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="font-display font-bold text-white">Tren Layanan BK</h3>
+            {sessions.length === 0 && schedules.length === 0 && (
+              <span className="text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">Belum ada data</span>
+            )}
+          </div>
+          <p className="text-dark-200 text-xs mb-5">Konseling & bim. klasikal per bulan (6 bulan terakhir)</p>
           <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={CHART_DATA}>
+            <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorKonseling" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
                   <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                 </linearGradient>
-                <linearGradient id="colorAsesmen" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#d946ef" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#d946ef" stopOpacity={0} />
+                <linearGradient id="colorKlasikal" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
               <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} allowDecimals={false} />
               <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(99,102,241,0.3)', borderRadius: 12, color: '#f1f5f9' }} />
               <Legend wrapperStyle={{ color: '#94a3b8', fontSize: 12 }} />
               <Area type="monotone" dataKey="konseling" name="Konseling" stroke="#6366f1" strokeWidth={2} fill="url(#colorKonseling)" />
-              <Area type="monotone" dataKey="asesmen" name="Asesmen" stroke="#d946ef" strokeWidth={2} fill="url(#colorAsesmen)" />
+              <Area type="monotone" dataKey="klasikal" name="Bim. Klasikal" stroke="#14b8a6" strokeWidth={2} fill="url(#colorKlasikal)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
         {/* Bar Chart */}
         <div className="card-feature">
-          <h3 className="font-display font-bold text-white mb-1">Sesi per Bulan</h3>
-          <p className="text-dark-200 text-xs mb-5">Perbandingan layanan tahunan</p>
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="font-display font-bold text-white">Sesi per Bulan</h3>
+          </div>
+          <p className="text-dark-200 text-xs mb-5">Perbandingan layanan 6 bulan terakhir</p>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={CHART_DATA} barSize={18}>
+            <BarChart data={chartData} barSize={18}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
               <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} allowDecimals={false} />
               <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(99,102,241,0.3)', borderRadius: 12, color: '#f1f5f9' }} />
               <Legend wrapperStyle={{ color: '#94a3b8', fontSize: 12 }} />
-              <Bar dataKey="konseling" name="Konseling" fill="#6366f1" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="asesmen" name="Asesmen" fill="#d946ef" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="konseling" name="Konseling" fill="#6366f1" radius={[4,4,0,0]} />
+              <Bar dataKey="klasikal" name="Bim. Klasikal" fill="#14b8a6" radius={[4,4,0,0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

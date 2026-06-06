@@ -47,6 +47,13 @@ export function DataProvider({ children }) {
       .finally(() => setDataLoading(false))
   }, [isAuthenticated])
 
+  // Cache siswa ke localStorage agar portal publik bisa akses tanpa auth
+  useEffect(() => {
+    if (siswa.length > 0) {
+      localStorage.setItem('simbk_cache_siswa', JSON.stringify(siswa))
+    }
+  }, [siswa])
+
   // Persist akpdResult only (not API data)
   useEffect(() => {
     localStorage.setItem('simbk_data_akpd_result', JSON.stringify(akpdResult))

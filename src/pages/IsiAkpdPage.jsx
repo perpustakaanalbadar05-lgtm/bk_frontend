@@ -1,17 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { 
-  RiShieldCheckLine, 
-  RiHeartLine, 
-  RiGroupLine, 
-  RiBookOpenLine, 
-  RiBriefcaseLine, 
-  RiCheckboxCircleLine, 
-  RiArrowRightLine, 
-  RiArrowLeftLine,
-  RiSave3Line,
-  RiSunLine,
-  RiMoonLine
+import { RiShieldCheckLine, RiHeartLine, RiGroupLine, RiBookOpenLine,
+  RiBriefcaseLine, RiCheckboxCircleLine, RiArrowRightLine, RiArrowLeftLine,
+  RiSave3Line, RiSunLine, RiMoonLine, RiUserLine, RiCloseLine
 } from 'react-icons/ri';
 import toast from 'react-hot-toast';
 import { AKPD_MASTER } from '../data/akpdMaster';
@@ -58,12 +49,27 @@ export default function IsiAkpdPage() {
   const activeMeta = getActiveMeta();
 
   // Form states
-  const [step, setStep] = useState(1); // 1: Identitas, 2: Soal, 3: Berhasil
-  const [studentInfo, setStudentInfo] = useState({
-    nama: '',
-    jk: 'L',
-    kelas: activeMeta.kelas
+  const [step, setStep] = useState(1);
+  const [studentInfo, setStudentInfo] = useState({ nama: '', jk: 'L', kelas: activeMeta.kelas });
+
+  // Autocomplete — baca cache siswa dari localStorage (disimpan oleh DataContext)
+  const [siswaCache] = useState(() => {
+    try { const r = localStorage.getItem('simbk_cache_siswa'); return r ? JSON.parse(r) : []; } catch { return []; }
   });
+  const [namaQuery, setNamaQuery] = useState('');
+  const [showDrop, setShowDrop] = useState(false);
+  const inputRef = useRef(null);
+
+  const filteredSiswa = siswaCache
+    .filter(s => !namaQuery || s.nama?.toLowerCase().includes(namaQuery.toLowerCase()) || s.nis?.includes(namaQuery))
+    .slice(0, 10);
+
+  const handleSelectSiswa = (s) => {
+    const nama = s.nama || '';
+    setStudentInfo({ nama, jk: s.jenisKelamin === 'Perempuan' ? 'P' : 'L', kelas: s.kelas || activeMeta.kelas });
+    setNamaQuery(nama);
+    setShowDrop(false);
+  };
 
   // Selected indices
   const [selections, setSelections] = useState(Array(config.master.length).fill(0));
@@ -180,16 +186,58 @@ export default function IsiAkpdPage() {
             </p>
 
             <form onSubmit={handleStart} className="space-y-5">
-              <div>
+              {/* Nama Lengkap — autocomplete dari cache siswa */}
+              <div className="relative" ref={inputRef}>
                 <label className="block text-xs font-bold text-dark-300 mb-1.5 uppercase tracking-wider">Nama Lengkap</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="Ketik nama lengkap Anda..."
-                  className="input-field py-3"
-                  value={studentInfo.nama}
-                  onChange={(e) => setStudentInfo({...studentInfo, nama: e.target.value})}
-                />
+                <div className={`relative flex items-center input-field py-0 pr-0 ${showDrop ? 'border-primary-500 ring-1 ring-primary-500/30' : ''}`}>
+                  <RiUserLine className="flex-shrink-0 ml-3 text-dark-300" />
+                  <input
+                    type="text" required autoComplete="off"
+                    placeholder={siswaCache.length > 0 ? 'Ketik nama atau NIS Anda...' : 'Ketik nama lengkap Anda...'}
+                    className="flex-1 bg-transparent outline-none text-sm text-white placeholder-dark-400 px-2.5 py-3"
+                    value={namaQuery}
+                    onChange={e => { setNamaQuery(e.target.value); setStudentInfo({...studentInfo, nama: e.target.value}); setShowDrop(true); }}
+                    onFocus={() => setShowDrop(true)}
+                  />
+                  {namaQuery && (
+                    <button type="button" onClick={() => { setNamaQuery(''); setStudentInfo({...studentInfo, nama: ''}); setShowDrop(false); }}
+                      className="flex-shrink-0 p-3 text-dark-400 hover:text-red-400 transition-colors">
+                      <RiCloseLine className="text-base" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Dropdown */}
+                {showDrop && siswaCache.length > 0 && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setShowDrop(false)} />
+                    <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-dark-900 border border-white/15 rounded-xl shadow-2xl overflow-hidden">
+                      <div className="px-3 py-1.5 border-b border-white/10 bg-primary-500/5">
+                        <span className="text-[10px] text-primary-300 font-bold uppercase tracking-wider">{filteredSiswa.length} siswa ditemukan</span>
+                      </div>
+                      <div className="max-h-52 overflow-y-auto">
+                        {filteredSiswa.length === 0
+                          ? <div className="py-5 text-center text-dark-400 text-sm">Tidak ditemukan</div>
+                          : filteredSiswa.map(s => (
+                            <button key={s.id} type="button"
+                              onMouseDown={e => { e.preventDefault(); handleSelectSiswa(s); }}
+                              className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-white/10 transition-colors text-left">
+                              <div className="w-8 h-8 rounded-full bg-primary-500/20 border border-primary-500/30 flex items-center justify-center font-bold text-primary-300 text-xs flex-shrink-0">
+                                {s.nama?.substring(0,2).toUpperCase()}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="font-semibold text-white text-sm truncate">{s.nama}</div>
+                                <div className="text-dark-400 text-[10px]">
+                                  NIS: {s.nis || '-'} · <span className="text-primary-400 font-medium">{s.kelas}</span>
+                                </div>
+                              </div>
+                            </button>
+                          ))
+                        }
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
