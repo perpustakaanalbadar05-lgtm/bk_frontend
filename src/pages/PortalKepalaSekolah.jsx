@@ -14,18 +14,18 @@ const MONTHS = ['Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des']
 
 export default function PortalKepalaSekolah() {
   const { portalUser, logoutPortal } = useRole()
-  const { siswa, sessions, kasus } = useData()
+  const { siswa, sessions, kasus, schedules, akpdResult } = useData()
   const { sekolah } = useSettings()
   const navigate = useNavigate()
 
-  if (!portalUser || portalUser.role !== 'kepala_sekolah') {
+  if (!portalUser || (portalUser.role !== 'kepala_sekolah' && portalUser.role !== 'pengawas')) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
         <div className="text-center p-8">
           <RiAlertLine className="text-5xl text-amber-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-slate-800">Akses Ditolak</h2>
           <p className="text-slate-500 mt-2">Anda tidak memiliki akses ke halaman ini.</p>
-          <button onClick={() => navigate('/portal/login?role=kepala_sekolah')} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold">Login</button>
+          <button onClick={() => navigate('/portal/login')} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold">Login Portal</button>
         </div>
       </div>
     )
@@ -40,18 +40,33 @@ export default function PortalKepalaSekolah() {
   const completedSessions = sessions.filter(s => s.status === 'Selesai').length
   const activeKasus = kasus.filter(k => k.status !== 'Selesai').length
 
-  const monthlyData = MONTHS.map((m, i) => ({
-    month: m,
-    konseling: Math.floor(sessions.length / 6) + (i % 3),
-    kasus: Math.floor(kasus.length / 6) + (i % 2),
-  }))
+  const monthlyData = MONTHS.map((m, i) => {
+    const monthTarget = i + 6; // 6 = July
+    const konselingCount = sessions.filter(s => {
+      if (!s.tanggal) return false;
+      const d = new Date(s.tanggal);
+      return !isNaN(d) && d.getMonth() === monthTarget;
+    }).length;
+
+    const kasusCount = kasus.filter(k => {
+      if (!k.date) return false;
+      const d = new Date(k.date);
+      return !isNaN(d) && d.getMonth() === monthTarget;
+    }).length;
+
+    return {
+      month: m,
+      konseling: konselingCount,
+      kasus: kasusCount,
+    }
+  })
 
   const radarData = [
-    { subject: 'Konseling', A: sessions.length > 0 ? 80 : 20 },
-    { subject: 'Kasus', A: kasus.length > 0 ? 65 : 10 },
-    { subject: 'Klasikal', A: 75 },
-    { subject: 'Asesmen', A: 90 },
-    { subject: 'Program', A: 70 },
+    { subject: 'Konseling', A: Math.min(100, sessions.length * 15) },
+    { subject: 'Kasus', A: kasus.length === 0 ? 100 : Math.round((kasus.filter(k => k.status === 'Selesai').length / kasus.length) * 100) },
+    { subject: 'Klasikal', A: Math.min(100, (schedules?.length || 0) * 20) },
+    { subject: 'Asesmen', A: akpdResult ? 100 : 0 },
+    { subject: 'Program', A: akpdResult ? 100 : 0 },
   ]
 
   return (
@@ -64,14 +79,14 @@ export default function PortalKepalaSekolah() {
               <RiUserStarLine className="text-white text-xl" />
             </div>
             <div>
-              <h1 className="font-display font-black text-slate-800 leading-none">Portal Kepala Sekolah</h1>
+              <h1 className="font-display font-black text-slate-800 leading-none">Portal {portalUser.role === 'pengawas' ? 'Pengawas' : 'Kepala Sekolah'}</h1>
               <p className="text-slate-500 text-xs">{sekolah.nama || 'Konseli'} · Monitoring BK</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <div className="hidden sm:block text-right">
               <p className="text-slate-800 font-semibold text-sm leading-none">{portalUser.name}</p>
-              <p className="text-slate-400 text-xs mt-0.5">Kepala Sekolah</p>
+              <p className="text-slate-400 text-xs mt-0.5">{portalUser.role === 'pengawas' ? 'Pengawas Sekolah' : 'Kepala Sekolah'}</p>
             </div>
             <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors text-sm font-semibold">
               <RiLogoutBoxLine /> Keluar

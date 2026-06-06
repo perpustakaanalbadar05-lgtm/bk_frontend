@@ -53,7 +53,8 @@ function JadwalKlasikalModal({ isOpen, onClose, onSave, classes }) {
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1.5">Kelas *</label>
               <select className="input-field text-sm" value={form.class} onChange={e => setForm({...form, class: e.target.value})}>
-                {classes.map(k => <option key={k} value={k}>{k}</option>)}
+                <option value="" disabled>Pilih Kelas</option>
+                {classes?.length ? classes.map(k => <option key={k} value={k}>{k}</option>) : <option value="" disabled>Belum ada kelas di Pengaturan</option>}
               </select>
             </div>
             <div>

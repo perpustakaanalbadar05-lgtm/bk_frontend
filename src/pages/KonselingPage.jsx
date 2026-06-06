@@ -139,7 +139,7 @@ export default function KonselingPage() {
                   <div className="grid grid-cols-2 gap-3">
                     <select className="input-field text-sm" value={formData.kelas} onChange={e => setFormData({...formData, kelas: e.target.value})}>
                       <option value="" disabled>Pilih Kelas</option>
-                      {classes.map(c => <option key={c} value={c}>{c}</option>)}
+                      {classes?.length ? classes.map(c => <option key={c} value={c}>{c}</option>) : <option value="" disabled>Belum ada kelas di Pengaturan</option>}
                     </select>
                     <select className="input-field text-sm" value={formData.jenis} onChange={e => setFormData({...formData, jenis: e.target.value})}>
                       <option value="Individu">Individu</option>

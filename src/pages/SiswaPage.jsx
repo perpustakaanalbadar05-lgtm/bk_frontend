@@ -70,7 +70,8 @@ function SiswaModal({ isOpen, onClose, initial, onSave, classes }) {
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-2">Kelas</label>
               <select className="input-field" value={form.kelas} onChange={e=>set('kelas',e.target.value)}>
-                {classes?.map(k=><option key={k} value={k}>{k}</option>)}
+                <option value="" disabled>Pilih Kelas</option>
+                {classes?.length ? classes.map(k=><option key={k} value={k}>{k}</option>) : <option value="" disabled>Belum ada kelas di Pengaturan</option>}
               </select>
             </div>
             <div>
@@ -602,8 +603,8 @@ export default function SiswaPage() {
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-dark-200 block mb-2">Kelas</label>
                 <select className="input-field text-sm" value={filterKelas} onChange={e=>{setFilterKelas(e.target.value);setPage(1)}}>
-                  <option>Semua</option>
-                  {classes.map(k=><option key={k}>{k}</option>)}
+                  <option value="Semua">Semua</option>
+                  {classes?.map(k=><option key={k} value={k}>{k}</option>)}
                 </select>
               </div>
             </div>
