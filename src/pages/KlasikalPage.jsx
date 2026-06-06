@@ -9,54 +9,104 @@ import { useData } from '../contexts/DataContext'
 import { useSettings } from '../contexts/SettingsContext'
 
 function JadwalKlasikalModal({ isOpen, onClose, onSave, classes }) {
+  const today = new Date().toISOString().split('T')[0]
   const [form, setForm] = useState({
     class: classes?.[0] || '',
     topic: '',
+    date: today,
     time: '',
-    total: 36
+    total: 36,
+    materi: '',
+    metode: 'Ceramah & Diskusi',
+    catatan: ''
   })
 
   if (!isOpen) return null
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!form.class || !form.topic || !form.time) return toast.error('Harap isi semua kolom jadwal!')
+    if (!form.class || !form.topic || !form.date || !form.time) return toast.error('Harap isi semua kolom!')
     onSave(form)
+  }
+
+  const formatTanggal = (d) => {
+    if (!d) return ''
+    const dt = new Date(d)
+    return dt.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
   }
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
-      <div className="relative w-full max-w-md card-feature p-0 flex flex-col overflow-hidden animate-in">
-        <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/5">
-          <h2 className="font-display font-bold text-white text-lg">Buat Jadwal Klasikal</h2>
+      <div className="relative w-full max-w-lg card-feature p-0 flex flex-col overflow-hidden animate-in max-h-[90vh]">
+        <div className="p-5 border-b border-white/10 flex items-center justify-between bg-white/5 flex-shrink-0">
+          <div>
+            <h2 className="font-display font-bold text-white text-lg">📋 Rekam Sesi Bimbingan Klasikal</h2>
+            <p className="text-dark-300 text-xs mt-0.5">Catat sesi mingguan bimbingan klasikal</p>
+          </div>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-dark-200 hover:text-white"><RiCloseLine /></button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Pilih Kelas</label>
-            <select className="input-field text-sm" value={form.class} onChange={e => setForm({...form, class: e.target.value})}>
-              {classes.map(k => <option key={k} value={k}>{k}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Topik Bimbingan / Layanan</label>
-            <input type="text" placeholder="Cth: Bahaya Bullying & Dampaknya" required className="input-field text-sm" value={form.topic} onChange={e => setForm({...form, topic: e.target.value})} />
-          </div>
+
+        <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto flex-1">
+          {/* Identitas */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Hari & Jam</label>
-              <input type="text" placeholder="Cth: Senin, 08:00" required className="input-field text-sm" value={form.time} onChange={e => setForm({...form, time: e.target.value})} />
+              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1.5">Kelas *</label>
+              <select className="input-field text-sm" value={form.class} onChange={e => setForm({...form, class: e.target.value})}>
+                {classes.map(k => <option key={k} value={k}>{k}</option>)}
+              </select>
             </div>
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Total Siswa</label>
-              <input type="number" min="1" max="50" className="input-field text-sm" value={form.total} onChange={e => setForm({...form, total: parseInt(e.target.value) || 30})} />
+              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1.5">Total Siswa</label>
+              <input type="number" min="1" max="60" className="input-field text-sm" value={form.total} onChange={e => setForm({...form, total: parseInt(e.target.value) || 30})} />
             </div>
           </div>
+
+          {/* Tanggal Pelaksanaan */}
+          <div className="p-3 bg-primary-500/10 border border-primary-500/30 rounded-xl">
+            <label className="block text-xs font-bold uppercase tracking-wider text-primary-300 mb-1.5">📅 Tanggal Pelaksanaan *</label>
+            <input
+              type="date"
+              required
+              className="input-field text-sm w-full"
+              value={form.date}
+              onChange={e => setForm({...form, date: e.target.value})}
+            />
+            {form.date && (
+              <p className="text-primary-400 text-xs mt-1.5 font-medium">{formatTanggal(form.date)}</p>
+            )}
+          </div>
+
+          {/* Waktu */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1.5">Jam Pelaksanaan *</label>
+            <div className="grid grid-cols-2 gap-3">
+              <input type="time" required className="input-field text-sm" value={form.time} onChange={e => setForm({...form, time: e.target.value})} />
+              <select className="input-field text-sm" value={form.metode} onChange={e => setForm({...form, metode: e.target.value})}>
+                {['Ceramah & Diskusi','Permainan','Penugasan','Presentasi','Simulasi','Video & Diskusi'].map(m => <option key={m} value={m}>{m}</option>)}
+              </select>
+            </div>
+            <p className="text-dark-400 text-[10px] mt-1">Kiri: Jam mulai · Kanan: Metode layanan</p>
+          </div>
+
+          {/* Topik & Materi */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1.5">Topik / Judul Layanan *</label>
+            <input type="text" placeholder="Cth: Bahaya Bullying & Dampaknya" required className="input-field text-sm" value={form.topic} onChange={e => setForm({...form, topic: e.target.value})} />
+          </div>
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1.5">Materi Pokok</label>
+            <input type="text" placeholder="Cth: Pengertian, jenis, dan dampak bullying" className="input-field text-sm" value={form.materi} onChange={e => setForm({...form, materi: e.target.value})} />
+          </div>
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1.5">Catatan / Evaluasi</label>
+            <textarea rows={2} placeholder="Catatan pelaksanaan, kendala, atau tindak lanjut..." className="input-field text-sm resize-none" value={form.catatan} onChange={e => setForm({...form, catatan: e.target.value})} />
+          </div>
         </form>
-        <div className="p-4 border-t border-white/10 bg-dark-950/50 flex gap-3">
+
+        <div className="p-4 border-t border-white/10 bg-dark-950/50 flex gap-3 flex-shrink-0">
           <button type="button" onClick={onClose} className="flex-1 btn-secondary text-sm py-2">Batal</button>
-          <button type="button" onClick={handleSubmit} className="flex-1 btn-primary text-sm py-2 gap-2 bg-primary-500"><RiSaveLine /> Buat Jadwal</button>
+          <button type="button" onClick={handleSubmit} className="flex-1 btn-primary text-sm py-2.5 gap-2 bg-primary-500"><RiSaveLine /> Simpan Sesi</button>
         </div>
       </div>
     </div>
@@ -110,13 +160,39 @@ export default function KlasikalPage() {
     try {
       await addSchedule({ ...form, status: 'Terjadwal', attended: 0 })
       setModalOpen(false)
-      toast.success('Jadwal Bimbingan Klasikal baru berhasil dibuat!')
+      toast.success('Sesi bimbingan klasikal berhasil direkam!')
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Gagal membuat jadwal.')
+      toast.error(err?.response?.data?.message || 'Gagal menyimpan sesi.')
     } finally {
       setSaving(false)
     }
   }
+
+  const formatTgl = (d) => {
+    if (!d) return '-'
+    return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+  }
+
+  const getWeekLabel = (d) => {
+    if (!d) return ''
+    const dt = new Date(d)
+    const startOfYear = new Date(dt.getFullYear(), 0, 1)
+    const week = Math.ceil(((dt - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7)
+    return `Minggu ke-${week}`
+  }
+
+  const getBulan = (d) => {
+    if (!d) return ''
+    return new Date(d).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
+  }
+
+  // Group schedules by month
+  const grouped = schedules.reduce((acc, s) => {
+    const key = getBulan(s.date)
+    if (!acc[key]) acc[key] = []
+    acc[key].push(s)
+    return acc
+  }, {})
 
   const filteredStudents = classStudents.filter(s =>
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -146,70 +222,103 @@ export default function KlasikalPage() {
               <p className="text-dark-200 text-sm">Jadwal masuk kelas & manajemen kehadiran peserta didik secara kolektif.</p>
             </div>
             <button onClick={() => setModalOpen(true)} className="btn-primary gap-2 py-2.5 shadow-glow-indigo">
-              <RiPresentationLine className="text-lg" /> Buat Jadwal Baru
+              <RiPresentationLine className="text-lg" /> + Rekam Sesi
             </button>
           </div>
 
           {/* STATS */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { label: 'Total Sesi Bulan Ini', val: `${schedules.length} Kali`, icon: RiHistoryLine, color: 'text-indigo-400' },
-              { label: 'Jam Layanan', val: `${schedules.length * 2} JP`, icon: RiTimeLine, color: 'text-emerald-400' },
-              { label: 'Tingkat Kehadiran', val: '96.5%', icon: RiGroupLine, color: 'text-accent-400' },
+              { label: 'Total Sesi', val: `${schedules.length}`, sub: 'Kali', icon: RiHistoryLine, color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+              { label: 'Jam Layanan', val: `${schedules.length * 2}`, sub: 'JP', icon: RiTimeLine, color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+              { label: 'Sesi Selesai', val: `${schedules.filter(s=>s.status==='Selesai').length}`, sub: 'Selesai', icon: RiCheckLine, color: 'text-teal-400', bg: 'bg-teal-500/10 border-teal-500/20' },
+              { label: 'Rata Kehadiran', val: schedules.length ? Math.round(schedules.filter(s=>s.attended).reduce((a,s)=>(a + (s.attended/s.total)*100),0)/schedules.filter(s=>s.attended).length || 0) + '%' : '—', sub: 'Hadir', icon: RiGroupLine, color: 'text-accent-400', bg: 'bg-accent-500/10 border-accent-500/20' },
             ].map(item => (
-              <div key={item.label} className="card-feature flex items-center gap-4 py-5">
-                <div className="p-3 rounded-xl bg-white/10 text-2xl border border-white/20">{<item.icon className={item.color}/>}</div>
+              <div key={item.label} className={`card-feature flex items-center gap-3 py-4 border ${item.bg}`}>
+                <div className={`p-2.5 rounded-xl bg-white/10 text-xl border border-white/10`}>{<item.icon className={item.color}/>}</div>
                 <div>
-                  <div className="text-2xl font-display font-black text-white">{item.val}</div>
-                  <div className="text-xs text-dark-200">{item.label}</div>
+                  <div className="text-2xl font-display font-black text-white">{item.val} <span className="text-xs font-normal text-dark-300">{item.sub}</span></div>
+                  <div className="text-[10px] text-dark-300 uppercase tracking-wider">{item.label}</div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* CLASS SCHEDULE GRID */}
-          <h3 className="text-white font-display font-bold mt-8 mb-2">Agenda Minggu Ini</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {schedules.map((item) => (
-              <div key={item.id} className="card-feature group border-white/20 hover:border-primary-500/30 relative overflow-hidden">
-                {item.status === 'Berlangsung' && (
-                  <div className="absolute top-0 right-0 bg-emerald-500 text-[9px] font-bold text-white uppercase px-3 py-1 rounded-bl-xl animate-pulse">Live Now</div>
-                )}
-                <div className="flex justify-between items-start mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center font-display font-black text-primary-400 text-lg group-hover:scale-110 transition-transform duration-300">
-                    {item.class.split(' ')[0]}
+          {/* RIWAYAT SESI — Grouped by Month */}
+          {schedules.length === 0 ? (
+            <div className="card-feature text-center py-16 border-dashed border-white/20">
+              <RiCalendarCheckLine className="text-5xl text-dark-500 mx-auto mb-3" />
+              <p className="text-dark-300 font-bold">Belum ada sesi yang direkam</p>
+              <p className="text-dark-400 text-sm mt-1">Klik "Rekam Sesi" untuk mulai mencatat bimbingan mingguan</p>
+            </div>
+          ) : (
+            Object.entries(grouped).reverse().map(([bulan, items]) => (
+              <div key={bulan}>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="px-3 py-1 rounded-full bg-primary-500/20 border border-primary-500/30 text-primary-300 text-xs font-bold uppercase tracking-wider">
+                    📅 {bulan}
                   </div>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
-                    item.status === 'Selesai' ? 'bg-white/10 text-dark-200 border-white/20' :
-                    item.status === 'Berlangsung' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                    'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                  }`}>{item.status}</span>
+                  <div className="flex-1 h-px bg-white/10" />
+                  <span className="text-dark-400 text-xs">{items.length} sesi</span>
                 </div>
-
-                <h4 className="font-bold text-white text-lg group-hover:text-primary-300 transition-colors">{item.class}</h4>
-                <p className="text-dark-300 text-sm mt-1 font-medium line-clamp-1">{item.topic}</p>
-
-                <div className="flex items-center gap-2 text-dark-300 text-xs mt-4 bg-white/5 p-2 rounded-lg">
-                  <RiCalendarCheckLine className="text-primary-400" />
-                  {item.time}
-                </div>
-
-                <div className="mt-5 pt-4 border-t border-white/20 flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-xs text-dark-200">
-                    <RiTeamLine /> {item.status === 'Selesai' ? `${item.attended}/${item.total} Hadir` : `${item.total} Siswa`}
-                  </div>
-                  <button 
-                    onClick={() => handleOpenAttendance(item)}
-                    className={`flex items-center gap-1 text-xs font-bold py-1.5 px-3 rounded-lg transition-all ${
-                      item.status === 'Selesai' ? 'bg-white/10 text-dark-200 hover:bg-dark-700' : 'bg-primary-600 text-white hover:bg-primary-500 shadow-glow-sm'
-                    }`}
-                  >
-                    {item.status === 'Selesai' ? 'Detail' : 'Presensi'} <RiArrowRightLine />
-                  </button>
+                <div className="space-y-3">
+                  {[...items].reverse().map((item) => (
+                    <div key={item.id} className="card-feature group border-white/10 hover:border-primary-500/30 transition-all p-0 overflow-hidden">
+                      <div className="flex items-stretch">
+                        {/* Tanggal sidebar */}
+                        <div className="w-20 flex-shrink-0 bg-primary-500/10 border-r border-primary-500/20 flex flex-col items-center justify-center py-4 px-2">
+                          <span className="text-2xl font-display font-black text-primary-300 leading-none">
+                            {item.date ? new Date(item.date).getDate() : '—'}
+                          </span>
+                          <span className="text-[10px] text-primary-400 font-bold uppercase mt-0.5">
+                            {item.date ? new Date(item.date).toLocaleDateString('id-ID',{month:'short'}) : ''}
+                          </span>
+                          <span className="text-[10px] text-dark-400 mt-0.5">
+                            {item.date ? getWeekLabel(item.date) : ''}
+                          </span>
+                        </div>
+                        {/* Konten */}
+                        <div className="flex-1 p-4">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="font-display font-black text-white text-base">{item.class}</span>
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold border flex-shrink-0 ${
+                                  item.status === 'Selesai' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                                  'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                                }`}>{item.status}</span>
+                              </div>
+                              <p className="text-white/80 text-sm font-medium mt-0.5 line-clamp-1">{item.topic}</p>
+                              {item.materi && <p className="text-dark-400 text-xs mt-0.5 line-clamp-1">Materi: {item.materi}</p>}
+                            </div>
+                            <button
+                              onClick={() => handleOpenAttendance(item)}
+                              className={`flex-shrink-0 flex items-center gap-1 text-xs font-bold py-1.5 px-3 rounded-lg transition-all ${
+                                item.status === 'Selesai' ? 'bg-white/10 text-dark-200 hover:bg-dark-700' : 'bg-primary-600 text-white hover:bg-primary-500 shadow-glow-sm'
+                              }`}
+                            >
+                              {item.status === 'Selesai' ? 'Detail' : 'Presensi'} <RiArrowRightLine />
+                            </button>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-white/10">
+                            <span className="flex items-center gap-1 text-xs text-dark-300">
+                              <RiTimeLine className="text-primary-400" />
+                              {item.time || '—'}
+                            </span>
+                            <span className="flex items-center gap-1 text-xs text-dark-300">
+                              <RiTeamLine className="text-emerald-400" />
+                              {item.status === 'Selesai' ? `${item.attended}/${item.total} Hadir` : `${item.total} Siswa`}
+                            </span>
+                            {item.metode && <span className="text-xs text-dark-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">{item.metode}</span>}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
+            ))
+          )}
         </>
       ) : (
         /* ATTENDANCE ENTRY MODE */

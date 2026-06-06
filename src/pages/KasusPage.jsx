@@ -9,8 +9,9 @@ import toast from 'react-hot-toast'
 import { useData } from '../contexts/DataContext'
 import { useSettings } from '../contexts/SettingsContext'
 import ConfirmDialog from '../components/ConfirmDialog'
+import StudentSelector from '../components/StudentSelector'
 
-function KasusModal({ isOpen, onClose, onSave, classes, defaultVisit = false }) {
+function KasusModal({ isOpen, onClose, onSave, classes, siswa = [], defaultVisit = false }) {
   const [form, setForm] = useState({
     siswa: '', kelas: classes?.[0] || '', kasus: '', poin: 10, status: 'Proses', visit: defaultVisit, konseling: false, panggilan: false
   })
@@ -39,8 +40,18 @@ function KasusModal({ isOpen, onClose, onSave, classes, defaultVisit = false }) 
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Nama Siswa</label>
-            <input type="text" placeholder="Nama lengkap siswa..." required className="input-field" value={form.siswa} onChange={e => setForm({...form, siswa: e.target.value})} />
+            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1.5">Nama Siswa *</label>
+            <StudentSelector
+              siswa={siswa}
+              value={form.siswa}
+              kelas={form.kelas}
+              onSelect={(s) => setForm({...form, siswa: s.nama, kelas: s.kelas || form.kelas})}
+              onChange={(val) => setForm({...form, siswa: val})}
+              placeholder="Cari nama / NIS siswa..."
+            />
+            {form.siswa && !siswa.find(s => s.nama === form.siswa) && (
+              <p className="text-amber-400 text-[10px] mt-1 flex items-center gap-1">⚠️ Nama tidak ditemukan di database siswa.</p>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -167,6 +178,7 @@ export default function KasusPage() {
         onClose={() => setModalOpen(false)}
         onSave={handleSaveKasus}
         classes={classes}
+        siswa={siswa}
         defaultVisit={defaultVisitCheck}
       />
       <ConfirmDialog

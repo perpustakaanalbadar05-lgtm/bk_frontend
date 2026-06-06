@@ -10,6 +10,7 @@ import toast from 'react-hot-toast'
 import { useSettings } from '../contexts/SettingsContext'
 import { useData } from '../contexts/DataContext'
 import ConfirmDialog from '../components/ConfirmDialog'
+import StudentSelector from '../components/StudentSelector'
 
 const STATUS_CLS = {
   'Selesai': 'badge bg-teal-500/20 text-teal-300 border border-teal-500/30',
@@ -28,7 +29,7 @@ export default function KonselingPage() {
   const [showForm, setShowForm] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [saving, setSaving] = useState(false)
-  const { sessions, addSession, deleteSession } = useData()
+  const { sessions, addSession, deleteSession, siswa } = useData()
   const tabs = ['semua', 'terjadwal', 'proses', 'selesai']
 
   const sigCanvas = useRef(null)
@@ -122,21 +123,30 @@ export default function KonselingPage() {
             <form onSubmit={handleSubmit} className="p-6 space-y-5 flex-1">
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-dark-200 block mb-2">Informasi Subjek</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <input
-                    type="text" placeholder="Nama Siswa / Kelompok" required
-                    className="input-field text-sm col-span-2"
-                    value={formData.siswa} onChange={e => setFormData({...formData, siswa: e.target.value})}
+                <div className="space-y-3">
+                  {/* StudentSelector — autocomplete dari database */}
+                  <StudentSelector
+                    siswa={siswa}
+                    value={formData.siswa}
+                    kelas={formData.kelas}
+                    onSelect={(s) => setFormData({...formData, siswa: s.nama, kelas: s.kelas || formData.kelas})}
+                    onChange={(val) => setFormData({...formData, siswa: val})}
+                    placeholder="Cari nama / NIS siswa..."
                   />
-                  <select className="input-field text-sm" value={formData.kelas} onChange={e => setFormData({...formData, kelas: e.target.value})}>
-                    <option value="" disabled>Pilih Kelas</option>
-                    {classes.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                  <select className="input-field text-sm" value={formData.jenis} onChange={e => setFormData({...formData, jenis: e.target.value})}>
-                    <option value="Individu">Individu</option>
-                    <option value="Kelompok">Kelompok</option>
-                    <option value="Klasikal">Klasikal</option>
-                  </select>
+                  {formData.siswa && !siswa.find(s => s.nama === formData.siswa) && (
+                    <p className="text-amber-400 text-[10px] flex items-center gap-1">⚠️ Nama ini tidak ada di database siswa. Pastikan ejaan benar.</p>
+                  )}
+                  <div className="grid grid-cols-2 gap-3">
+                    <select className="input-field text-sm" value={formData.kelas} onChange={e => setFormData({...formData, kelas: e.target.value})}>
+                      <option value="" disabled>Pilih Kelas</option>
+                      {classes.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                    <select className="input-field text-sm" value={formData.jenis} onChange={e => setFormData({...formData, jenis: e.target.value})}>
+                      <option value="Individu">Individu</option>
+                      <option value="Kelompok">Kelompok</option>
+                      <option value="Klasikal">Klasikal</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
