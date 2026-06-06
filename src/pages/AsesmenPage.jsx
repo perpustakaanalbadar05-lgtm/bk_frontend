@@ -29,6 +29,7 @@ import { parseAkpdExcel } from '../utils/akpdParser'
 import { computeAkpdResults } from '../utils/akpdCalculator'
 import { AKPD_MASTER, saveCustomAkpd } from '../data/akpdMaster'
 import { GAYA_BELAJAR_MASTER, KECERDASAN_MASTER, KEPRIBADIAN_MASTER, BAKAT_MINAT_MASTER, saveCustomAssessment } from '../data/assessmentMasters'
+import { generateExcelTemplate } from '../utils/generateExcelTemplate'
 
 const TABS = [
   { id: 'akpd', label: 'Asesmen AKPD' },
@@ -66,6 +67,14 @@ export default function AsesmenPage() {
     sekolah: 'SMP Negeri 2 Pamekasan',
     kelas: '',
     tahun: '2022-2023'
+  })
+
+  // Template Download Modal
+  const [showTemplateModal, setShowTemplateModal] = useState(false)
+  const [templateForm, setTemplateForm] = useState({
+    sekolah: 'Nama Sekolah',
+    kelas: '',
+    tahun: new Date().getFullYear() + '/' + (new Date().getFullYear() + 1)
   })
 
   // Edit Pertanyaan Form
@@ -150,6 +159,22 @@ export default function AsesmenPage() {
     if (confirm('Apakah Anda yakin ingin menghapus hasil Asesmen ini? Semua data yang terisi digital akan terhapus.')) {
       getAssessmentConfig().setResult(null)
       toast.success('Data asesmen berhasil dihapus.')
+    }
+  }
+
+  const handleDownloadTemplate = (e) => {
+    e.preventDefault()
+    if (!templateForm.kelas.trim()) {
+      toast.error('Nama kelas wajib diisi!')
+      return
+    }
+    try {
+      generateExcelTemplate(activeTab, templateForm)
+      toast.success('Template Excel berhasil diunduh! Buka file dan isi data siswa.')
+      setShowTemplateModal(false)
+    } catch (err) {
+      console.error(err)
+      toast.error('Gagal membuat template Excel.')
     }
   }
 
@@ -370,6 +395,17 @@ export default function AsesmenPage() {
             />
             
             <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center">
+              {/* Unduh Template */}
+              <button
+                onClick={() => setShowTemplateModal(true)}
+                disabled={loading}
+                className="btn-primary py-3 px-6 bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 gap-2 font-bold uppercase text-xs disabled:opacity-50"
+              >
+                <RiDownloadLine className="text-base" /> UNDUH TEMPLATE EXCEL
+              </button>
+
+              <div className="text-dark-400 font-display font-bold text-xs uppercase my-1 sm:my-0">→</div>
+
               <button 
                 onClick={() => fileInputRef.current?.click()}
                 disabled={loading}
@@ -387,6 +423,16 @@ export default function AsesmenPage() {
               >
                 <RiAddLine className="text-lg" /> BUAT DIGITAL MANDIRI
               </button>
+            </div>
+            
+            <div className="mt-6 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl text-left max-w-lg">
+              <p className="text-emerald-300 text-[11px] font-bold mb-2 flex items-center gap-1.5"><RiDownloadLine /> ALUR PENGGUNAAN TEMPLATE EXCEL:</p>
+              <ol className="text-dark-300 text-[11px] space-y-1 list-decimal list-inside">
+                <li>Klik <b className="text-white">UNDUH TEMPLATE EXCEL</b> → isi identitas kelas → klik Unduh</li>
+                <li>Buka file Excel yang diunduh, lihat sheet <b className="text-white">PANDUAN</b></li>
+                <li>Isi data siswa di sheet <b className="text-white">ENTRI</b> (0 = tidak, 1 = ya)</li>
+                <li>Simpan file, lalu klik <b className="text-white">UNGGAH EXCEL ACUAN</b></li>
+              </ol>
             </div>
             
             <div className="mt-10 flex items-center gap-2 text-dark-400 text-[11px] border-t border-white/10 pt-6 w-full justify-center">
@@ -677,6 +723,80 @@ export default function AsesmenPage() {
       {/* Modals Rendering */}
       {renderNewSessionModal()}
       {renderStudentDetailModal()}
+
+      {/* Template Download Modal */}
+      {showTemplateModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-dark-950/75 backdrop-blur-sm animate-in">
+          <div className="bg-[rgb(var(--bg-main))] w-full max-w-md rounded-2xl border border-white/15 shadow-2xl flex flex-col relative overflow-hidden p-6">
+            <div className="flex items-center gap-3 mb-1">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl">
+                <RiDownloadLine />
+              </div>
+              <div>
+                <h3 className="text-white font-display font-bold text-xl leading-tight">Unduh Template Excel</h3>
+                <p className="text-dark-300 text-[11px]">Asesmen {getAssessmentConfig().title}</p>
+              </div>
+            </div>
+            <p className="text-dark-300 text-xs mb-6 mt-3 leading-relaxed border-l-2 border-emerald-500/40 pl-3">
+              Template berisi <b className="text-white">{getAssessmentConfig().master.length} butir pernyataan</b> sesuai instrumen standar.
+              Isi identitas kelas berikut agar sudah tertulis di dalam file.
+            </p>
+
+            <form onSubmit={handleDownloadTemplate} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-dark-300 mb-1.5 uppercase tracking-wider">Nama Sekolah</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="SMP Negeri 1 ..."
+                  className="input-field py-2.5 text-sm"
+                  value={templateForm.sekolah}
+                  onChange={e => setTemplateForm({...templateForm, sekolah: e.target.value})}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-dark-300 mb-1.5 uppercase tracking-wider">Kelas *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Contoh: VII G"
+                    className="input-field py-2.5 text-sm"
+                    value={templateForm.kelas}
+                    onChange={e => setTemplateForm({...templateForm, kelas: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-dark-300 mb-1.5 uppercase tracking-wider">Tahun Pelajaran</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="2025/2026"
+                    className="input-field py-2.5 text-sm"
+                    value={templateForm.tahun}
+                    onChange={e => setTemplateForm({...templateForm, tahun: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-[11px] text-dark-300 space-y-1">
+                <p className="text-white font-bold text-xs mb-1">📋 Petunjuk singkat:</p>
+                <p>1. Unduh → buka di Excel/Google Sheets</p>
+                <p>2. Lihat sheet <b className="text-emerald-400">PANDUAN</b> untuk instruksi lengkap</p>
+                <p>3. Isi data siswa di sheet <b className="text-indigo-300">ENTRI</b> (0 = tidak, 1 = ya)</p>
+                <p>4. Unggah kembali via tombol <b className="text-white">UNGGAH EXCEL ACUAN</b></p>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+                <button type="button" onClick={() => setShowTemplateModal(false)} className="btn-secondary py-2 px-4 text-xs">Batal</button>
+                <button type="submit" className="btn-primary py-2 px-5 bg-emerald-600 hover:bg-emerald-500 text-xs font-bold gap-2 border-none">
+                  <RiDownloadLine /> UNDUH TEMPLATE .XLSX
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
