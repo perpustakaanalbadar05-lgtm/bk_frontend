@@ -3,8 +3,8 @@ import {
   RiShieldStarLine, RiUserLine, RiLockLine, RiBellLine,
   RiPaletteLine, RiSaveLine, RiBuildingLine, RiGroupLine,
   RiUploadCloud2Line, RiDeleteBinLine, RiAddLine, RiLoader4Line,
-  RiEyeLine, RiEyeOffLine, RiUserStarLine, RiParentLine,
-  RiGraduationCapLine, RiSunLine, RiMoonLine,
+  RiEyeLine, RiEyeOffLine, RiUserStarLine, RiTeamLine,
+  RiSunLine, RiMoonLine,
   RiEditLine, RiCheckLine, RiCloseLine, RiFileCopyLine
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
@@ -13,9 +13,9 @@ import { useSettings } from '../contexts/SettingsContext'
 import { useRole } from '../contexts/RoleContext'
 import api from '../lib/axios'
 
-const ROLE_ICONS = { kepala_sekolah: RiUserStarLine, orang_tua: RiParentLine, murid: RiGraduationCapLine }
-const ROLE_COLORS = { kepala_sekolah: 'from-blue-500 to-indigo-600', orang_tua: 'from-emerald-500 to-teal-600', murid: 'from-purple-500 to-pink-600' }
-const ROLE_LABELS = { kepala_sekolah: 'Kepala Sekolah', orang_tua: 'Orang Tua', murid: 'Murid' }
+const ROLE_ICONS = { kepala_sekolah: RiUserStarLine, pengawas: RiTeamLine }
+const ROLE_COLORS = { kepala_sekolah: 'from-blue-500 to-indigo-600', pengawas: 'from-emerald-500 to-teal-600' }
+const ROLE_LABELS = { kepala_sekolah: 'Kepala Sekolah', pengawas: 'Pengawas' }
 const ALL_MENUS = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'siswa', label: 'Data Siswa' },
@@ -150,7 +150,7 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-display font-bold text-2xl text-white">Pengaturan</h1>
-        <p className="text-dark-200 text-sm">Kelola profil dan konfigurasi sistem SIMBK</p>
+        <p className="text-dark-200 text-sm">Kelola profil dan konfigurasi sistem Konseli</p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
@@ -364,7 +364,7 @@ export default function SettingsPage() {
                   'Laporan bulanan otomatis',
                   'Notifikasi siswa baru',
                   'Alert siswa bermasalah',
-                  'Update sistem SIMBK',
+                  'Update sistem Konseli',
                 ].map(item => (
                   <label key={item} className="flex items-center justify-between p-4 glass rounded-xl cursor-pointer hover:bg-white/10 transition-colors">
                     <span className="text-dark-200 text-sm">{item}</span>
@@ -384,11 +384,11 @@ export default function SettingsPage() {
             <div className="animate-in space-y-6">
               <div>
                 <h2 className="font-display font-bold text-white text-lg mb-1">Manajemen Akun Portal</h2>
-                <p className="text-dark-200 text-sm">Kelola akun untuk Kepala Sekolah, Orang Tua, dan Murid.</p>
+                <p className="text-dark-200 text-sm">Kelola akun untuk Kepala Sekolah dan Pengawas.</p>
               </div>
 
               {/* Portal Link Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {Object.entries(ROLE_LABELS).map(([role, label]) => {
                   const Icon = ROLE_ICONS[role]
                   return (
@@ -498,12 +498,7 @@ export default function SettingsPage() {
                       <label className="text-dark-300 text-xs font-medium block mb-1">Password *</label>
                       <input type="password" placeholder="Min. 6 karakter" value={akunForm.password} onChange={e => setAkunForm({...akunForm, password: e.target.value})} className="input-field" />
                     </div>
-                    {(akunForm.role === 'orang_tua' || akunForm.role === 'murid') && (
-                      <div>
-                        <label className="text-dark-300 text-xs font-medium block mb-1">Nama Siswa (Tautkan ke data siswa)</label>
-                        <input type="text" placeholder="Nama siswa yang terkait..." value={akunForm.siswa} onChange={e => setAkunForm({...akunForm, siswa: e.target.value})} className="input-field" />
-                      </div>
-                    )}
+
                     <div className="flex gap-2 pt-2">
                       <button onClick={() => setShowAkunModal(false)} className="btn-secondary flex-1 py-2 text-sm">Batal</button>
                       <button onClick={handleCreateAkun} className="btn-primary flex-1 py-2 text-sm"><RiCheckLine /> Buat Akun</button>
@@ -519,7 +514,7 @@ export default function SettingsPage() {
             <div className="animate-in space-y-6">
               <div>
                 <h2 className="font-display font-bold text-white text-lg mb-1">Pengaturan Tampilan</h2>
-                <p className="text-dark-200 text-sm">Sesuaikan tema dan gaya antarmuka SIMBK</p>
+                <p className="text-dark-200 text-sm">Sesuaikan tema dan gaya antarmuka Konseli</p>
               </div>
               <div className="glass rounded-xl p-5 border border-white/10">
                 <div className="flex items-center justify-between">
@@ -538,8 +533,8 @@ export default function SettingsPage() {
               <div className="glass rounded-xl p-4 flex items-center gap-3 border border-white/10">
                 <RiShieldStarLine className="text-primary-400 text-2xl" />
                 <div>
-                  <p className="font-semibold text-white text-sm">SIMBK v1.0.0</p>
-                  <p className="text-dark-200 text-xs">Sistem Informasi Manajemen Bimbingan dan Konseling</p>
+                  <p className="font-semibold text-white text-sm">Konseli v1.0.0</p>
+                  <p className="text-dark-200 text-xs">Konseling, Solusi, Edukasi.</p>
                   <p className="text-dark-300 text-xs">CV. Alifba Media © {new Date().getFullYear()}</p>
                 </div>
               </div>

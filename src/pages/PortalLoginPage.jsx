@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   RiShieldStarLine, RiUserLine, RiLockLine, RiEyeLine, RiEyeOffLine,
-  RiArrowLeftLine, RiUserStarLine, RiParentLine, RiGraduationCapLine
+  RiArrowLeftLine, RiUserStarLine, RiTeamLine
 } from 'react-icons/ri'
 import { useRole } from '../contexts/RoleContext'
 import toast from 'react-hot-toast'
@@ -16,21 +16,13 @@ const ROLE_CONFIG = {
     description: 'Portal monitoring & evaluasi BK sekolah',
     redirect: '/portal/kepala-sekolah',
   },
-  orang_tua: {
-    label: 'Orang Tua / Wali',
-    icon: RiParentLine,
+  pengawas: {
+    label: 'Pengawas',
+    icon: RiTeamLine,
     color: 'from-emerald-600 to-teal-700',
     accent: 'text-emerald-400',
-    description: 'Pantau perkembangan putra-putri Anda',
-    redirect: '/portal/orang-tua',
-  },
-  murid: {
-    label: 'Murid / Siswa',
-    icon: RiGraduationCapLine,
-    color: 'from-purple-600 to-pink-700',
-    accent: 'text-purple-400',
-    description: 'Akses data asesmen dan riwayat konseling',
-    redirect: '/portal/murid',
+    description: 'Portal pemantauan dan supervisi BK',
+    redirect: '/portal/kepala-sekolah',
   },
 }
 
@@ -92,7 +84,7 @@ export default function PortalLoginPage() {
               <div className="w-16 h-16 rounded-2xl bg-primary-500 flex items-center justify-center mx-auto mb-4 shadow-glow-sm">
                 <RiShieldStarLine className="text-white text-3xl" />
               </div>
-              <h1 className="text-2xl font-display font-black text-white">Portal SIMBK</h1>
+              <h1 className="text-2xl font-display font-black text-white">Portal Konseli</h1>
               <p className="text-slate-400 text-sm mt-1">Pilih portal sesuai peran Anda</p>
             </div>
 

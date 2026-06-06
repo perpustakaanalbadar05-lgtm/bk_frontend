@@ -87,8 +87,8 @@ export default function LandingPage() {
               <RiShieldStarLine className="text-white text-lg" />
             </div>
             <div>
-              <span className="font-display font-bold text-white text-lg">SIMBK</span>
-              <span className="hidden sm:block text-[10px] text-dark-200 leading-none">CV. Alifba Media</span>
+              <span className="font-display font-bold text-white text-lg">Konseli</span>
+              <span className="hidden sm:block text-[10px] text-dark-200 leading-none">by Alifba Media.</span>
             </div>
           </Link>
 
@@ -161,16 +161,19 @@ export default function LandingPage() {
               <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
             </div>
 
-            <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-black leading-tight mb-6 animate-in delay-100">
-              <span className="text-white">Sistem Informasi</span>
+            <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-black leading-tight mb-4 animate-in delay-100">
+              <span className="gradient-text">Konseli</span>
               <br />
-              <span className="gradient-text">Manajemen BK</span>
+              <span className="text-primary-300 font-semibold text-2xl sm:text-3xl">by Alifba Media.</span>
               <br />
-              <span className="text-white text-4xl sm:text-5xl md:text-6xl">yang Cerdas & Modern</span>
+              <span className="text-white text-3xl sm:text-4xl md:text-5xl italic font-medium">Konseling, Solusi, Edukasi.</span>
             </h1>
 
-            <p className="text-dark-300 text-lg md:text-xl leading-relaxed mb-10 max-w-2xl mx-auto animate-in delay-200">
-              SIMBK membantu Guru BK mengelola layanan konseling secara otomatis — mulai dari{' '}
+            <p className="text-dark-300 text-lg md:text-xl leading-relaxed mb-4 max-w-2xl mx-auto animate-in delay-200 font-medium">
+              Manajemen BK yang Mudah dan Profesional.
+            </p>
+            <p className="text-dark-300 text-base md:text-lg leading-relaxed mb-10 max-w-2xl mx-auto animate-in delay-200">
+              <span className="text-white font-semibold">Konseli</span> membantu Guru BK mengelola layanan konseling secara otomatis — mulai dari{' '}
               <span className="text-primary-300 font-medium">asesmen siswa</span> hingga{' '}
               <span className="text-accent-300 font-medium">penyusunan program BK</span>{' '}
               secara efisien dan profesional.
@@ -222,7 +225,7 @@ export default function LandingPage() {
               <span className="gradient-text">Guru BK Modern</span>
             </h2>
             <p className="section-subtitle">
-              Dari asesmen hingga laporan, SIMBK mengintegrasikan seluruh alur kerja bimbingan konseling dalam satu platform.
+              Dari asesmen hingga laporan, <span className="text-primary-300 font-semibold">Konseli</span> mengintegrasikan seluruh alur kerja bimbingan konseling dalam satu platform.
             </p>
           </div>
 
@@ -286,7 +289,7 @@ export default function LandingPage() {
               <span className="gradient-text">Sekolah Anda?</span>
             </h2>
             <p className="text-dark-200 text-lg mb-8 max-w-xl mx-auto">
-              Bergabung bersama ratusan sekolah yang telah meningkatkan kualitas layanan bimbingan konseling dengan SIMBK dari CV. Alifba Media.
+              Bergabung bersama ratusan sekolah yang telah meningkatkan kualitas layanan bimbingan konseling dengan <span className="text-primary-300 font-semibold">Konseli</span> dari CV. Alifba Media.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
               <Link to="/login" className="btn-primary text-base px-8 py-4">
@@ -313,8 +316,8 @@ export default function LandingPage() {
               <RiShieldStarLine className="text-white text-sm" />
             </div>
             <div>
-              <span className="font-display font-bold text-white">SIMBK</span>
-              <span className="text-dark-300 text-xs ml-2">by CV. Alifba Media</span>
+              <span className="font-display font-bold text-white">Konseli</span>
+              <span className="text-dark-300 text-xs ml-2">by Alifba Media.</span>
             </div>
           </div>
           <p className="text-dark-300 text-sm">

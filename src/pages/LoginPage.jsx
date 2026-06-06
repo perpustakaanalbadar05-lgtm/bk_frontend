@@ -25,7 +25,7 @@ export default function LoginPage() {
     setLoading(true)
     try {
       await login(form)
-      toast.success('Selamat datang di SIMBK!')
+      toast.success('Selamat datang di Konseli!')
       navigate('/dashboard')
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Email atau password salah.')
@@ -57,10 +57,11 @@ export default function LoginPage() {
           <div className="w-20 h-20 rounded-2xl bg-primary-500 flex items-center justify-center mx-auto mb-8 shadow-glow animate-float">
             <RiShieldStarLine className="text-white text-4xl" />
           </div>
-          <h1 className="font-display font-black text-5xl text-white mb-4">SIMBK</h1>
-          <p className="text-primary-300 font-medium text-lg mb-3">Sistem Informasi Manajemen<br />Bimbingan dan Konseling</p>
+          <h1 className="font-display font-black text-5xl text-white mb-2">Konseli</h1>
+          <p className="text-primary-300 font-semibold text-lg mb-1">by Alifba Media.</p>
+          <p className="text-dark-200 font-medium italic mb-3">Konseling, Solusi, Edukasi.</p>
           <p className="text-dark-300 text-sm leading-relaxed">
-            Platform digital BK yang membantu Guru BK mengelola layanan konseling secara otomatis, efisien, dan profesional.
+            Manajemen BK yang Mudah dan Profesional. Platform digital untuk Guru BK mengelola layanan konseling secara otomatis, efisien, dan terintegrasi.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             {['Asesmen Digital', 'Program BK Otomatis', 'Laporan Instan', 'Data Terintegrasi'].map(tag => (
@@ -80,8 +81,8 @@ export default function LoginPage() {
               <RiShieldStarLine className="text-white text-2xl" />
             </div>
             <div>
-              <div className="font-display font-bold text-white text-2xl">SIMBK</div>
-              <div className="text-dark-200 text-xs">CV. Alifba Media</div>
+              <div className="font-display font-bold text-white text-2xl">Konseli</div>
+              <div className="text-dark-200 text-xs">by Alifba Media.</div>
             </div>
           </div>
 
@@ -146,7 +147,7 @@ export default function LoginPage() {
               ) : (
                 <>
                   <RiSparklingLine />
-                  Masuk ke SIMBK
+                  Masuk ke Konseli
                   <RiArrowRightLine />
                 </>
               )}

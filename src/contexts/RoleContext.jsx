@@ -6,15 +6,13 @@ const RoleContext = createContext()
 const DEFAULT_MENUS = {
   super_admin: ['dashboard', 'siswa', 'klasikal', 'konseling', 'kasus', 'asesmen', 'program-bk', 'laporan', 'settings'],
   kepala_sekolah: ['dashboard', 'siswa', 'konseling', 'kasus', 'laporan'],
-  orang_tua: ['dashboard', 'konseling', 'kasus'],
-  murid: ['dashboard', 'asesmen'],
+  pengawas: ['dashboard', 'siswa', 'klasikal', 'konseling', 'kasus', 'asesmen', 'program-bk', 'laporan'],
 }
 
 const ROLE_LABELS = {
   super_admin: 'Super Admin (Guru BK)',
   kepala_sekolah: 'Kepala Sekolah',
-  orang_tua: 'Orang Tua',
-  murid: 'Murid / Siswa',
+  pengawas: 'Pengawas',
 }
 
 export function RoleProvider({ children }) {

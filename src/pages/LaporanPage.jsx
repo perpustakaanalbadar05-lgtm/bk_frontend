@@ -375,7 +375,7 @@ export default function LaporanPage() {
                 </div>
 
                 {/* FOOTER SUMMARY */}
-                <p className="mt-6 italic text-xs leading-relaxed">Catatan: Laporan ini dicetak secara digital melalui ekosistem aplikasi SIMBK. Data di atas bersifat rahasia dan hanya digunakan untuk evaluasi internal sekolah serta koordinasi bersama orang tua siswa / pengawas dinas.</p>
+                <p className="mt-6 italic text-xs leading-relaxed">Catatan: Laporan ini dicetak secara digital melalui ekosistem aplikasi Konseli by Alifba Media. Data di atas bersifat rahasia dan hanya digunakan untuk evaluasi internal sekolah serta koordinasi bersama orang tua siswa / pengawas dinas.</p>
 
                 {/* SIGNATURE AREA */}
                 <div className="mt-12 grid grid-cols-2 gap-8 text-xs leading-normal">

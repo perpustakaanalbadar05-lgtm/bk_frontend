@@ -65,7 +65,7 @@ export default function PortalKepalaSekolah() {
             </div>
             <div>
               <h1 className="font-display font-black text-slate-800 leading-none">Portal Kepala Sekolah</h1>
-              <p className="text-slate-500 text-xs">{sekolah.nama || 'SIMBK'} · Monitoring BK</p>
+              <p className="text-slate-500 text-xs">{sekolah.nama || 'Konseli'} · Monitoring BK</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
