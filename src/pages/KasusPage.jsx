@@ -175,8 +175,8 @@ export default function KasusPage() {
   }
 
   const filteredKasus = kasus.filter(k =>
-    k.siswa?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    k.kasus?.toLowerCase().includes(searchTerm.toLowerCase())
+    (k.siswa || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (k.kasus || '').toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (
