@@ -55,20 +55,20 @@ export default function LoginPage() {
 
         <div className="relative text-center max-w-md">
           <div className="w-20 h-20 rounded-2xl bg-primary-500 flex items-center justify-center mx-auto mb-8 shadow-glow animate-float">
-            <RiShieldStarLine className="text-white text-4xl" />
+            <RiShieldStarLine className="text-[#ffffff] text-4xl" />
           </div>
-          <h1 className="font-display font-black text-5xl text-white mb-2">Konseli</h1>
+          <h1 className="font-display font-black text-5xl text-[#ffffff] mb-2">Konseli</h1>
           <p className="text-primary-300 font-semibold text-lg mb-1">by Alifba Media.</p>
-          <p className="text-dark-200 font-medium italic mb-3">Konseling, Solusi, Edukasi.</p>
-          <p className="text-dark-300 text-sm leading-relaxed">
+          <p className="text-[#cbd5e1] font-medium italic mb-3">Konseling, Solusi, Edukasi.</p>
+          <p className="text-[#94a3b8] text-sm leading-relaxed">
             Manajemen BK yang Mudah dan Profesional. Platform digital untuk Guru BK mengelola layanan konseling secara otomatis, efisien, dan terintegrasi.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             {['Asesmen Digital', 'Program BK Otomatis', 'Laporan Instan', 'Data Terintegrasi'].map(tag => (
-              <span key={tag} className="badge badge-primary text-xs">{tag}</span>
+              <span key={tag} className="badge bg-primary-500/20 border border-primary-500/50 text-[#ffffff] text-xs">{tag}</span>
             ))}
           </div>
-          <p className="mt-10 text-dark-300 text-sm">CV. Alifba Media — Solusi Digital BK</p>
+          <p className="mt-10 text-[#94a3b8] text-sm">CV. Alifba Media — Solusi Digital BK</p>
         </div>
       </div>
 

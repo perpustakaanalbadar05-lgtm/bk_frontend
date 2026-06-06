@@ -36,6 +36,11 @@ export default function ProgramBKPage() {
   const [generatedActionPlan, setGeneratedActionPlan] = useState([])
   const [selectedRpl, setSelectedRpl] = useState(null); // State for selected RPL Modal
 
+  let tingkatFallback = 'SMP/MTs';
+  if (sekolah?.nama?.toUpperCase().includes('SMA') || sekolah?.nama?.toUpperCase().includes('SMK') || sekolah?.nama?.toUpperCase().includes('MAN ')) {
+    tingkatFallback = 'SMA/SMK/MA';
+  }
+
   const handleGenerate = () => {
     setGenerating(true)
     
@@ -135,11 +140,11 @@ export default function ProgramBKPage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hide-on-print">
         <div>
-          <h1 className="font-display font-bold text-3xl text-white flex items-center gap-2">
+          <h1 className="font-display font-bold text-3xl text-slate-800 dark:text-white flex items-center gap-3">
             Program BK Otomatis
-            <span className="badge-teal bg-emerald-500/10 text-emerald-400 text-xs py-0.5 animate-pulse">Auto Engine v2</span>
+            <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 rounded-full text-xs font-bold border border-emerald-200 dark:border-emerald-500/30 shadow-sm animate-pulse">Auto Engine v2</span>
           </h1>
-          <p className="text-dark-200 text-sm mt-1">Menghasilkan dokumen ACTION PLAN, PROTA, PROSEM, dan RPL otomatis.</p>
+          <p className="text-slate-500 dark:text-dark-300 text-sm mt-1">Menghasilkan dokumen ACTION PLAN, PROTA, PROSEM, dan RPL otomatis.</p>
         </div>
         <div className="flex items-center gap-2">
           <button 
@@ -192,7 +197,7 @@ export default function ProgramBKPage() {
             <div className="card-feature bg-gradient-to-r from-primary-900/50 via-dark-900 to-accent-900/30 p-8 border border-primary-500/20 flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="relative z-10">
                 <h3 className="font-display text-2xl font-bold text-white flex items-center gap-2">Data AKPD {akpdResult.meta.kelas} Siap Digunakan!</h3>
-                <p className="text-dark-300 mt-2 max-w-md text-sm">Sistem mendeteksi {akpdResult.aggregates.filter(x=>x.prioritas!=='RENDAH').length} materi prioritas untuk target <b className="text-white">{akpdResult.meta.tingkat || 'SMP/MTs'}</b>. Hasilkan Action Plan, Prota, Promes, dan 1-Page RPL lengkap.</p>
+                <p className="text-dark-300 mt-2 max-w-md text-sm">Sistem mendeteksi {akpdResult.aggregates.filter(x=>x.prioritas!=='RENDAH').length} materi prioritas untuk target <b className="text-white">{akpdResult.meta.tingkat || tingkatFallback}</b>. Hasilkan Action Plan, Prota, Promes, dan 1-Page RPL lengkap.</p>
               </div>
               <button onClick={() => setActiveTab('generator')} className="btn-primary gap-3 whitespace-nowrap bg-primary-500 font-bold">
                 SUSUN PROGRAM SEKARANG <RiMagicLine />
@@ -288,7 +293,7 @@ export default function ProgramBKPage() {
                       <div className="space-y-4 animate-in text-black">
                         <div className="text-center mb-6">
                           <h4 className="font-bold text-lg underline uppercase leading-tight">MATRIKS RENCANA KEGIATAN (ACTION PLAN)</h4>
-                          <p className="text-xs font-bold mt-1">TINGKAT: {akpdResult?.meta?.tingkat || 'SMP / MTs'} | SEMESTER GANJIL TAHUN AJARAN {akpdResult ? akpdResult.meta.tahun : '2022-2023'}</p>
+                          <p className="text-xs font-bold mt-1">TINGKAT: {akpdResult?.meta?.tingkat || tingkatFallback} | SEMESTER GANJIL TAHUN AJARAN {akpdResult ? akpdResult.meta.tahun : '2022-2023'}</p>
                         </div>
                         
                         <div className="overflow-x-auto border border-black rounded-sm">
@@ -338,7 +343,7 @@ export default function ProgramBKPage() {
                       <div className="space-y-4 animate-in text-black">
                         <div className="text-center mb-6">
                           <h4 className="font-bold text-lg underline uppercase leading-tight">PROGRAM TAHUNAN (PROTA) BIMBINGAN KONSELING</h4>
-                          <p className="text-xs font-bold mt-1">TINGKAT: {akpdResult?.meta?.tingkat || 'SMP / MTs'} | SASARAN: {akpdResult ? `KELAS ${akpdResult.meta.kelas}` : 'SEMUA SISWA'}</p>
+                          <p className="text-xs font-bold mt-1">TINGKAT: {akpdResult?.meta?.tingkat || tingkatFallback} | SASARAN: {akpdResult ? `KELAS ${akpdResult.meta.kelas}` : 'SEMUA SISWA'}</p>
                         </div>
                         <div className="overflow-x-auto border border-black">
                           <table className="w-full text-xs text-left border-collapse">
@@ -375,7 +380,7 @@ export default function ProgramBKPage() {
                       <div className="space-y-4 animate-in text-black">
                         <div className="text-center mb-6">
                           <h4 className="font-bold text-lg underline uppercase leading-tight">PROGRAM SEMESTER GANJIL (PROSEM)</h4>
-                          <p className="text-xs font-bold mt-1">TINGKAT: {akpdResult?.meta?.tingkat || 'SMP / MTs'} | BULAN PELAKSANAAN: JULI - DESEMBER</p>
+                          <p className="text-xs font-bold mt-1">TINGKAT: {akpdResult?.meta?.tingkat || tingkatFallback} | BULAN PELAKSANAAN: JULI - DESEMBER</p>
                         </div>
                         
                         <div className="overflow-x-auto border border-black">

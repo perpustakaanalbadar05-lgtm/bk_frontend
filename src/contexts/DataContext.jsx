@@ -7,18 +7,18 @@ const DataContext = createContext()
 export function DataProvider({ children }) {
   const { isAuthenticated } = useAuth()
 
-  const [siswa, setSiswa]         = useState([])
-  const [sessions, setSessions]   = useState([])
-  const [kasus, setKasus]         = useState([])
-  const [schedules, setSchedules] = useState([])
-  const [dataLoading, setDataLoading] = useState(false)
-
   const getLocal = (key) => {
     try {
       const saved = localStorage.getItem(key)
       return saved ? JSON.parse(saved) : null
     } catch { return null }
   }
+
+  const [siswa, setSiswa]         = useState(() => getLocal('simbk_cache_siswa') || [])
+  const [sessions, setSessions]   = useState(() => getLocal('simbk_cache_sessions') || [])
+  const [kasus, setKasus]         = useState(() => getLocal('simbk_cache_kasus') || [])
+  const [schedules, setSchedules] = useState(() => getLocal('simbk_cache_schedules') || [])
+  const [dataLoading, setDataLoading] = useState(false)
 
   const [akpdResult, setAkpdResult] = useState(() => getLocal('simbk_data_akpd_result'))
   const [gayaBelajarResult, setGayaBelajarResult] = useState(() => getLocal('simbk_data_gaya-belajar_result'))
@@ -29,30 +29,37 @@ export function DataProvider({ children }) {
   // Fetch all data from API when authenticated
   useEffect(() => {
     if (!isAuthenticated) {
-      setSiswa([]); setSessions([]); setKasus([]); setSchedules([])
       return
     }
     setDataLoading(true)
-    Promise.all([
+    Promise.allSettled([
       api.get('/students'),
       api.get('/sessions'),
       api.get('/kasus'),
       api.get('/schedules'),
-    ]).then(([s, ses, k, sc]) => {
-      setSiswa(s.data)
-      setSessions(ses.data)
-      setKasus(k.data)
-      setSchedules(sc.data)
-    }).catch(console.error)
-      .finally(() => setDataLoading(false))
+    ]).then((results) => {
+      const [sRes, sesRes, kRes, scRes] = results;
+      if (sRes.status === 'fulfilled') setSiswa(sRes.value.data);
+      if (sesRes.status === 'fulfilled') setSessions(sesRes.value.data);
+      if (kRes.status === 'fulfilled') setKasus(kRes.value.data);
+      if (scRes.status === 'fulfilled') setSchedules(scRes.value.data);
+    }).finally(() => setDataLoading(false))
   }, [isAuthenticated])
 
-  // Cache siswa ke localStorage agar portal publik bisa akses tanpa auth
   useEffect(() => {
     if (siswa.length > 0) {
       localStorage.setItem('simbk_cache_siswa', JSON.stringify(siswa))
     }
-  }, [siswa])
+    if (sessions.length > 0) {
+      localStorage.setItem('simbk_cache_sessions', JSON.stringify(sessions))
+    }
+    if (kasus.length > 0) {
+      localStorage.setItem('simbk_cache_kasus', JSON.stringify(kasus))
+    }
+    if (schedules.length > 0) {
+      localStorage.setItem('simbk_cache_schedules', JSON.stringify(schedules))
+    }
+  }, [siswa, sessions, kasus, schedules])
 
   // Persist akpdResult only (not API data)
   useEffect(() => {
@@ -94,8 +101,12 @@ export function DataProvider({ children }) {
   }, [])
 
   const bulkDeleteStudents = useCallback(async (ids) => {
-    await Promise.all(ids.map(id => api.delete(`/students/${id}`)))
-    setSiswa(prev => prev.filter(s => !ids.includes(s.id)))
+    const results = await Promise.allSettled(ids.map(id => api.delete(`/students/${id}`)))
+    const successfulIds = ids.filter((_, index) => results[index].status === 'fulfilled')
+    setSiswa(prev => prev.filter(s => !successfulIds.includes(s.id)))
+    if (successfulIds.length !== ids.length) {
+      throw new Error('Beberapa data gagal dihapus')
+    }
   }, [])
 
   // ── SESSION MUTATIONS ──────────────────────────────────────

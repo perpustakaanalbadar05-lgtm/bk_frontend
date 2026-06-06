@@ -315,7 +315,7 @@ export default function KasusPage() {
               </p>
               <div className="p-3 bg-black/40 rounded-xl border border-white/10 shadow-inner mb-4">
                 <div className="text-[10px] text-dark-300 uppercase font-bold tracking-wider mb-1">Terkait Kasus</div>
-                <div className="text-sm text-amber-100 font-medium">{k.kasus}</div>
+                <div className="text-sm text-amber-700 dark:text-amber-100 font-medium">{k.kasus}</div>
               </div>
               <div className="flex gap-2">
                 {k.status !== 'Selesai' && (

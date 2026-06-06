@@ -31,6 +31,7 @@ function SiswaModal({ isOpen, onClose, initial, onSave, classes }) {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!form.nama.trim() || !form.nis.trim()) return toast.error('Nama dan NIS wajib diisi!')
+    if (!form.kelas) return toast.error('Kelas wajib dipilih!')
     onSave(form)
   }
 
@@ -114,15 +115,15 @@ function DetailModal({ siswa, onClose }) {
   const sName = siswa.nama.toLowerCase().trim()
   
   const studentSessions = sessions.filter(s => 
-    s.siswa.toLowerCase().trim() === sName || sName.includes(s.siswa.toLowerCase().trim())
+    s.siswa.toLowerCase().trim() === sName
   )
 
   const studentKasus = kasus.filter(k => 
-    k.siswa.toLowerCase().trim() === sName || sName.includes(k.siswa.toLowerCase().trim())
+    k.siswa.toLowerCase().trim() === sName
   )
 
   const akpdRecord = akpdResult?.records?.find(r => 
-    r.nama.toLowerCase().trim() === sName || sName.includes(r.nama.toLowerCase().trim())
+    r.nama.toLowerCase().trim() === sName
   )
 
   // Badge calculations
@@ -571,7 +572,7 @@ export default function SiswaPage() {
             <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-200" />
             <input
               type="text" placeholder="Cari nama atau NIS..."
-              className="input-field pl-9"
+              className="input-field !pl-10"
               value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
             />
           </div>
