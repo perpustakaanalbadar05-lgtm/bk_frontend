@@ -40,8 +40,8 @@ export function DataProvider({ children }) {
     ]).then((results) => {
       const [sRes, sesRes, kRes, scRes] = results;
       if (sRes.status === 'fulfilled') setSiswa(sRes.value.data);
-      if (sesRes.status === 'fulfilled') setSessions(sesRes.value.data);
-      if (kRes.status === 'fulfilled') setKasus(kRes.value.data);
+      if (sesRes.status === 'fulfilled') setSessions(sesRes.value.data.map(s => ({...s, siswa: s.student?.nama || s.siswa})));
+      if (kRes.status === 'fulfilled') setKasus(kRes.value.data.map(k => ({...k, siswa: k.student?.nama || k.siswa})));
       if (scRes.status === 'fulfilled') setSchedules(scRes.value.data);
     }).finally(() => setDataLoading(false))
   }, [isAuthenticated])
@@ -112,14 +112,16 @@ export function DataProvider({ children }) {
   // ── SESSION MUTATIONS ──────────────────────────────────────
   const addSession = useCallback(async (form) => {
     const res = await api.post('/sessions', form)
-    setSessions(prev => [res.data, ...prev])
-    return res.data
+    const newSession = {...res.data, siswa: form.siswa || res.data.student?.nama};
+    setSessions(prev => [newSession, ...prev])
+    return newSession
   }, [])
 
   const updateSession = useCallback(async (id, form) => {
     const res = await api.put(`/sessions/${id}`, form)
-    setSessions(prev => prev.map(s => s.id === id ? res.data : s))
-    return res.data
+    const updated = {...res.data, siswa: form.siswa || res.data.student?.nama};
+    setSessions(prev => prev.map(s => s.id === id ? updated : s))
+    return updated
   }, [])
 
   const deleteSession = useCallback(async (id) => {
@@ -130,14 +132,16 @@ export function DataProvider({ children }) {
   // ── KASUS MUTATIONS ────────────────────────────────────────
   const addKasus = useCallback(async (form) => {
     const res = await api.post('/kasus', form)
-    setKasus(prev => [res.data, ...prev])
-    return res.data
+    const newKasus = {...res.data, siswa: form.siswa || res.data.student?.nama};
+    setKasus(prev => [newKasus, ...prev])
+    return newKasus
   }, [])
 
   const updateKasus = useCallback(async (id, form) => {
     const res = await api.put(`/kasus/${id}`, form)
-    setKasus(prev => prev.map(k => k.id === id ? res.data : k))
-    return res.data
+    const updated = {...res.data, siswa: form.siswa || res.data.student?.nama};
+    setKasus(prev => prev.map(k => k.id === id ? updated : k))
+    return updated
   }, [])
 
   const deleteKasus = useCallback(async (id) => {

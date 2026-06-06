@@ -35,7 +35,7 @@ export default function KonselingPage() {
   const sigCanvas = useRef(null)
   const { classes } = useSettings()
 
-  const defaultForm = { siswa: '', kelas: classes?.[0] || '', topik: '', jenis: 'Individu', ringkasan: '', durasi: '30' }
+  const defaultForm = { student_id: '', siswa: '', kelas: classes?.[0] || '', topik: '', jenis: 'Individu', ringkasan: '', durasi: '30' }
   const [formData, setFormData] = useState(defaultForm)
   const [skipSignature, setSkipSignature] = useState(false)
 
@@ -51,10 +51,17 @@ export default function KonselingPage() {
     if (!skipSignature && sigCanvas.current?.isEmpty()) {
       return toast.error("Harap masukkan tanda tangan atau centang 'Lewati'.")
     }
+    let sid = formData.student_id
+    if (!sid) {
+      const matched = siswa.find(s => s.nama.toLowerCase() === formData.siswa.toLowerCase())
+      if (matched) sid = matched.id
+      else return toast.error('Siswa tidak valid. Silakan pilih dari dropdown.')
+    }
+
     setSaving(true)
     try {
       const payload = {
-        siswa: formData.siswa,
+        student_id: sid,
         kelas: formData.kelas || classes?.[0] || '',
         tanggal: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
         topik: formData.topik,
@@ -129,7 +136,7 @@ export default function KonselingPage() {
                     siswa={siswa}
                     value={formData.siswa}
                     kelas={formData.kelas}
-                    onSelect={(s) => setFormData({...formData, siswa: s.nama, kelas: s.kelas || formData.kelas})}
+                    onSelect={(s) => setFormData({...formData, siswa: s.nama, student_id: s.id, kelas: s.kelas || formData.kelas})}
                     onChange={(val) => setFormData({...formData, siswa: val})}
                     placeholder="Cari nama / NIS siswa..."
                   />

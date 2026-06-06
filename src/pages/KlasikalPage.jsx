@@ -345,7 +345,7 @@ export default function KlasikalPage() {
                     type="text" placeholder="Cari nama/NIS..." 
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    className="w-full bg-white/10/80 border border-white/20 rounded-xl pl-9 pr-4 py-2 text-xs text-white outline-none focus:border-indigo-500 transition-colors"
+                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-9 pr-4 py-2 text-xs text-white outline-none focus:border-indigo-500 transition-colors"
                   />
                </div>
                <button onClick={handleSaveAttendance} className="btn-primary bg-primary-500 gap-2 py-2 text-sm shadow-glow-teal whitespace-nowrap">

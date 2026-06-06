@@ -115,11 +115,11 @@ function DetailModal({ siswa, onClose }) {
   const sName = siswa.nama.toLowerCase().trim()
   
   const studentSessions = sessions.filter(s => 
-    s.siswa.toLowerCase().trim() === sName
+    s.student_id === siswa.id
   )
 
   const studentKasus = kasus.filter(k => 
-    k.siswa.toLowerCase().trim() === sName
+    k.student_id === siswa.id
   )
 
   const akpdRecord = akpdResult?.records?.find(r => 
@@ -455,7 +455,7 @@ export default function SiswaPage() {
 
   const handleExport = () => {
     const rows = [['NIS','Nama','Kelas','J/K','Status','Konseling','HP','Alamat']]
-    filtered.forEach(s => rows.push([s.nis, s.nama, s.kelas, s.jk, s.status, s.konseling || 0, s.hp || '', s.alamat || '']))
+    filtered.forEach(s => rows.push([s.nis, s.nama, s.kelas, s.jk, s.status, s.counseling_sessions_count || 0, s.hp || '', s.alamat || '']))
     const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n')
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
@@ -556,7 +556,7 @@ export default function SiswaPage() {
           { label: 'Total Siswa', value: siswa.length, color: 'text-primary-400' },
           { label: 'Aktif', value: siswa.filter(s=>s.status==='Aktif').length, color: 'text-teal-400' },
           { label: 'Perlu Perhatian', value: siswa.filter(s=>s.status==='Perhatian').length, color: 'text-amber-400' },
-          { label: 'Konseling Aktif', value: siswa.reduce((a,s)=>a+s.konseling,0), color: 'text-accent-400' },
+          { label: 'Konseling Aktif', value: siswa.reduce((a,s)=>a+(s.counseling_sessions_count || 0),0), color: 'text-accent-400' },
         ].map(({ label, value, color }) => (
           <div key={label} className="card-feature text-center py-5">
             <div className={`font-display font-black text-3xl ${color} mb-1 drop-shadow-md`}>{value}</div>
@@ -662,7 +662,7 @@ export default function SiswaPage() {
                   <td className="table-cell hidden sm:table-cell">{s.jk === 'L' ? '👦 L' : '👧 P'}</td>
                   <td className="table-cell"><span className={STATUS_CLS[s.status]}>{s.status}</span></td>
                   <td className="table-cell hidden md:table-cell">
-                    <span className="font-semibold text-white">{s.konseling}</span>
+                    <span className="font-semibold text-white">{s.counseling_sessions_count || 0}</span>
                     <span className="text-dark-300 ml-1">sesi</span>
                   </td>
                   <td className="table-cell">

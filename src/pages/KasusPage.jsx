@@ -13,7 +13,7 @@ import StudentSelector from '../components/StudentSelector'
 
 function KasusModal({ isOpen, onClose, onSave, classes, siswa = [], defaultVisit = false }) {
   const [form, setForm] = useState({
-    siswa: '', kelas: classes?.[0] || '', kasus: '', poin: 10, status: 'Proses', visit: defaultVisit, konseling: false, panggilan: false
+    student_id: '', siswa: '', kelas: classes?.[0] || '', kasus: '', poin: 10, status: 'Proses', visit: defaultVisit, konseling: false, panggilan: false
   })
   const [saving, setSaving] = useState(false)
 
@@ -22,9 +22,16 @@ function KasusModal({ isOpen, onClose, onSave, classes, siswa = [], defaultVisit
   const handleSubmit = async (e) => {
     e?.preventDefault()
     if (!form.siswa || !form.kasus) return toast.error('Nama siswa dan deskripsi kasus wajib diisi!')
+    let sid = form.student_id
+    if (!sid) {
+      const matched = siswa.find(s => s.nama.toLowerCase() === form.siswa.toLowerCase())
+      if (matched) sid = matched.id
+      else return toast.error('Siswa tidak valid. Silakan pilih dari dropdown.')
+    }
+
     setSaving(true)
     try {
-      await onSave(form)
+      await onSave({ ...form, student_id: sid })
     } finally {
       setSaving(false)
     }
@@ -45,7 +52,7 @@ function KasusModal({ isOpen, onClose, onSave, classes, siswa = [], defaultVisit
               siswa={siswa}
               value={form.siswa}
               kelas={form.kelas}
-              onSelect={(s) => setForm({...form, siswa: s.nama, kelas: s.kelas || form.kelas})}
+              onSelect={(s) => setForm({...form, siswa: s.nama, student_id: s.id, kelas: s.kelas || form.kelas})}
               onChange={(val) => setForm({...form, siswa: val})}
               placeholder="Cari nama / NIS siswa..."
             />
