@@ -5,6 +5,8 @@ import {
   RiShieldStarLine, RiUser3Line, RiMoonLine, RiSunLine, RiCloseLine
 } from 'react-icons/ri'
 import { useAuth } from '../contexts/AuthContext'
+import { useEffect } from 'react'
+import api from '../lib/axios'
 
 const PAGE_TITLES = {
   '/dashboard': { title: 'Dashboard', sub: 'Ringkasan layanan BK hari ini' },
@@ -34,11 +36,22 @@ export default function Topbar({ onMenuClick }) {
 
   // Notifikasi State
   const [notifOpen, setNotifOpen] = useState(false)
-  const [notifications, setNotifications] = useState([
-    { id: 1, title: 'Asesmen AKPD', text: '5 siswa belum mengisi asesmen AKPD semester ini.', time: '1 jam lalu', read: false, type: 'warning' },
-    { id: 2, title: 'Laporan Otomatis', text: 'Laporan rekapitulasi bulan berjalan siap diunduh.', time: '2 jam lalu', read: false, type: 'info' },
-    { id: 3, title: 'Peringatan Kasus', text: 'Terdapat 2 kasus baru yang perlu tindak lanjut (Home Visit).', time: '1 hari lalu', read: true, type: 'alert' },
-  ])
+  const [notifications, setNotifications] = useState([])
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await api.get('/notifications')
+        setNotifications(res.data)
+      } catch (err) {
+        console.error('Failed to fetch notifications', err)
+      }
+    }
+
+    if (user?.role === 'guru_bk') {
+      fetchNotifications()
+    }
+  }, [user])
 
   const unreadCount = notifications.filter(n => !n.read).length
 

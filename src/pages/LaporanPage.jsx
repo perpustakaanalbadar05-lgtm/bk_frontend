@@ -6,6 +6,7 @@ import {
 } from 'react-icons/ri'
 import { useData } from '../contexts/DataContext'
 import { useSettings } from '../contexts/SettingsContext'
+import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
 
 const ARCHIVED_REPORTS = [
@@ -22,6 +23,7 @@ const TIPE_CLS = {
 }
 
 export default function LaporanPage() {
+  const { user } = useAuth()
   const { siswa, sessions, kasus } = useData()
   const { sekolah } = useSettings()
   const [isGenerating, setIsGenerating] = useState(false)
@@ -396,8 +398,8 @@ export default function LaporanPage() {
                       <p className="font-bold">Guru Pembimbing Bimbingan Konseling</p>
                     </div>
                     <div className="text-center">
-                      <p className="font-bold underline">Guru Pembimbing BK</p>
-                      <p className="font-mono">NIP. .........................................</p>
+                      <p className="font-bold underline">{user?.name || 'Guru Pembimbing BK'}</p>
+                      <p className="font-mono">{user?.nip ? `NIP. ${user.nip}` : 'NIP. .........................................'}</p>
                     </div>
                   </div>
                 </div>

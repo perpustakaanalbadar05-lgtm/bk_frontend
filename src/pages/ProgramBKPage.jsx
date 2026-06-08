@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useData } from '../contexts/DataContext'
 import { useSettings } from '../contexts/SettingsContext'
+import { useAuth } from '../contexts/AuthContext'
 
 // Fallbacks
 const FALLBACK_PROTA = [
@@ -23,6 +24,7 @@ const PROSEM_BULAN_GANJIL = ['Juli', 'Agustus', 'September', 'Oktober', 'Novembe
 
 export default function ProgramBKPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { akpdResult } = useData();
   const { sekolah } = useSettings();
   
@@ -125,8 +127,8 @@ export default function ProgramBKPage() {
             <p className="font-bold text-white print:text-black">Guru Bimbingan Konseling</p>
           </div>
           <div>
-            <p className="font-bold text-white print:text-black underline">Guru Pembimbing BK</p>
-            <p className="text-xs text-dark-400 font-mono print:text-black">NIP. ..................................................</p>
+            <p className="font-bold text-white print:text-black underline">{user?.name || 'Guru Pembimbing BK'}</p>
+            <p className="text-xs text-dark-400 font-mono print:text-black">{user?.nip ? `NIP. ${user.nip}` : 'NIP. ..................................................'}</p>
           </div>
         </div>
       </div>

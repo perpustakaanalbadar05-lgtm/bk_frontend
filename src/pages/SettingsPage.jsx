@@ -95,8 +95,31 @@ export default function SettingsPage() {
     }
   }
 
-  const handleSaveSekolah = () => {
-    toast.success('Profil sekolah berhasil disimpan!')
+  const saveSettingsToBackend = async (sekolahData, classesData) => {
+    try {
+      const res = await api.put('/user', {
+        settings: {
+          sekolah: sekolahData,
+          classes: classesData
+        }
+      })
+      updateUser(res.data.user)
+    } catch (err) {
+      console.error('Gagal menyimpan pengaturan ke server', err)
+      throw err
+    }
+  }
+
+  const handleSaveSekolah = async () => {
+    setSaving(true)
+    try {
+      await saveSettingsToBackend(sekolah, classes)
+      toast.success('Profil sekolah & kop surat berhasil disimpan!')
+    } catch (e) {
+      toast.error('Terjadi kesalahan saat menyimpan pengaturan.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleChangePassword = async () => {
@@ -121,17 +144,29 @@ export default function SettingsPage() {
     }
   }
 
-  const handleAddClass = () => {
+  const handleAddClass = async () => {
     if (newClass.trim() && !classes.includes(newClass.trim())) {
-      setClasses([...classes, newClass.trim()])
+      const newClasses = [...classes, newClass.trim()]
+      setClasses(newClasses)
       setNewClass('')
-      toast.success('Kelas berhasil ditambahkan!')
+      try {
+        await saveSettingsToBackend(sekolah, newClasses)
+        toast.success('Kelas berhasil ditambahkan!')
+      } catch (e) {
+        toast.error('Gagal menyimpan kelas ke server.')
+      }
     }
   }
 
-  const removeClass = (c) => {
-    setClasses(classes.filter(x => x !== c))
-    toast.success('Kelas dihapus!')
+  const removeClass = async (c) => {
+    const newClasses = classes.filter(x => x !== c)
+    setClasses(newClasses)
+    try {
+      await saveSettingsToBackend(sekolah, newClasses)
+      toast.success('Kelas dihapus!')
+    } catch (e) {
+      toast.error('Gagal menghapus kelas di server.')
+    }
   }
 
   const handleLogoUpload = (e, field) => {
