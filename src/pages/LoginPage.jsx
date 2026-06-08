@@ -24,9 +24,13 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     try {
-      await login(form)
+      const user = await login(form)
       toast.success('Selamat datang di Konseli!')
-      navigate('/dashboard')
+      if (user.role === 'super_admin') {
+        navigate('/super-admin/dashboard')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Email atau password salah.')
     } finally {

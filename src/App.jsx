@@ -23,6 +23,10 @@ import { DataProvider } from './contexts/DataContext'
 import { RoleProvider } from './contexts/RoleContext'
 import ProtectedRoute from './components/ProtectedRoute'
 
+import SuperAdminLayout from './layouts/SuperAdminLayout'
+import SuperAdminDashboard from './pages/SuperAdminDashboard'
+import ManageGuruBkPage from './pages/ManageGuruBkPage'
+
 function App() {
   return (
     <AuthProvider>
@@ -56,6 +60,20 @@ function App() {
                 <Route path="/portal/kepala-sekolah" element={<PortalKepalaSekolah />} />
                 <Route path="/portal/orang-tua" element={<PortalOrangTua />} />
                 <Route path="/portal/murid" element={<PortalMurid />} />
+                
+                {/* Super Admin Routes */}
+                <Route
+                  path="/super-admin"
+                  element={
+                    <ProtectedRoute>
+                      <SuperAdminLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route path="dashboard" element={<SuperAdminDashboard />} />
+                  <Route path="guru-bk" element={<ManageGuruBkPage />} />
+                </Route>
+
                 {/* Admin dashboard */}
                 <Route
                   path="/dashboard"

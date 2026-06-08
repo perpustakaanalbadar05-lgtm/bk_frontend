@@ -1,11 +1,17 @@
 import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, Navigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import Sidebar from '../components/Sidebar'
 import Topbar from '../components/Topbar'
 
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const { user } = useAuth()
+
+  if (!user || user.role !== 'guru_bk') {
+    return <Navigate to="/super-admin/dashboard" replace />
+  }
 
   return (
     <div className="min-h-screen flex">
