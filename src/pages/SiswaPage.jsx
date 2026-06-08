@@ -364,7 +364,7 @@ function ConfirmDelete({ siswa, onClose, onConfirm }) {
 
 export default function SiswaPage() {
   const { classes } = useSettings()
-  const { siswa, addStudent, updateStudent, deleteStudent, bulkDeleteStudents, dataLoading } = useData()
+  const { siswa, addStudent, bulkAddStudents, updateStudent, deleteStudent, bulkDeleteStudents, dataLoading } = useData()
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState('Semua')
   const [filterKelas, setFilterKelas] = useState('Semua')
@@ -408,7 +408,7 @@ export default function SiswaPage() {
 
   const filtered = useMemo(() => {
     return siswa.filter(s => {
-      const matchSearch = s.nama.toLowerCase().includes(search.toLowerCase()) || s.nis.includes(search)
+      const matchSearch = (s.nama || '').toLowerCase().includes(search.toLowerCase()) || (s.nis || '').includes(search)
       const matchStatus = filterStatus === 'Semua' || s.status === filterStatus
       const matchKelas = filterKelas === 'Semua' || s.kelas === filterKelas
       return matchSearch && matchStatus && matchKelas
@@ -513,27 +513,31 @@ export default function SiswaPage() {
                     let baseId = Math.max(0, ...siswa.map(s => s.id)) + 1
 
                     for (let i = 1; i < lines.length; i++) {
-                      const cols = lines[i].split(',').map(c => c.trim())
+                      const cols = lines[i].split(',').map(c => c.trim().replace(/^"|"$/g, ''))
                       if (cols.length < 2) continue // skip incomplete lines
 
                       // Map standard CSV columns: NIS, Nama, Kelas, JK, Status, Konseling (some can be optional)
                       // Assumes layout: NIS,Nama,Kelas,J/K,Status,Konseling
                       newStudents.push({
-                        id: baseId++,
                         nis: cols[0] || `IMPORT${Date.now()}${i}`,
                         nama: cols[1] || 'Tanpa Nama',
                         kelas: cols[2] || classes[0] || 'Umum',
                         jk: cols[3] ? (cols[3].toUpperCase().includes('P') ? 'P' : 'L') : 'L',
                         status: cols[4] || 'Aktif',
-                        konseling: parseInt(cols[5]) || 0,
                         hp: '',
                         alamat: ''
                       })
                     }
 
                     if (newStudents.length > 0) {
-                      setSiswa(prev => [...newStudents, ...prev])
-                      toast.success(`${newStudents.length} data siswa berhasil diimport!`)
+                      setSaving(true)
+                      bulkAddStudents(newStudents)
+                        .then(() => toast.success(`${newStudents.length} data siswa berhasil diimport!`))
+                        .catch(err => {
+                           console.error(err);
+                           toast.error(err?.response?.data?.message || 'Gagal menyimpan data ke server.')
+                        })
+                        .finally(() => setSaving(false))
                     }
                   } catch (err) {
                     toast.error('Gagal membaca file CSV.')

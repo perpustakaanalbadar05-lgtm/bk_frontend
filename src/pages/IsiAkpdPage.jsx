@@ -61,7 +61,7 @@ export default function IsiAkpdPage() {
   const inputRef = useRef(null);
 
   const filteredSiswa = siswaCache
-    .filter(s => !namaQuery || s.nama?.toLowerCase().includes(namaQuery.toLowerCase()) || s.nis?.includes(namaQuery))
+    .filter(s => !namaQuery || (s.nama || '').toLowerCase().includes(namaQuery.toLowerCase()) || (s.nis || '').includes(namaQuery))
     .slice(0, 10);
 
   const handleSelectSiswa = (s) => {

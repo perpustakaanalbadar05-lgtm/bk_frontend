@@ -196,8 +196,8 @@ export default function KlasikalPage() {
   }, {})
 
   const filteredStudents = classStudents.filter(s =>
-    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.nis.includes(searchTerm)
+    (s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (s.nis || '').includes(searchTerm)
   )
 
   return (

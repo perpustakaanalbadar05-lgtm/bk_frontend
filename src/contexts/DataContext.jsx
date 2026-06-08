@@ -89,6 +89,13 @@ export function DataProvider({ children }) {
     return res.data
   }, [])
 
+  const bulkAddStudents = useCallback(async (studentsArr) => {
+    await api.post('/students/bulk', { students: studentsArr })
+    // Fetch fresh data to get IDs of newly inserted rows
+    const res = await api.get('/students')
+    setSiswa(res.data)
+  }, [])
+
   const updateStudent = useCallback(async (id, form) => {
     const res = await api.put(`/students/${id}`, form)
     setSiswa(prev => prev.map(s => s.id === id ? res.data : s))
@@ -177,7 +184,7 @@ export function DataProvider({ children }) {
       kepribadianResult, setKepribadianResult,
       bakatMinatResult, setBakatMinatResult,
       // Student
-      addStudent, updateStudent, deleteStudent, bulkDeleteStudents,
+      addStudent, bulkAddStudents, updateStudent, deleteStudent, bulkDeleteStudents,
       // Session
       addSession, updateSession, deleteSession,
       // Kasus
