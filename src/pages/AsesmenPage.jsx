@@ -26,10 +26,12 @@ import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tool
 import toast from 'react-hot-toast'
 import { useData } from '../contexts/DataContext'
 import { useSettings } from '../contexts/SettingsContext'
+import { useAuth } from '../contexts/AuthContext'
+import api from '../lib/axios'
 import { parseAkpdExcel } from '../utils/akpdParser'
 import { computeAkpdResults } from '../utils/akpdCalculator'
-import { AKPD_MASTER, AKPD_MASTER_SMA, saveCustomAkpd } from '../data/akpdMaster'
-import { GAYA_BELAJAR_MASTER, KECERDASAN_MASTER, KEPRIBADIAN_MASTER, BAKAT_MINAT_MASTER, saveCustomAssessment } from '../data/assessmentMasters'
+import { AKPD_MASTER, AKPD_MASTER_SMA } from '../data/akpdMaster'
+import { GAYA_BELAJAR_MASTER, KECERDASAN_MASTER, KEPRIBADIAN_MASTER, BAKAT_MINAT_MASTER } from '../data/assessmentMasters'
 import { generateExcelTemplate } from '../utils/generateExcelTemplate'
 
 const TABS = [
@@ -56,9 +58,34 @@ export default function AsesmenPage() {
     bakatMinatResult, setBakatMinatResult
   } = useData()
   const { sekolah, classes } = useSettings()
+  const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [viewMode, setViewMode] = useState('profil-kelas') // profil-kelas, daftar-siswa
   const fileInputRef = useRef(null)
+  
+  // Custom masters from backend
+  const [customMasters, setCustomMasters] = useState({})
+  const [fetchingMasters, setFetchingMasters] = useState(true)
+
+  useEffect(() => {
+    const fetchMasters = async () => {
+      try {
+        const masters = {}
+        for (const tab of TABS) {
+          const res = await api.get(`/assessment-templates/${tab.id}`)
+          if (res.data?.data) {
+            masters[tab.id] = res.data.data
+          }
+        }
+        setCustomMasters(masters)
+      } catch (err) {
+        console.error('Failed to fetch custom templates', err)
+      } finally {
+        setFetchingMasters(false)
+      }
+    }
+    fetchMasters()
+  }, [])
   
   // Modals state
   const [showNewSessionModal, setShowNewSessionModal] = useState(false)
@@ -86,15 +113,22 @@ export default function AsesmenPage() {
   const [editingText, setEditingText] = useState('')
 
   const getAssessmentConfig = (tabId = activeTab) => {
+    let master = []
+    let result = null
+    let setResult = null
+    let storageKey = ''
+    let title = ''
+
     switch (tabId) {
-      case 'gaya-belajar': return { result: gayaBelajarResult, setResult: setGayaBelajarResult, master: GAYA_BELAJAR_MASTER, type: tabId, storageKey: 'simbk_data_gaya-belajar_result', title: 'Gaya Belajar' };
-      case 'kecerdasan': return { result: kecerdasanResult, setResult: setKecerdasanResult, master: KECERDASAN_MASTER, type: tabId, storageKey: 'simbk_data_kecerdasan_result', title: 'Kecerdasan Majemuk' };
-      case 'kepribadian': return { result: kepribadianResult, setResult: setKepribadianResult, master: KEPRIBADIAN_MASTER, type: tabId, storageKey: 'simbk_data_kepribadian_result', title: 'Kepribadian' };
-      case 'bakat-minat': return { result: bakatMinatResult, setResult: setBakatMinatResult, master: BAKAT_MINAT_MASTER, type: tabId, storageKey: 'simbk_data_bakat-minat_result', title: 'Bakat & Karier' };
+      case 'gaya-belajar': result = gayaBelajarResult; setResult = setGayaBelajarResult; master = customMasters[tabId] || GAYA_BELAJAR_MASTER; storageKey = 'simbk_data_gaya-belajar_result'; title = 'Gaya Belajar'; break;
+      case 'kecerdasan': result = kecerdasanResult; setResult = setKecerdasanResult; master = customMasters[tabId] || KECERDASAN_MASTER; storageKey = 'simbk_data_kecerdasan_result'; title = 'Kecerdasan Majemuk'; break;
+      case 'kepribadian': result = kepribadianResult; setResult = setKepribadianResult; master = customMasters[tabId] || KEPRIBADIAN_MASTER; storageKey = 'simbk_data_kepribadian_result'; title = 'Kepribadian'; break;
+      case 'bakat-minat': result = bakatMinatResult; setResult = setBakatMinatResult; master = customMasters[tabId] || BAKAT_MINAT_MASTER; storageKey = 'simbk_data_bakat-minat_result'; title = 'Bakat & Karier'; break;
       default: 
         const isSma = (akpdResult?.meta?.tingkat === 'SMA/SMK/MA') || sessionForm.tingkat === 'SMA/SMK/MA' || templateForm.tingkat === 'SMA/SMK/MA';
-        return { result: akpdResult, setResult: setAkpdResult, master: isSma ? AKPD_MASTER_SMA : AKPD_MASTER, type: 'akpd', storageKey: 'simbk_data_akpd_result', title: 'Asesmen AKPD' };
+        result = akpdResult; setResult = setAkpdResult; master = customMasters['akpd'] || (isSma ? AKPD_MASTER_SMA : AKPD_MASTER); storageKey = 'simbk_data_akpd_result'; title = 'Asesmen AKPD'; break;
     }
+    return { result, setResult, master, type: tabId, storageKey, title }
   }
 
   // Listen to localStorage changes (e.g., submissions from new tabs)
@@ -185,25 +219,94 @@ export default function AsesmenPage() {
     }
   }
 
-  const handleSaveEditPernyataan = (no) => {
+  const handleSaveEditPernyataan = async (no) => {
     const conf = getAssessmentConfig();
-    const idx = no - 1;
-    if (idx >= 0 && idx < conf.master.length) {
+    const idx = conf.master.findIndex(m => m.no === no);
+    if (idx !== -1) {
       const newMaster = JSON.parse(JSON.stringify(conf.master));
       newMaster[idx].pernyataan = editingText;
-      if (conf.type === 'akpd') {
-        saveCustomAkpd(newMaster);
-      } else {
-        saveCustomAssessment(conf.type, newMaster);
-      }
       
-      if (conf.result) {
-        const updatedResult = computeAkpdResults(conf.result.meta, conf.result.students, newMaster);
-        conf.setResult(updatedResult);
+      try {
+        await api.post(`/assessment-templates/${conf.type}`, { master_data: newMaster });
+        setCustomMasters(prev => ({ ...prev, [conf.type]: newMaster }));
+        
+        if (conf.result) {
+          const updatedResult = computeAkpdResults(conf.result.meta, conf.result.students, newMaster);
+          conf.setResult(updatedResult);
+        }
         toast.success('Pernyataan instrumen berhasil diperbarui!');
+      } catch (err) {
+        toast.error('Gagal menyimpan perubahan ke server.');
+        console.error(err);
       }
     }
     setEditingItemNo(null);
+  }
+
+  const handleDeletePernyataan = async (no) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus butir instrumen ini?')) return;
+    
+    const conf = getAssessmentConfig();
+    const newMaster = conf.master.filter(m => m.no !== no);
+    // Re-index
+    newMaster.forEach((m, i) => m.no = i + 1);
+    
+    try {
+      await api.post(`/assessment-templates/${conf.type}`, { master_data: newMaster });
+      setCustomMasters(prev => ({ ...prev, [conf.type]: newMaster }));
+      
+      if (conf.result) {
+        // Also remove responses from students for the deleted index
+        const idx = conf.master.findIndex(m => m.no === no);
+        const newStudents = JSON.parse(JSON.stringify(conf.result.students));
+        newStudents.forEach(std => {
+          if (std.responses && std.responses.length > idx) {
+            std.responses.splice(idx, 1);
+          }
+        });
+        const updatedResult = computeAkpdResults(conf.result.meta, newStudents, newMaster);
+        conf.setResult(updatedResult);
+      }
+      toast.success('Butir instrumen berhasil dihapus!');
+    } catch (err) {
+      toast.error('Gagal menghapus butir instrumen.');
+      console.error(err);
+    }
+  }
+
+  const handleAddPernyataan = async () => {
+    const conf = getAssessmentConfig();
+    const newMaster = JSON.parse(JSON.stringify(conf.master));
+    const nextNo = newMaster.length + 1;
+    newMaster.push({
+      no: nextNo,
+      pernyataan: 'Pernyataan Baru (Silakan Edit)',
+      bidangKode: 'P',
+      bidang: 'Pribadi',
+      materi: 'Materi Baru',
+      tujuanLayanan: '-',
+      komponenLayanan: 'Dasar',
+      strategiLayanan: 'Bimbingan Klasikal'
+    });
+    
+    try {
+      await api.post(`/assessment-templates/${conf.type}`, { master_data: newMaster });
+      setCustomMasters(prev => ({ ...prev, [conf.type]: newMaster }));
+      
+      if (conf.result) {
+        // Add empty response for all students
+        const newStudents = JSON.parse(JSON.stringify(conf.result.students));
+        newStudents.forEach(std => {
+          if (std.responses) std.responses.push(0);
+        });
+        const updatedResult = computeAkpdResults(conf.result.meta, newStudents, newMaster);
+        conf.setResult(updatedResult);
+      }
+      toast.success('Butir instrumen baru berhasil ditambahkan!');
+    } catch (err) {
+      toast.error('Gagal menambahkan butir instrumen.');
+      console.error(err);
+    }
   }
 
   // Sub-render for Detailed Student Modal
@@ -403,6 +506,10 @@ export default function AsesmenPage() {
     const result = conf.result;
 
     // If no uploaded data, show upload & create options
+    if (fetchingMasters) {
+      return <div className="py-20 text-center text-dark-300 animate-pulse">Memuat template instrumen...</div>
+    }
+
     if (!result) {
       return (
         <div className="max-w-3xl mx-auto text-center py-12 animate-in">
@@ -497,10 +604,10 @@ export default function AsesmenPage() {
           </div>
           <div className="flex w-full md:w-auto gap-2 bg-dark-900 p-1.5 rounded-xl border border-white/10">
             <code className="text-primary-300 text-xs font-mono flex items-center px-3 select-all truncate max-w-[200px] sm:max-w-xs">
-              {window.location.origin}/isi-asesmen?type={conf.type}
+              {window.location.origin}/isi-asesmen?type={conf.type}&bk_id={user?.id}
             </code>
             <button onClick={() => {
-              const link = `${window.location.origin}/isi-asesmen?type=${conf.type}`;
+              const link = `${window.location.origin}/isi-asesmen?type=${conf.type}&bk_id=${user?.id}`;
               navigator.clipboard.writeText(link).then(() => {
                 toast.success("Tautan asesmen berhasil disalin!");
               }).catch(() => {
@@ -648,6 +755,13 @@ export default function AsesmenPage() {
                               >
                                 <RiEditLine />
                               </button>
+                              <button 
+                                onClick={() => handleDeletePernyataan(item.no)}
+                                className="opacity-0 group-hover:opacity-100 p-1 bg-red-500/10 hover:bg-red-500/20 rounded text-red-400 hover:text-red-300 transition-all flex-shrink-0 ml-1"
+                                title="Hapus Pertanyaan"
+                              >
+                                <RiCloseLine />
+                              </button>
                             </div>
                             <div className="text-[10px] text-dark-400 mt-0.5">Materi: {item.materi}</div>
                           </>
@@ -669,6 +783,11 @@ export default function AsesmenPage() {
                   ))}
                 </tbody>
               </table>
+              <div className="p-4 bg-dark-950 border-t border-white/10 flex justify-center">
+                <button onClick={handleAddPernyataan} className="btn-secondary py-2 px-6 text-xs gap-2 hover:bg-primary-500/20 hover:text-primary-300 hover:border-primary-500/30">
+                  <RiAddLine /> Tambah Butir Instrumen Baru
+                </button>
+              </div>
             </div>
           </div>
         ) : (

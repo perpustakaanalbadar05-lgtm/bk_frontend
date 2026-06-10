@@ -8,11 +8,36 @@ import toast from 'react-hot-toast';
 import { AKPD_MASTER, AKPD_MASTER_SMA } from '../data/akpdMaster';
 import { GAYA_BELAJAR_MASTER, KECERDASAN_MASTER, KEPRIBADIAN_MASTER, BAKAT_MINAT_MASTER } from '../data/assessmentMasters';
 import { computeAkpdResults } from '../utils/akpdCalculator';
+import api from '../lib/axios';
 
 export default function IsiAkpdPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const type = searchParams.get('type') || 'akpd';
+  const bkId = searchParams.get('bk_id');
+
+  const [customMaster, setCustomMaster] = useState(null);
+  const [fetching, setFetching] = useState(true);
+
+  React.useEffect(() => {
+    const fetchMaster = async () => {
+      if (!bkId) {
+        setFetching(false);
+        return;
+      }
+      try {
+        const res = await api.get(`/public/assessment-templates/${bkId}/${type}`);
+        if (res.data?.data) {
+          setCustomMaster(res.data.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch custom master', err);
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchMaster();
+  }, [bkId, type]);
 
   const storageKey = type === 'gaya-belajar' ? 'simbk_data_gaya-belajar_result' : 
                      type === 'kecerdasan' ? 'simbk_data_kecerdasan_result' : 
@@ -34,16 +59,20 @@ export default function IsiAkpdPage() {
 
   const getAssessmentConfig = () => {
     switch (type) {
-      case 'gaya-belajar': return { title: 'GAYA BELAJAR', key: storageKey, master: GAYA_BELAJAR_MASTER };
-      case 'kecerdasan': return { title: 'KECERDASAN MAJEMUK', key: storageKey, master: KECERDASAN_MASTER };
-      case 'kepribadian': return { title: 'KEPRIBADIAN', key: storageKey, master: KEPRIBADIAN_MASTER };
-      case 'bakat-minat': return { title: 'BAKAT & MINAT', key: storageKey, master: BAKAT_MINAT_MASTER };
+      case 'gaya-belajar': return { title: 'GAYA BELAJAR', key: storageKey, master: customMaster || GAYA_BELAJAR_MASTER };
+      case 'kecerdasan': return { title: 'KECERDASAN MAJEMUK', key: storageKey, master: customMaster || KECERDASAN_MASTER };
+      case 'kepribadian': return { title: 'KEPRIBADIAN', key: storageKey, master: customMaster || KEPRIBADIAN_MASTER };
+      case 'bakat-minat': return { title: 'BAKAT & MINAT', key: storageKey, master: customMaster || BAKAT_MINAT_MASTER };
       default: 
         const isSma = activeMeta.tingkat === 'SMA/SMK/MA' || (activeMeta.sekolah || '').toUpperCase().includes('SMA') || (activeMeta.sekolah || '').toUpperCase().includes('SMK');
-        return { title: 'AKPD', key: storageKey, master: isSma ? AKPD_MASTER_SMA : AKPD_MASTER };
+        return { title: 'AKPD', key: storageKey, master: customMaster || (isSma ? AKPD_MASTER_SMA : AKPD_MASTER) };
     }
   };
   const config = getAssessmentConfig();
+
+  React.useEffect(() => {
+    setSelections(Array(config.master.length).fill(0));
+  }, [config.master.length]);
   
   // Theme State
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
@@ -179,6 +208,14 @@ export default function IsiAkpdPage() {
       </div>
     </div>
   );
+
+  if (fetching) {
+    return (
+      <div className="min-h-screen bg-[rgb(var(--bg-main))] text-white flex flex-col items-center justify-center transition-colors duration-300">
+        <div className="text-dark-300 animate-pulse">Menyiapkan instrumen asesmen...</div>
+      </div>
+    );
+  }
 
   if (step === 1) {
     return (

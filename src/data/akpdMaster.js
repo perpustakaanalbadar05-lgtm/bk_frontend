@@ -554,32 +554,7 @@ const DEFAULT_AKPD_MASTER = [
   }
 ];
 
-const getSavedAkpdMaster = () => {
-  if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('simbk_custom_akpd_master');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return null;
-      }
-    }
-  }
-  return null;
-};
-
-export const AKPD_MASTER = getSavedAkpdMaster() || DEFAULT_AKPD_MASTER;
-
-export const saveCustomAkpd = (newMaster) => {
-  localStorage.setItem('simbk_custom_akpd_master', JSON.stringify(newMaster));
-  // Mutate in place so current session sees it
-  AKPD_MASTER.splice(0, AKPD_MASTER.length, ...newMaster);
-};
-
-export const resetCustomAkpd = () => {
-  localStorage.removeItem('simbk_custom_akpd_master');
-  AKPD_MASTER.splice(0, AKPD_MASTER.length, ...DEFAULT_AKPD_MASTER);
-};
+export const AKPD_MASTER = DEFAULT_AKPD_MASTER;
 export const AKPD_MASTER_SMA = [
   {
     "no": 1,

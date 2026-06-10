@@ -30,32 +30,7 @@ const DEFAULT_BAKAT_MINAT = [
   { no: 4, pernyataan: "Saya suka menolong orang lain yang kesulitan", bidangKode: "S", bidang: "Sosial", materi: "Minat Sosial" }
 ];
 
-const getSaved = (key, defaultArr) => {
-  if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem(key);
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) {}
-    }
-  }
-  return defaultArr;
-};
-
-export const GAYA_BELAJAR_MASTER = getSaved('simbk_custom_gaya_belajar', DEFAULT_GAYA_BELAJAR);
-export const KECERDASAN_MASTER = getSaved('simbk_custom_kecerdasan', DEFAULT_KECERDASAN);
-export const KEPRIBADIAN_MASTER = getSaved('simbk_custom_kepribadian', DEFAULT_KEPRIBADIAN);
-export const BAKAT_MINAT_MASTER = getSaved('simbk_custom_bakat_minat', DEFAULT_BAKAT_MINAT);
-
-export const saveCustomAssessment = (type, newMaster) => {
-  let key = '';
-  let masterArr = null;
-  switch (type) {
-    case 'gaya-belajar': key = 'simbk_custom_gaya_belajar'; masterArr = GAYA_BELAJAR_MASTER; break;
-    case 'kecerdasan': key = 'simbk_custom_kecerdasan'; masterArr = KECERDASAN_MASTER; break;
-    case 'kepribadian': key = 'simbk_custom_kepribadian'; masterArr = KEPRIBADIAN_MASTER; break;
-    case 'bakat-minat': key = 'simbk_custom_bakat_minat'; masterArr = BAKAT_MINAT_MASTER; break;
-  }
-  if (key) {
-    localStorage.setItem(key, JSON.stringify(newMaster));
-    masterArr.splice(0, masterArr.length, ...newMaster);
-  }
-};
+export const GAYA_BELAJAR_MASTER = DEFAULT_GAYA_BELAJAR;
+export const KECERDASAN_MASTER = DEFAULT_KECERDASAN;
+export const KEPRIBADIAN_MASTER = DEFAULT_KEPRIBADIAN;
+export const BAKAT_MINAT_MASTER = DEFAULT_BAKAT_MINAT;
