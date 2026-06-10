@@ -120,10 +120,10 @@ export default function AsesmenPage() {
     const toastId = toast.loading('Sedang memproses file Excel...')
     
     try {
-      const result = await parseAkpdExcel(file)
       const conf = getAssessmentConfig();
+      const result = await parseAkpdExcel(file, conf.master)
       conf.setResult(result)
-      toast.success(`Berhasil memproses data AKPD ${result.meta.kelas}!`, { id: toastId })
+      toast.success(`Berhasil memproses data ${conf.title} ${result.meta.kelas}!`, { id: toastId })
     } catch (err) {
       console.error(err)
       toast.error(err.message || 'Gagal memproses file Excel!', { id: toastId })
@@ -146,7 +146,7 @@ export default function AsesmenPage() {
       kelas: sessionForm.kelas.toUpperCase(),
       tahun: sessionForm.tahun,
       tingkat: sessionForm.tingkat
-    }, [], sessionForm.tingkat === 'SMA/SMK/MA' ? AKPD_MASTER_SMA : AKPD_MASTER);
+    }, [], getAssessmentConfig().master);
 
     getAssessmentConfig().setResult(emptyResult);
     setShowNewSessionModal(false);
@@ -154,7 +154,7 @@ export default function AsesmenPage() {
   }
 
   const handleCopyLink = () => {
-    const link = `${window.location.origin}/isi-akpd`;
+    const link = `${window.location.origin}/isi-asesmen`;
     navigator.clipboard.writeText(link).then(() => {
       toast.success("Tautan asesmen berhasil disalin!");
     }).catch(() => {
@@ -248,14 +248,18 @@ export default function AsesmenPage() {
                 <div>
                   <span className="text-[10px] text-dark-300 font-bold tracking-wider block">TOTAL SKOR</span>
                   <span className="text-3xl font-mono font-black text-white">{selectedStudent.totalScore}</span>
-                  <span className="text-dark-400 text-xs"> Masalah</span>
+                  <span className="text-dark-400 text-xs"> {conf.type === 'akpd' ? 'Masalah' : 'Pilihan'}</span>
                 </div>
                 <div className={`text-[10px] font-bold uppercase px-2 py-1 rounded border ${
-                  selectedStudent.totalScore > 15 ? 'bg-red-500/20 border-red-500/30 text-red-400' :
-                  selectedStudent.totalScore > 7 ? 'bg-amber-500/20 border-amber-500/30 text-amber-400' :
-                  'bg-teal-500/20 border-teal-500/30 text-teal-400'
+                  conf.type === 'akpd' ? (
+                    selectedStudent.totalScore > 15 ? 'bg-red-500/20 border-red-500/30 text-red-400' :
+                    selectedStudent.totalScore > 7 ? 'bg-amber-500/20 border-amber-500/30 text-amber-400' :
+                    'bg-teal-500/20 border-teal-500/30 text-teal-400'
+                  ) : 'bg-primary-500/20 border-primary-500/30 text-primary-400'
                 }`}>
-                  {selectedStudent.totalScore > 15 ? '⚠️ Urgent' : selectedStudent.totalScore > 7 ? '⚠️ Sedang' : '✅ Stabil'}
+                  {conf.type === 'akpd' ? (
+                    selectedStudent.totalScore > 15 ? '⚠️ Urgent' : selectedStudent.totalScore > 7 ? '⚠️ Sedang' : '✅ Stabil'
+                  ) : '📊 Hasil Tes'}
                 </div>
               </div>
               
@@ -272,13 +276,13 @@ export default function AsesmenPage() {
             {/* List of Checked Problems */}
             <div>
               <h4 className="font-display font-bold text-white text-sm border-b border-white/10 pb-2 mb-4 flex items-center justify-between">
-                Peta Diagnosa Masalah Terpilih
+                {conf.type === 'akpd' ? 'Peta Diagnosa Masalah Terpilih' : 'Item yang Terpilih'}
                 <span className="badge bg-white/5 text-dark-300 border-white/10 text-[10px]">{personalChecked.length} Butir Terpilih</span>
               </h4>
 
               {personalChecked.length === 0 ? (
                 <div className="text-center py-8 text-dark-400 italic text-sm">
-                  Siswa tidak memilih satupun pernyataan masalah. Kondisi stabil.
+                  {conf.type === 'akpd' ? 'Siswa tidak memilih satupun pernyataan masalah. Kondisi stabil.' : 'Siswa tidak memilih satupun pernyataan.'}
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -493,10 +497,10 @@ export default function AsesmenPage() {
           </div>
           <div className="flex w-full md:w-auto gap-2 bg-dark-900 p-1.5 rounded-xl border border-white/10">
             <code className="text-primary-300 text-xs font-mono flex items-center px-3 select-all truncate max-w-[200px] sm:max-w-xs">
-              {window.location.origin}/isi-akpd?type={conf.type}
+              {window.location.origin}/isi-asesmen?type={conf.type}
             </code>
             <button onClick={() => {
-              const link = `${window.location.origin}/isi-akpd?type=${conf.type}`;
+              const link = `${window.location.origin}/isi-asesmen?type=${conf.type}`;
               navigator.clipboard.writeText(link).then(() => {
                 toast.success("Tautan asesmen berhasil disalin!");
               }).catch(() => {
@@ -521,7 +525,7 @@ export default function AsesmenPage() {
               <span>•</span>
               <span>Responden: <b className="text-emerald-400">{result.students.length} Siswa</b></span>
               <span>•</span>
-              <span>Masalah Terdiagnosa: <b>{result.meta.totalMasalah} Kali</b></span>
+              <span>{conf.type === 'akpd' ? 'Masalah Terdiagnosa' : 'Pernyataan Terpilih'}: <b>{result.meta.totalMasalah} Kali</b></span>
             </div>
           </div>
           <button onClick={handleResetData} className="btn-secondary py-2 text-xs border-red-500/20 hover:bg-red-500/10 text-red-300 gap-1.5 whitespace-nowrap">
@@ -533,10 +537,12 @@ export default function AsesmenPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="card-feature">
             <h3 className="font-display font-bold text-white mb-1 flex items-center justify-between">
-              Profil Kebutuhan Siswa
+              {conf.type === 'akpd' ? 'Profil Kebutuhan Siswa' : `Profil ${conf.title}`}
               <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-white/5 border border-white/10 text-dark-300">Persentase %</span>
             </h3>
-            <p className="text-dark-300 text-xs mb-4">Rasio persebaran masalah dalam 4 Bidang Bimbingan Konseling</p>
+            <p className="text-dark-300 text-xs mb-4">
+              {conf.type === 'akpd' ? 'Rasio persebaran masalah dalam 4 Bidang Bimbingan Konseling' : `Rasio persebaran kecenderungan ${conf.title.toLowerCase()}`}
+            </p>
             
             <div className="flex items-center justify-center h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -555,7 +561,9 @@ export default function AsesmenPage() {
 
           <div className="card-feature flex flex-col justify-between">
             <div>
-              <h3 className="font-display font-bold text-white mb-4">Kebutuhan Bidang Layanan</h3>
+              <h3 className="font-display font-bold text-white mb-4">
+                {conf.type === 'akpd' ? 'Kebutuhan Bidang Layanan' : 'Persentase Hasil'}
+              </h3>
               <div className="space-y-3.5">
                 {result.bidangSummary.map(item => (
                   <div key={item.label} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all border border-white/5">
@@ -603,7 +611,7 @@ export default function AsesmenPage() {
                 <thead className="bg-dark-950 text-dark-300 text-xs font-bold border-b border-white/10 sticky top-0 z-10">
                   <tr>
                     <th className="px-4 py-3.5 text-center w-12 bg-dark-950">NO</th>
-                    <th className="px-4 py-3.5 bg-dark-950">BUTIR MASALAH SISWA</th>
+                    <th className="px-4 py-3.5 bg-dark-950">{conf.type === 'akpd' ? 'BUTIR MASALAH SISWA' : 'PERNYATAAN INSTRUMEN'}</th>
                     <th className="px-4 py-3.5 w-24 bg-dark-950 text-center">BIDANG</th>
                     <th className="px-4 py-3.5 w-24 bg-dark-950 text-center">JML RESP</th>
                     <th className="px-4 py-3.5 w-24 bg-dark-950 text-center">PERSEN</th>
@@ -679,9 +687,11 @@ export default function AsesmenPage() {
                         {std.nama.substring(0, 2)}
                       </div>
                       <span className={`text-[10px] font-bold tracking-widest uppercase font-mono border px-2 py-0.5 rounded ${
-                        std.totalScore > 15 ? 'bg-red-500/20 text-red-400 border-red-500/30' :
-                        std.totalScore > 7 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
-                        'bg-teal-500/20 text-teal-400 border-teal-500/30'
+                        conf.type === 'akpd' ? (
+                          std.totalScore > 15 ? 'bg-red-500/20 text-red-400 border-red-500/30' :
+                          std.totalScore > 7 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
+                          'bg-teal-500/20 text-teal-400 border-teal-500/30'
+                        ) : 'bg-primary-500/20 text-primary-300 border-primary-500/30'
                       }`}>
                         SKOR: {std.totalScore}
                       </span>
@@ -691,9 +701,13 @@ export default function AsesmenPage() {
                   </div>
                   <div className="mt-4 pt-3 border-t border-white/10 flex justify-between items-center">
                     <span className="text-[10px] text-dark-300">
-                      {std.totalScore > 15 ? '⚠️ Butuh Penanganan' : 
-                       std.totalScore > 7 ? '💡 Rekomendasi Bim.' : 
-                       '✅ Kondisi Stabil'}
+                      {conf.type === 'akpd' ? (
+                        std.totalScore > 15 ? '⚠️ Butuh Penanganan' : 
+                        std.totalScore > 7 ? '💡 Rekomendasi Bim.' : 
+                        '✅ Kondisi Stabil'
+                      ) : (
+                        `📊 ${std.totalScore} Terpilih`
+                      )}
                     </span>
                     <button 
                       onClick={() => setSelectedStudent(std)}

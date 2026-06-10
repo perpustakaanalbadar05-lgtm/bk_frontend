@@ -5,7 +5,7 @@ import { RiShieldCheckLine, RiHeartLine, RiGroupLine, RiBookOpenLine,
   RiSave3Line, RiSunLine, RiMoonLine, RiUserLine, RiCloseLine
 } from 'react-icons/ri';
 import toast from 'react-hot-toast';
-import { AKPD_MASTER } from '../data/akpdMaster';
+import { AKPD_MASTER, AKPD_MASTER_SMA } from '../data/akpdMaster';
 import { GAYA_BELAJAR_MASTER, KECERDASAN_MASTER, KEPRIBADIAN_MASTER, BAKAT_MINAT_MASTER } from '../data/assessmentMasters';
 import { computeAkpdResults } from '../utils/akpdCalculator';
 
@@ -14,13 +14,33 @@ export default function IsiAkpdPage() {
   const [searchParams] = useSearchParams();
   const type = searchParams.get('type') || 'akpd';
 
+  const storageKey = type === 'gaya-belajar' ? 'simbk_data_gaya-belajar_result' : 
+                     type === 'kecerdasan' ? 'simbk_data_kecerdasan_result' : 
+                     type === 'kepribadian' ? 'simbk_data_kepribadian_result' : 
+                     type === 'bakat-minat' ? 'simbk_data_bakat-minat_result' : 'simbk_data_akpd_result';
+
+  const getActiveMeta = () => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.meta || {};
+      }
+    } catch (_) {}
+    return { sekolah: 'SMP Negeri 2 Pamekasan', kelas: 'VII G', tahun: '2022-2023', tingkat: 'SMP/MTs' };
+  };
+
+  const activeMeta = getActiveMeta();
+
   const getAssessmentConfig = () => {
     switch (type) {
-      case 'gaya-belajar': return { title: 'GAYA BELAJAR', key: 'simbk_data_gaya-belajar_result', master: GAYA_BELAJAR_MASTER };
-      case 'kecerdasan': return { title: 'KECERDASAN MAJEMUK', key: 'simbk_data_kecerdasan_result', master: KECERDASAN_MASTER };
-      case 'kepribadian': return { title: 'KEPRIBADIAN', key: 'simbk_data_kepribadian_result', master: KEPRIBADIAN_MASTER };
-      case 'bakat-minat': return { title: 'BAKAT & MINAT', key: 'simbk_data_bakat-minat_result', master: BAKAT_MINAT_MASTER };
-      default: return { title: 'AKPD', key: 'simbk_data_akpd_result', master: AKPD_MASTER };
+      case 'gaya-belajar': return { title: 'GAYA BELAJAR', key: storageKey, master: GAYA_BELAJAR_MASTER };
+      case 'kecerdasan': return { title: 'KECERDASAN MAJEMUK', key: storageKey, master: KECERDASAN_MASTER };
+      case 'kepribadian': return { title: 'KEPRIBADIAN', key: storageKey, master: KEPRIBADIAN_MASTER };
+      case 'bakat-minat': return { title: 'BAKAT & MINAT', key: storageKey, master: BAKAT_MINAT_MASTER };
+      default: 
+        const isSma = activeMeta.tingkat === 'SMA/SMK/MA' || (activeMeta.sekolah || '').toUpperCase().includes('SMA') || (activeMeta.sekolah || '').toUpperCase().includes('SMK');
+        return { title: 'AKPD', key: storageKey, master: isSma ? AKPD_MASTER_SMA : AKPD_MASTER };
     }
   };
   const config = getAssessmentConfig();
@@ -34,19 +54,6 @@ export default function IsiAkpdPage() {
     localStorage.setItem('theme', isDarkNow ? 'dark' : 'light');
   };
 
-  // Load existing data or default
-  const getActiveMeta = () => {
-    try {
-      const saved = localStorage.getItem(config.key);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return parsed.meta;
-      }
-    } catch (_) {}
-    return { sekolah: 'SMP Negeri 2 Pamekasan', kelas: 'VII G', tahun: '2022-2023' };
-  };
-
-  const activeMeta = getActiveMeta();
 
   // Form states
   const [step, setStep] = useState(1);

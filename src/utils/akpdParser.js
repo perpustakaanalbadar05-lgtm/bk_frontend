@@ -2,7 +2,7 @@ import * as XLSX from 'xlsx';
 import { computeAkpdResults } from './akpdCalculator';
 import { AKPD_MASTER, AKPD_MASTER_SMA } from '../data/akpdMaster';
 
-export const parseAkpdExcel = async (file) => {
+export const parseAkpdExcel = async (file, masterData) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     
@@ -68,7 +68,7 @@ export const parseAkpdExcel = async (file) => {
           
           if (noUrut && !isNaN(noUrut) && nama) {
             const responses = [];
-            for (let j = 0; j < 50; j++) {
+            for (let j = 0; j < masterData.length; j++) {
               const val = parseInt(String(row[numStartColIndex + j]).trim());
               responses.push(isNaN(val) ? 0 : val);
             }
@@ -91,7 +91,7 @@ export const parseAkpdExcel = async (file) => {
         }
 
         // Use central compute function with appropriate master
-        const computed = computeAkpdResults({ sekolah, kelas, tahun, tingkat }, students, tingkat === 'SMA/SMK/MA' ? AKPD_MASTER_SMA : AKPD_MASTER);
+        const computed = computeAkpdResults({ sekolah, kelas, tahun, tingkat }, students, masterData);
         resolve(computed);
 
       } catch (error) {

@@ -145,16 +145,24 @@ export default function SettingsPage() {
   }
 
   const handleAddClass = async () => {
-    if (newClass.trim() && !classes.includes(newClass.trim())) {
-      const newClasses = [...classes, newClass.trim()]
-      setClasses(newClasses)
-      setNewClass('')
-      try {
-        await saveSettingsToBackend(sekolah, newClasses)
-        toast.success('Kelas berhasil ditambahkan!')
-      } catch (e) {
-        toast.error('Gagal menyimpan kelas ke server.')
-      }
+    const trimmed = newClass.trim();
+    if (!trimmed) {
+      return toast.error('Nama kelas tidak boleh kosong!');
+    }
+    if (classes.includes(trimmed)) {
+      return toast.error('Kelas tersebut sudah ada di daftar!');
+    }
+    
+    const newClasses = [...classes, trimmed];
+    setClasses(newClasses);
+    setNewClass('');
+    
+    try {
+      await saveSettingsToBackend(sekolah, newClasses);
+      toast.success('Kelas berhasil ditambahkan!');
+    } catch (e) {
+      setClasses(classes); // revert UI
+      toast.error('Gagal menyimpan kelas ke server.');
     }
   }
 

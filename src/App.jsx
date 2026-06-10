@@ -54,7 +54,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="/isi-akpd" element={<IsiAkpdPage />} />
+                <Route path="/isi-asesmen" element={<IsiAkpdPage />} />
                 {/* Portal routes */}
                 <Route path="/portal/login" element={<PortalLoginPage />} />
                 <Route path="/portal/kepala-sekolah" element={<PortalKepalaSekolah />} />

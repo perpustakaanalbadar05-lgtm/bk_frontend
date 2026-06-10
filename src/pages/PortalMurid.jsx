@@ -171,7 +171,7 @@ export default function PortalMurid() {
                 <p className="font-bold text-sm">Isi Kuesioner AKPD</p>
                 <p className="text-purple-200 text-xs mt-1">Bantu Guru BK memahami kebutuhan Anda</p>
                 <button
-                  onClick={() => navigate('/isi-akpd')}
+                  onClick={() => navigate('/isi-asesmen')}
                   className="mt-3 flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors"
                 >
                   Isi Sekarang <RiArrowRightLine />
@@ -216,7 +216,7 @@ export default function PortalMurid() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-slate-800">Hasil Asesmen Anda</h3>
               <button
-                onClick={() => navigate('/isi-akpd')}
+                onClick={() => navigate('/isi-asesmen')}
                 className="text-sm bg-purple-600 text-white px-3 py-2 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center gap-1"
               >
                 <RiClipboardLine /> Isi Kuesioner Baru
