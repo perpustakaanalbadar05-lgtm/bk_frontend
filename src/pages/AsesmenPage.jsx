@@ -111,6 +111,7 @@ export default function AsesmenPage() {
   // Edit Pertanyaan Form
   const [editingItemNo, setEditingItemNo] = useState(null)
   const [editingText, setEditingText] = useState('')
+  const [editingMateri, setEditingMateri] = useState('')
 
   const getAssessmentConfig = (tabId = activeTab) => {
     let master = []
@@ -225,6 +226,7 @@ export default function AsesmenPage() {
     if (idx !== -1) {
       const newMaster = JSON.parse(JSON.stringify(conf.master));
       newMaster[idx].pernyataan = editingText;
+      newMaster[idx].materi = editingMateri;
       
       try {
         await api.post(`/assessment-templates/${conf.type}`, { master_data: newMaster });
@@ -738,6 +740,14 @@ export default function AsesmenPage() {
                               value={editingText}
                               onChange={e => setEditingText(e.target.value)}
                               autoFocus
+                              placeholder="Pernyataan Instrumen"
+                            />
+                            <input
+                              type="text"
+                              className="w-full bg-dark-900 border border-primary-500 rounded p-2 text-xs text-white"
+                              value={editingMateri}
+                              onChange={e => setEditingMateri(e.target.value)}
+                              placeholder="Materi Layanan (Topik)"
                             />
                             <div className="flex gap-2 justify-end">
                               <button onClick={() => setEditingItemNo(null)} className="text-[10px] bg-dark-800 text-dark-300 px-2 py-1 rounded hover:bg-dark-700">Batal</button>
@@ -749,7 +759,7 @@ export default function AsesmenPage() {
                             <div className="font-medium text-white/90 leading-relaxed flex items-start gap-2 justify-between">
                               {item.pernyataan}
                               <button 
-                                onClick={() => { setEditingItemNo(item.no); setEditingText(item.pernyataan); }}
+                                onClick={() => { setEditingItemNo(item.no); setEditingText(item.pernyataan); setEditingMateri(item.materi || ''); }}
                                 className="opacity-0 group-hover:opacity-100 p-1 bg-white/5 hover:bg-white/10 rounded text-dark-300 hover:text-white transition-all flex-shrink-0"
                                 title="Edit Pertanyaan"
                               >
