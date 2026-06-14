@@ -66,7 +66,7 @@ export default function LandingPage() {
   const toggleTheme = () => {
     const isDarkNow = document.documentElement.classList.toggle('dark')
     setIsDark(isDarkNow)
-    localStorage.setItem('theme', isDarkNow ? 'dark' : 'light')
+    localStorage.setItem('simbk_theme', isDarkNow ? 'dark' : 'light')
   }
 
   useEffect(() => {
@@ -87,7 +87,7 @@ export default function LandingPage() {
               <RiShieldStarLine className="text-white text-lg" />
             </div>
             <div>
-              <span className="font-display font-bold text-white text-lg">Konseli</span>
+              <span className="font-display font-bold text-white text-lg">Konselia</span>
               <span className="hidden sm:block text-[10px] text-dark-200 leading-none">by Alifba Media.</span>
             </div>
           </Link>
@@ -162,7 +162,7 @@ export default function LandingPage() {
             </div>
 
             <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-black leading-tight mb-4 animate-in delay-100">
-              <span className="gradient-text">Konseli</span>
+              <span className="gradient-text">Konselia</span>
               <br />
               <span className="text-primary-300 font-semibold text-2xl sm:text-3xl">by Alifba Media.</span>
               <br />
@@ -173,7 +173,7 @@ export default function LandingPage() {
               Manajemen BK yang Mudah dan Profesional.
             </p>
             <p className="text-dark-300 text-base md:text-lg leading-relaxed mb-10 max-w-2xl mx-auto animate-in delay-200">
-              <span className="text-white font-semibold">Konseli</span> membantu Guru BK mengelola layanan konseling secara otomatis — mulai dari{' '}
+              <span className="text-white font-semibold">Konselia</span> membantu Guru BK mengelola layanan konseling secara otomatis — mulai dari{' '}
               <span className="text-primary-300 font-medium">asesmen siswa</span> hingga{' '}
               <span className="text-accent-300 font-medium">penyusunan program BK</span>{' '}
               secara efisien dan profesional.
@@ -182,7 +182,7 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-in delay-300">
               <Link to="/login" className="btn-primary text-base px-8 py-4 w-full sm:w-auto">
                 <RiSparklingLine />
-                Mulai Gratis Sekarang
+                Mulai Sekarang
                 <RiArrowRightLine />
               </Link>
               <a href="#fitur" className="btn-secondary text-base px-8 py-4 w-full sm:w-auto">
@@ -202,7 +202,7 @@ export default function LandingPage() {
           </div>
 
           {/* Hero visual - stats floating cards */}
-          <div className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto animate-in delay-500">
+          <div className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
             {STATS.map(({ value, label, icon: Icon }) => (
               <div key={label} className="card-feature text-center p-4">
                 <Icon className="text-2xl text-primary-400 mx-auto mb-2" />
@@ -222,10 +222,10 @@ export default function LandingPage() {
             <h2 className="section-title mb-4">
               Semua yang Dibutuhkan
               <br />
-              <span className="gradient-text">Guru BK Modern</span>
+              <span className="gradient-text">Guru BK</span>
             </h2>
             <p className="section-subtitle">
-              Dari asesmen hingga laporan, <span className="text-primary-300 font-semibold">Konseli</span> mengintegrasikan seluruh alur kerja bimbingan konseling dalam satu platform.
+              Dari asesmen hingga laporan, <span className="text-primary-300 font-semibold">Konselia</span> mengintegrasikan seluruh alur kerja bimbingan konseling dalam satu platform.
             </p>
           </div>
 
@@ -289,19 +289,19 @@ export default function LandingPage() {
               <span className="gradient-text">Sekolah Anda?</span>
             </h2>
             <p className="text-dark-200 text-lg mb-8 max-w-xl mx-auto">
-              Bergabung bersama ratusan sekolah yang telah meningkatkan kualitas layanan bimbingan konseling dengan <span className="text-primary-300 font-semibold">Konseli</span> dari CV. Alifba Media.
+              Bergabung bersama ratusan sekolah yang telah meningkatkan kualitas layanan bimbingan konseling dengan <span className="text-primary-300 font-semibold">Konselia</span> dari CV. Alifba Media.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
               <Link to="/login" className="btn-primary text-base px-8 py-4">
-                <RiSparklingLine /> Daftar Sekarang — Gratis
+                <RiSparklingLine /> Daftar Sekarang 
               </Link>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-dark-200 text-sm">
-              <a href="tel:+62" className="flex items-center gap-2 hover:text-primary-300 transition-colors">
-                <RiPhoneLine /> +62 xxx-xxxx-xxxx
+              <a href="tel:+6282143777455" className="flex items-center gap-2 hover:text-primary-300 transition-colors">
+                <RiPhoneLine /> +62 821-4377-7455
               </a>
-              <a href="mailto:info@alifbamedia.id" className="flex items-center gap-2 hover:text-primary-300 transition-colors">
-                <RiMailLine /> info@alifbamedia.id
+              <a href="mailto:mediaalifba@gmail.com" className="flex items-center gap-2 hover:text-primary-300 transition-colors">
+                <RiMailLine /> mediaalifba@gmail.com
               </a>
             </div>
           </div>
@@ -316,7 +316,7 @@ export default function LandingPage() {
               <RiShieldStarLine className="text-white text-sm" />
             </div>
             <div>
-              <span className="font-display font-bold text-white">Konseli</span>
+              <span className="font-display font-bold text-white">Konselia</span>
               <span className="text-dark-300 text-xs ml-2">by Alifba Media.</span>
             </div>
           </div>

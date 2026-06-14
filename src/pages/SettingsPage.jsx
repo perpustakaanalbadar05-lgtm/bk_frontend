@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   RiShieldStarLine, RiUserLine, RiLockLine, RiBellLine,
   RiPaletteLine, RiSaveLine, RiBuildingLine, RiGroupLine,
   RiUploadCloud2Line, RiDeleteBinLine, RiAddLine, RiLoader4Line,
-  RiEyeLine, RiEyeOffLine, RiUserStarLine, RiTeamLine,
+  RiEyeLine, RiEyeOffLine, RiUserStarLine, RiTeamLine, RiGraduationCapLine,
   RiSunLine, RiMoonLine,
   RiEditLine, RiCheckLine, RiCloseLine, RiFileCopyLine
 } from 'react-icons/ri'
@@ -13,9 +13,9 @@ import { useSettings } from '../contexts/SettingsContext'
 import { useRole } from '../contexts/RoleContext'
 import api from '../lib/axios'
 
-const ROLE_ICONS = { kepala_sekolah: RiUserStarLine, pengawas: RiTeamLine }
-const ROLE_COLORS = { kepala_sekolah: 'from-blue-500 to-indigo-600', pengawas: 'from-emerald-500 to-teal-600' }
-const ROLE_LABELS = { kepala_sekolah: 'Kepala Sekolah', pengawas: 'Pengawas' }
+const ROLE_ICONS  = { kepala_sekolah: RiUserStarLine, pengawas: RiTeamLine, murid: RiGraduationCapLine, orang_tua: RiUserLine }
+const ROLE_COLORS = { kepala_sekolah: 'from-blue-500 to-indigo-600', pengawas: 'from-emerald-500 to-teal-600', murid: 'from-purple-500 to-pink-600', orang_tua: 'from-amber-500 to-orange-600' }
+const ROLE_LABELS = { kepala_sekolah: 'Kepala Sekolah', pengawas: 'Pengawas', murid: 'Murid / Siswa', orang_tua: 'Orang Tua' }
 const ALL_MENUS = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'siswa', label: 'Data Siswa' },
@@ -30,10 +30,17 @@ const ALL_MENUS = [
 export default function SettingsPage() {
   const { user, updateUser } = useAuth()
   const { classes, setClasses, sekolah, setSekolah, theme, toggleTheme } = useSettings()
-  const { accounts, createAccount, deleteAccount, updateRoleMenus, getVisibleMenus } = useRole()
+  const { accounts, accountsLoading, fetchAccounts, createAccount, deleteAccount, updateRoleMenus, getVisibleMenus } = useRole()
   const [activeTab, setActiveTab] = useState('profil')
   const [newClass, setNewClass] = useState('')
   const [saving, setSaving] = useState(false)
+
+  // Load portal accounts when the akun tab opens
+  useEffect(() => {
+    if (activeTab === 'akun') {
+      fetchAccounts()
+    }
+  }, [activeTab, fetchAccounts])
 
   // Profile form state
   const [profileForm, setProfileForm] = useState({
@@ -51,17 +58,42 @@ export default function SettingsPage() {
   })
   const [showPass, setShowPass] = useState({ current: false, new: false, confirm: false })
 
+  // Notifikasi preferences state
+  const notifDefaults = {
+    jadwal: true, laporan: true, siswa_baru: true,
+    alert_masalah: true, update_sistem: false,
+  }
+  const [notifPrefs, setNotifPrefs] = useState(() => {
+    const saved = user?.settings?.notif_prefs
+    return saved || notifDefaults
+  })
+
+  const saveNotifPrefs = async (prefs) => {
+    setNotifPrefs(prefs)
+    try {
+      const res = await api.put('/user', { settings: { ...(user?.settings || {}), notif_prefs: prefs } })
+      updateUser(res.data.user)
+    } catch (e) { console.warn('Gagal simpan notifikasi', e) }
+  }
+
   // Akun modal state
   const [showAkunModal, setShowAkunModal] = useState(false)
   const [editMenuRole, setEditMenuRole] = useState(null)
   const [akunForm, setAkunForm] = useState({ name: '', username: '', password: '', role: 'kepala_sekolah', siswa: '', kelas: '' })
 
-  const handleCreateAkun = () => {
+  const handleCreateAkun = async () => {
     if (!akunForm.name || !akunForm.username || !akunForm.password) return toast.error('Nama, username, dan password wajib diisi!')
-    createAccount(akunForm)
-    setAkunForm({ name: '', username: '', password: '', role: 'kepala_sekolah', siswa: '', kelas: '' })
-    setShowAkunModal(false)
-    toast.success(`Akun ${ROLE_LABELS[akunForm.role]} berhasil dibuat!`)
+    setSaving(true)
+    try {
+      await createAccount(akunForm)
+      setAkunForm({ name: '', username: '', password: '', role: 'kepala_sekolah', siswa: '', kelas: '' })
+      setShowAkunModal(false)
+      toast.success(`Akun ${ROLE_LABELS[akunForm.role]} berhasil dibuat!`)
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Gagal membuat akun.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const copyPortalLink = (role) => {
@@ -193,7 +225,7 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-display font-bold text-2xl text-white">Pengaturan</h1>
-        <p className="text-dark-200 text-sm">Kelola profil dan konfigurasi sistem Konseli</p>
+        <p className="text-dark-200 text-sm">Kelola profil dan konfigurasi sistem Konselia</p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
@@ -407,7 +439,7 @@ export default function SettingsPage() {
                   'Laporan bulanan otomatis',
                   'Notifikasi siswa baru',
                   'Alert siswa bermasalah',
-                  'Update sistem Konseli',
+                  'Update sistem Konselia',
                 ].map(item => (
                   <label key={item} className="flex items-center justify-between p-4 glass rounded-xl cursor-pointer hover:bg-white/10 transition-colors">
                     <span className="text-dark-200 text-sm">{item}</span>
@@ -557,7 +589,7 @@ export default function SettingsPage() {
             <div className="animate-in space-y-6">
               <div>
                 <h2 className="font-display font-bold text-white text-lg mb-1">Pengaturan Tampilan</h2>
-                <p className="text-dark-200 text-sm">Sesuaikan tema dan gaya antarmuka Konseli</p>
+                <p className="text-dark-200 text-sm">Sesuaikan tema dan gaya antarmuka Konselia</p>
               </div>
               <div className="glass rounded-xl p-5 border border-white/10">
                 <div className="flex items-center justify-between">
@@ -576,7 +608,7 @@ export default function SettingsPage() {
               <div className="glass rounded-xl p-4 flex items-center gap-3 border border-white/10">
                 <RiShieldStarLine className="text-primary-400 text-2xl" />
                 <div>
-                  <p className="font-semibold text-white text-sm">Konseli v1.0.0</p>
+                  <p className="font-semibold text-white text-sm">Konselia v1.0.0</p>
                   <p className="text-dark-200 text-xs">Konseling, Solusi, Edukasi.</p>
                   <p className="text-dark-300 text-xs">CV. Alifba Media © {new Date().getFullYear()}</p>
                 </div>

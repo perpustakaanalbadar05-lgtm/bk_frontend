@@ -9,7 +9,7 @@ export default function ProtectedRoute({ children }) {
       <div className="min-h-screen flex items-center justify-center bg-[rgb(var(--bg-main))]">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 rounded-full border-2 border-primary-500 border-t-transparent animate-spin" />
-          <p className="text-dark-200 text-sm">Memuat Konseli...</p>
+          <p className="text-dark-200 text-sm">Memuat Konselia...</p>
         </div>
       </div>
     )

@@ -69,7 +69,7 @@ export default function PortalMurid() {
             </div>
             <div>
               <h1 className="font-display font-black text-slate-800 leading-none">Portal Murid</h1>
-              <p className="text-slate-500 text-xs">{sekolah.nama || 'Konseli'} · Ruang Bimbingan Digital</p>
+              <p className="text-slate-500 text-xs">{sekolah.nama || 'Konselia'} · Ruang Bimbingan Digital</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -94,7 +94,7 @@ export default function PortalMurid() {
             <div>
               <p className="text-purple-200 text-sm">Selamat datang kembali,</p>
               <h2 className="text-2xl font-display font-black">{linkedName}</h2>
-              <p className="text-purple-200 text-sm mt-1">{portalUser.kelas || 'Siswa Konseli'}</p>
+              <p className="text-purple-200 text-sm mt-1">{portalUser.kelas || 'Siswa Konselia'}</p>
             </div>
           </div>
 

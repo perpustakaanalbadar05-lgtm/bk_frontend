@@ -29,7 +29,7 @@ export default function Sidebar({ open, collapsed, onCollapse, onClose }) {
 
   const handleLogout = async () => {
     await logout()
-    toast.success('Berhasil keluar dari Konseli')
+    toast.success('Berhasil keluar dari Konselia')
     navigate('/login')
   }
 
@@ -39,7 +39,7 @@ export default function Sidebar({ open, collapsed, onCollapse, onClose }) {
         isOpen={confirmLogout}
         onClose={() => setConfirmLogout(false)}
         onConfirm={handleLogout}
-        title="Keluar dari Konseli?"
+        title="Keluar dari Konselia?"
         message="Sesi Anda akan diakhiri. Pastikan semua data sudah tersimpan."
         confirmLabel="Ya, Keluar"
         confirmClass="bg-red-600 hover:bg-red-500 text-white"
@@ -77,7 +77,7 @@ export default function Sidebar({ open, collapsed, onCollapse, onClose }) {
         
         {/* Smooth Fade & Slide For Title */}
         <div className={`ml-3 min-w-[160px] transition-all duration-500 ease-out ${collapsed ? 'opacity-0 -translate-x-4 pointer-events-none' : 'opacity-100 translate-x-0'}`}>
-          <h1 className="font-display font-black text-white text-xl tracking-wider leading-none">Konseli</h1>
+          <h1 className="font-display font-black text-white text-xl tracking-wider leading-none">Konselia</h1>
           <p className="text-dark-300 text-[9px] uppercase tracking-widest mt-1 truncate">by Alifba Media.</p>
         </div>
 

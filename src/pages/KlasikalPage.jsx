@@ -47,7 +47,7 @@ function JadwalKlasikalModal({ isOpen, onClose, onSave, classes }) {
           <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-dark-200 hover:text-white"><RiCloseLine /></button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto flex-1">
+        <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto flex-1 min-h-0">
           {/* Identitas */}
           <div className="grid grid-cols-2 gap-3">
             <div>

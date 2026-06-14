@@ -51,7 +51,7 @@ export default function PortalOrangTua() {
             </div>
             <div>
               <h1 className="font-display font-black text-slate-800 leading-none">Portal Orang Tua</h1>
-              <p className="text-slate-500 text-xs">{sekolah.nama || 'Konseli'} · Pantau Perkembangan Anak</p>
+              <p className="text-slate-500 text-xs">{sekolah.nama || 'Konselia'} · Pantau Perkembangan Anak</p>
             </div>
           </div>
           <div className="flex items-center gap-3">

@@ -614,7 +614,7 @@ export default function ProgramBKPage() {
                     <span>1. Tujuan Umum (SKKPD)</span>
                   </div>
                   <div className="col-span-2 p-2">
-                    Peserta didik/konseli mampu memahami pentingnya aspek {selectedRpl.bidang} terkait materi "{selectedRpl.kebutuhan}" untuk menunjang kesuksesan pribadi dan sosialnya di lingkungan sekolah.
+                    Peserta didik/konselia mampu memahami pentingnya aspek {selectedRpl.bidang} terkait materi "{selectedRpl.kebutuhan}" untuk menunjang kesuksesan pribadi dan sosialnya di lingkungan sekolah.
                   </div>
                 </div>
                 <div className="grid grid-cols-3 border-b border-black">
@@ -638,7 +638,7 @@ export default function ProgramBKPage() {
                     <span className="text-[10px] font-normal italic mt-0.5">(Alokasi: 5 Menit)</span>
                   </div>
                   <div className="col-span-2 p-2 space-y-1">
-                    <p>a. Guru BK menyapa konseli dengan kalimat penyemangat, memimpin doa bersama.</p>
+                    <p>a. Guru BK menyapa konselia dengan kalimat penyemangat, memimpin doa bersama.</p>
                     <p>b. Guru BK membina hubungan baik (*building rapport*) dan melakukan ice breaking singkat.</p>
                     <p>c. Menyampaikan tujuan khusus dan kontrak layanan bimbingan yang akan berjalan.</p>
                   </div>
@@ -650,7 +650,7 @@ export default function ProgramBKPage() {
                   </div>
                   <div className="col-span-2 p-2 space-y-1">
                     <p>a. **Tahap Pengamatan**: Guru BK menayangkan materi PPT atau skenario cerita.</p>
-                    <p>b. **Tahap Asosiasi**: Konseli berkelompok mendiskusikan rumusan masalah topik "{selectedRpl.kebutuhan}".</p>
+                    <p>b. **Tahap Asosiasi**: Konselia berkelompok mendiskusikan rumusan masalah topik "{selectedRpl.kebutuhan}".</p>
                     <p>c. **Tahap Komunikasi**: Perwakilan kelompok menyajikan hasil refleksi solusi pemecahan masalah di depan kelas.</p>
                     <p>d. Guru BK memberikan penguatan (*reinforcement*) dan meluruskan pemahaman yang kurang tepat.</p>
                   </div>
@@ -673,7 +673,7 @@ export default function ProgramBKPage() {
                 </div>
                 <div className="grid grid-cols-3 border-b border-black">
                   <div className="col-span-1 p-2 font-bold border-r border-black">1. Evaluasi Proses</div>
-                  <div className="col-span-2 p-2">Guru BK mengamati keterlibatan keaktifan konseli, antusiasme mengikuti materi, keharmonisan kerja sama kelompok, dan kedisiplinan waktu secara kualitatif.</div>
+                  <div className="col-span-2 p-2">Guru BK mengamati keterlibatan keaktifan konselia, antusiasme mengikuti materi, keharmonisan kerja sama kelompok, dan kedisiplinan waktu secara kualitatif.</div>
                 </div>
                 <div className="grid grid-cols-3">
                   <div className="col-span-1 p-2 font-bold border-r border-black">2. Evaluasi Hasil</div>

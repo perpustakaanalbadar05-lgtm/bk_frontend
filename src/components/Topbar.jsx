@@ -17,21 +17,21 @@ const PAGE_TITLES = {
   '/dashboard/asesmen': { title: 'Asesmen & Psikotes', sub: 'Analisis AKPD & tes psikologis' },
   '/dashboard/program-bk': { title: 'Program BK', sub: 'Susun program tahunan dan RPL' },
   '/dashboard/laporan': { title: 'Laporan', sub: 'Rekap dan unduh laporan BK' },
-  '/dashboard/settings': { title: 'Pengaturan', sub: 'Konfigurasi sistem Konseli' },
+  '/dashboard/settings': { title: 'Pengaturan', sub: 'Konfigurasi sistem Konselia' },
 }
 
 export default function Topbar({ onMenuClick }) {
   const { pathname } = useLocation()
   const { user } = useAuth()
   const [searchOpen, setSearchOpen] = useState(false)
-  const page = PAGE_TITLES[pathname] || { title: 'Konseli', sub: '' }
+  const page = PAGE_TITLES[pathname] || { title: 'Konselia', sub: '' }
 
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'))
 
   const toggleTheme = () => {
     const isDarkNow = document.documentElement.classList.toggle('dark')
     setIsDark(isDarkNow)
-    localStorage.setItem('theme', isDarkNow ? 'dark' : 'light')
+    localStorage.setItem('simbk_theme', isDarkNow ? 'dark' : 'light')
   }
 
   // Notifikasi State

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { RiShieldCheckLine, RiHeartLine, RiGroupLine, RiBookOpenLine,
   RiBriefcaseLine, RiCheckboxCircleLine, RiArrowRightLine, RiArrowLeftLine,
@@ -19,7 +19,7 @@ export default function IsiAkpdPage() {
   const [customMaster, setCustomMaster] = useState(null);
   const [fetching, setFetching] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchMaster = async () => {
       if (!bkId) {
         setFetching(false);
@@ -70,7 +70,7 @@ export default function IsiAkpdPage() {
   };
   const config = getAssessmentConfig();
 
-  React.useEffect(() => {
+  useEffect(() => {
     setSelections(Array(config.master.length).fill(0));
   }, [config.master.length]);
   
@@ -80,7 +80,7 @@ export default function IsiAkpdPage() {
   const toggleTheme = () => {
     const isDarkNow = document.documentElement.classList.toggle('dark');
     setIsDark(isDarkNow);
-    localStorage.setItem('theme', isDarkNow ? 'dark' : 'light');
+    localStorage.setItem('simbk_theme', isDarkNow ? 'dark' : 'light');
   };
 
 

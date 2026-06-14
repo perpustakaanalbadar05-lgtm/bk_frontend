@@ -112,6 +112,7 @@ export default function AsesmenPage() {
   const [editingItemNo, setEditingItemNo] = useState(null)
   const [editingText, setEditingText] = useState('')
   const [editingMateri, setEditingMateri] = useState('')
+  const [editingBidang, setEditingBidang] = useState('')
 
   const getAssessmentConfig = (tabId = activeTab) => {
     let master = []
@@ -227,6 +228,8 @@ export default function AsesmenPage() {
       const newMaster = JSON.parse(JSON.stringify(conf.master));
       newMaster[idx].pernyataan = editingText;
       newMaster[idx].materi = editingMateri;
+      newMaster[idx].bidang = editingBidang;
+      newMaster[idx].bidangKode = editingBidang.substring(0, 1).toUpperCase();
       
       try {
         await api.post(`/assessment-templates/${conf.type}`, { master_data: newMaster });
@@ -280,11 +283,12 @@ export default function AsesmenPage() {
     const conf = getAssessmentConfig();
     const newMaster = JSON.parse(JSON.stringify(conf.master));
     const nextNo = newMaster.length + 1;
+    const lastItem = newMaster.length > 0 ? newMaster[newMaster.length - 1] : null;
     newMaster.push({
       no: nextNo,
       pernyataan: 'Pernyataan Baru (Silakan Edit)',
-      bidangKode: 'P',
-      bidang: 'Pribadi',
+      bidangKode: lastItem ? lastItem.bidangKode : 'P',
+      bidang: lastItem ? lastItem.bidang : 'Pribadi',
       materi: 'Materi Baru',
       tujuanLayanan: '-',
       komponenLayanan: 'Dasar',
@@ -345,7 +349,7 @@ export default function AsesmenPage() {
           </div>
 
           {/* Scrollable Content */}
-          <div className="overflow-y-auto flex-1 p-6 space-y-6 scrollbar-thin">
+          <div className="overflow-y-auto flex-1 p-6 space-y-6 scrollbar-thin min-h-0">
             
             {/* Score & Summary Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -399,7 +403,7 @@ export default function AsesmenPage() {
                       <div className="flex-1">
                         <p className="text-white font-medium text-xs sm:text-sm leading-relaxed">{item.pernyataan}</p>
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
-                          <span className="text-[10px] uppercase font-bold text-dark-400">Bidang: <b>{item.bidang}</b></span>
+                          <span className="text-[10px] uppercase font-bold text-dark-400">{conf.type === 'akpd' ? 'Bidang' : 'Hasil'}: <b>{item.bidang}</b></span>
                           {item.strategiLayanan && (
                             <>
                               <span className="text-[10px] text-dark-500">•</span>
@@ -506,6 +510,24 @@ export default function AsesmenPage() {
   const renderAssessmentContent = () => {
     const conf = getAssessmentConfig();
     const result = conf.result;
+
+    // Calculate unique categories for the editing dropdown
+    const uniqueBidangs = [...new Set(conf.master.map(item => item.bidang))];
+
+    // Group aggregates by bidang to match student portal ordering
+    const groupedAggregates = [];
+    if (result && result.aggregates) {
+      const bidangMap = {};
+      result.aggregates.forEach(item => {
+        if (!bidangMap[item.bidang]) {
+          bidangMap[item.bidang] = [];
+        }
+        bidangMap[item.bidang].push(item);
+      });
+      Object.values(bidangMap).forEach(list => {
+        groupedAggregates.push(...list);
+      });
+    }
 
     // If no uploaded data, show upload & create options
     if (fetchingMasters) {
@@ -702,13 +724,13 @@ export default function AsesmenPage() {
             onClick={() => setViewMode('profil-kelas')}
             className={`px-5 py-3 font-display font-bold text-sm border-b-2 transition-all ${viewMode === 'profil-kelas' ? 'border-primary-500 text-white' : 'border-transparent text-dark-300 hover:text-white'}`}
           >
-            Profil Kelas (Rekap 50 Item)
+            Profil Kelas (Rekap {conf.master.length} Item)
           </button>
           <button 
             onClick={() => setViewMode('daftar-siswa')}
             className={`px-5 py-3 font-display font-bold text-sm border-b-2 transition-all ${viewMode === 'daftar-siswa' ? 'border-primary-500 text-white' : 'border-transparent text-dark-300 hover:text-white'}`}
           >
-            Daftar Responden Konseli ({result.students.length})
+            Daftar Responden Konselia ({result.students.length})
           </button>
         </div>
 
@@ -721,14 +743,14 @@ export default function AsesmenPage() {
                   <tr>
                     <th className="px-4 py-3.5 text-center w-12 bg-dark-950">NO</th>
                     <th className="px-4 py-3.5 bg-dark-950">{conf.type === 'akpd' ? 'BUTIR MASALAH SISWA' : 'PERNYATAAN INSTRUMEN'}</th>
-                    <th className="px-4 py-3.5 w-24 bg-dark-950 text-center">BIDANG</th>
+                    <th className="px-4 py-3.5 w-24 bg-dark-950 text-center">{conf.type === 'akpd' ? 'BIDANG' : 'HASIL'}</th>
                     <th className="px-4 py-3.5 w-24 bg-dark-950 text-center">JML RESP</th>
                     <th className="px-4 py-3.5 w-24 bg-dark-950 text-center">PERSEN</th>
-                    <th className="px-4 py-3.5 w-28 bg-dark-950 text-center">PRIORITAS</th>
+                    {conf.type === 'akpd' && <th className="px-4 py-3.5 w-28 bg-dark-950 text-center">PRIORITAS</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
-                  {result.aggregates.map((item) => (
+                  {groupedAggregates.map((item) => (
                     <tr key={item.no} className={`hover:bg-white/5 transition-colors ${item.prioritas === 'TINGGI' ? 'bg-red-500/5' : ''}`}>
                       <td className="px-4 py-3 text-center font-mono font-bold text-xs text-dark-300">{item.no}</td>
                       <td className="px-4 py-3 group">
@@ -742,13 +764,24 @@ export default function AsesmenPage() {
                               autoFocus
                               placeholder="Pernyataan Instrumen"
                             />
-                            <input
-                              type="text"
-                              className="w-full bg-dark-900 border border-primary-500 rounded p-2 text-xs text-white"
-                              value={editingMateri}
-                              onChange={e => setEditingMateri(e.target.value)}
-                              placeholder="Materi Layanan (Topik)"
-                            />
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                className="flex-1 bg-dark-900 border border-primary-500 rounded p-2 text-xs text-white"
+                                value={editingMateri}
+                                onChange={e => setEditingMateri(e.target.value)}
+                                placeholder="Materi Layanan (Topik)"
+                              />
+                              <select
+                                className="w-1/3 bg-dark-900 border border-primary-500 rounded p-2 text-xs text-white"
+                                value={editingBidang}
+                                onChange={e => setEditingBidang(e.target.value)}
+                              >
+                                {uniqueBidangs.map(b => (
+                                  <option key={b} value={b}>{b}</option>
+                                ))}
+                              </select>
+                            </div>
                             <div className="flex gap-2 justify-end">
                               <button onClick={() => setEditingItemNo(null)} className="text-[10px] bg-dark-800 text-dark-300 px-2 py-1 rounded hover:bg-dark-700">Batal</button>
                               <button onClick={() => handleSaveEditPernyataan(item.no)} className="text-[10px] bg-primary-500 text-white px-2 py-1 rounded hover:bg-primary-600 flex items-center gap-1"><RiCheckLine/> Simpan</button>
@@ -759,7 +792,7 @@ export default function AsesmenPage() {
                             <div className="font-medium text-white/90 leading-relaxed flex items-start gap-2 justify-between">
                               {item.pernyataan}
                               <button 
-                                onClick={() => { setEditingItemNo(item.no); setEditingText(item.pernyataan); setEditingMateri(item.materi || ''); }}
+                                onClick={() => { setEditingItemNo(item.no); setEditingText(item.pernyataan); setEditingMateri(item.materi || ''); setEditingBidang(item.bidang || 'Pribadi'); }}
                                 className="opacity-0 group-hover:opacity-100 p-1 bg-white/5 hover:bg-white/10 rounded text-dark-300 hover:text-white transition-all flex-shrink-0"
                                 title="Edit Pertanyaan"
                               >
@@ -786,9 +819,11 @@ export default function AsesmenPage() {
                       <td className="px-4 py-3 text-center font-mono text-xs text-primary-300 font-bold">
                         {(item.persentase * 100).toFixed(2)}%
                       </td>
-                      <td className="px-4 py-3 text-center">
-                        <span className={PRIORITAS_CLS[item.prioritas]}>{item.prioritas}</span>
-                      </td>
+                      {conf.type === 'akpd' && (
+                        <td className="px-4 py-3 text-center">
+                          <span className={PRIORITAS_CLS[item.prioritas]}>{item.prioritas}</span>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

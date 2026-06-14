@@ -39,7 +39,7 @@ function SiswaModal({ isOpen, onClose, initial, onSave, classes }) {
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
       <div className="relative w-full max-w-xl card-feature flex flex-col max-h-[90vh] p-0" style={{animationDuration:'0.25s'}}>
-        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
+        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5 flex-shrink-0">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-primary-500/20 border border-primary-500/30 flex items-center justify-center">
               <RiUserLine className="text-2xl text-primary-400" />
@@ -51,7 +51,7 @@ function SiswaModal({ isOpen, onClose, initial, onSave, classes }) {
           </div>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-dark-200 hover:text-white transition-colors"><RiCloseLine className="text-xl" /></button>
         </div>
-        <form onSubmit={handleSubmit} className="overflow-y-auto flex-1 p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="overflow-y-auto flex-1 p-6 space-y-5 min-h-0">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-2">Nama Lengkap *</label>
@@ -93,7 +93,7 @@ function SiswaModal({ isOpen, onClose, initial, onSave, classes }) {
             </div>
           </div>
         </form>
-        <div className="p-5 border-t border-white/10 bg-dark-900/50 flex gap-3">
+        <div className="p-5 border-t border-white/10 bg-dark-900/50 flex gap-3 flex-shrink-0">
           <button type="button" onClick={onClose} className="flex-1 btn-secondary py-2.5 text-sm">Batal</button>
           <button type="button" onClick={handleSubmit} className="flex-1 btn-primary py-2.5 text-sm gap-2">
             <RiSaveLine /> {isEdit ? 'Simpan Perubahan' : 'Tambah Siswa'}

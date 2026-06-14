@@ -115,6 +115,40 @@ export default function DashboardPage() {
     date: s.tanggal
   }))
 
+  // Calculate dynamic alerts
+  const [alerts, setAlerts] = useState([])
+  useEffect(() => {
+    const newAlerts = []
+    
+    if (siswa.length > 0) {
+      const filledAkpdSiswaNames = (akpdResult?.students || []).map(s => s.nama.toLowerCase())
+      const missingCount = siswa.filter(s => !filledAkpdSiswaNames.includes(s.nama.toLowerCase())).length
+      if (missingCount > 0) {
+        newAlerts.push({ text: `${missingCount} siswa belum mengisi asesmen AKPD`, type: 'warning' })
+      }
+    } else {
+      newAlerts.push({ text: 'Belum ada data siswa binaan. Silakan tambahkan siswa.', type: 'info' })
+    }
+
+    const pendingSessions = sessions.filter(s => s.status !== 'Selesai').length
+    if (pendingSessions > 0) {
+      newAlerts.push({ text: `${pendingSessions} sesi konseling masih berjalan / belum selesai`, type: 'warning' })
+    }
+
+    const currentMonthSchedules = schedules.filter(s => {
+      if (!s.date) return false;
+      try { return new Date(s.date).getMonth() === now.getMonth() } catch { return false }
+    }).length
+    if (currentMonthSchedules > 0) {
+      newAlerts.push({ text: `Terdapat ${currentMonthSchedules} jadwal Bimbingan Klasikal bulan ini`, type: 'info' })
+    }
+
+    if (newAlerts.length === 0) {
+      newAlerts.push({ text: 'Semua program BK dan asesmen berjalan dengan baik dan lancar', type: 'success' })
+    }
+    setAlerts(newAlerts)
+  }, [siswa, sessions, schedules, akpdResult])
+
   return (
     <div className="space-y-6">
       {/* Greeting */}
@@ -144,7 +178,7 @@ export default function DashboardPage() {
 
       {/* Alerts */}
       <div className="space-y-2">
-        {ALERTS.map(({ text, type }) => {
+        {alerts.map(({ text, type }) => {
           const { cls, icon: Icon, color } = ALERT_STYLE[type]
           return (
             <div key={text} className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${cls}`}>

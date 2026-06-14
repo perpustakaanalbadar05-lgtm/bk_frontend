@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   RiHomeHeartLine, RiMapPinLine, RiCalendarCheckLine,
   RiAddLine, RiSearchLine, RiCheckDoubleLine, RiFileList3Line,
@@ -37,17 +38,52 @@ function KasusModal({ isOpen, onClose, onSave, classes, siswa = [], defaultVisit
     }
   }
 
-  return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
-      <div className="relative w-full max-w-md card-feature p-0 flex flex-col overflow-hidden animate-in">
-        <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/5">
-          <h2 className="font-display font-bold text-white text-lg">Catat Kasus / Pelanggaran</h2>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-dark-200 hover:text-white"><RiCloseLine /></button>
-        </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      style={{ fontFamily: 'inherit' }}
+    >
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal box — no overflow:hidden, uses inline style card */}
+      <div
+        className="relative w-full max-w-md flex flex-col animate-in"
+        style={{
+          background: 'var(--card-feature-bg)',
+          border: '1px solid var(--card-feature-border)',
+          borderRadius: '1.25rem',
+          boxShadow: '0 25px 60px rgba(0,0,0,0.35)',
+          maxHeight: '92vh',
+          overflowY: 'auto',
+        }}
+      >
+        {/* Header */}
+        <div
+          className="flex items-center justify-between px-5 pt-5 pb-4"
+          style={{ borderBottom: '1px solid rgba(var(--color-white), 0.08)' }}
+        >
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1.5">Nama Siswa *</label>
+            <h2 className="font-display font-bold text-white text-lg leading-tight">Catat Kasus / Pelanggaran</h2>
+            <p className="text-dark-300 text-xs mt-0.5">Isi form berikut untuk mencatat kasus kedisiplinan siswa.</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="ml-3 p-2 rounded-full hover:bg-white/10 text-dark-200 hover:text-white transition-colors flex-shrink-0"
+          >
+            <RiCloseLine className="text-lg" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-4">
+
+          {/* Nama Siswa */}
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-dark-300 mb-1.5">Nama Siswa *</label>
             <StudentSelector
               siswa={siswa}
               value={form.siswa}
@@ -57,68 +93,113 @@ function KasusModal({ isOpen, onClose, onSave, classes, siswa = [], defaultVisit
               placeholder="Cari nama / NIS siswa..."
             />
             {form.siswa && !siswa.find(s => s.nama === form.siswa) && (
-              <p className="text-amber-400 text-[10px] mt-1 flex items-center gap-1">⚠️ Nama tidak ditemukan di database siswa.</p>
+              <p className="text-amber-400 text-[10px] mt-1.5 flex items-center gap-1">⚠️ Nama tidak ditemukan di database siswa.</p>
             )}
           </div>
+
+          {/* Kelas & Poin */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Kelas</label>
-              <select className="input-field text-sm" value={form.kelas} onChange={e => setForm({...form, kelas: e.target.value})}>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-dark-300 mb-1.5">Kelas</label>
+              <select className="input-field text-sm w-full" value={form.kelas} onChange={e => setForm({...form, kelas: e.target.value})}>
                 <option value="" disabled>Pilih Kelas</option>
-                {classes?.length ? classes.map(k => <option key={k} value={k}>{k}</option>) : <option value="" disabled>Belum ada kelas di Pengaturan</option>}
+                {classes?.length ? classes.map(k => <option key={k} value={k}>{k}</option>) : <option value="" disabled>Belum ada kelas</option>}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Poin Pelanggaran</label>
-              <input type="number" min="0" max="100" className="input-field" value={form.poin} onChange={e => setForm({...form, poin: parseInt(e.target.value) || 0})} />
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-dark-300 mb-1.5">Poin Pelanggaran</label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                className="input-field w-full"
+                value={form.poin}
+                onChange={e => setForm({...form, poin: parseInt(e.target.value) || 0})}
+              />
             </div>
           </div>
+
+          {/* Status */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Status</label>
-            <select className="input-field text-sm" value={form.status} onChange={e => setForm({...form, status: e.target.value})}>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-dark-300 mb-1.5">Status</label>
+            <select className="input-field text-sm w-full" value={form.status} onChange={e => setForm({...form, status: e.target.value})}>
               <option value="Proses">Proses</option>
               <option value="Selesai">Selesai</option>
               <option value="Terjadwal">Terjadwal</option>
             </select>
           </div>
+
+          {/* Deskripsi Kasus */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-1">Kasus / Bentuk Pelanggaran</label>
-            <textarea rows="3" placeholder="Jelaskan secara singkat..." required className="input-field resize-none" value={form.kasus} onChange={e => setForm({...form, kasus: e.target.value})} />
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-dark-300 mb-1.5">Kasus / Bentuk Pelanggaran</label>
+            <textarea
+              rows="3"
+              placeholder="Jelaskan secara singkat..."
+              required
+              className="input-field resize-none w-full"
+              value={form.kasus}
+              onChange={e => setForm({...form, kasus: e.target.value})}
+            />
           </div>
-          <div className="space-y-2">
-            <label className="block text-xs font-bold uppercase tracking-wider text-dark-200 mb-2">Tindakan Lanjutan (Opsional)</label>
-            <div className="flex items-center justify-between p-3 rounded-xl glass border border-amber-500/20">
-              <div>
-                <label className="font-semibold text-white text-sm flex items-center gap-1.5"><RiHomeHeartLine className="text-amber-400"/> Home Visit</label>
-                <p className="text-dark-200 text-[10px] mt-0.5">Jadwalkan kunjungan rumah orang tua.</p>
-              </div>
-              <input type="checkbox" className="accent-amber-500 w-4 h-4 cursor-pointer" checked={form.visit} onChange={e => setForm({...form, visit: e.target.checked})} />
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-xl glass border border-blue-500/20">
-              <div>
-                <label className="font-semibold text-white text-sm flex items-center gap-1.5"><RiChatVoiceLine className="text-blue-400"/> Konseling</label>
-                <p className="text-dark-200 text-[10px] mt-0.5">Jadwalkan sesi konseling khusus.</p>
-              </div>
-              <input type="checkbox" className="accent-blue-500 w-4 h-4 cursor-pointer" checked={form.konseling} onChange={e => setForm({...form, konseling: e.target.checked})} />
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-xl glass border border-purple-500/20">
-              <div>
-                <label className="font-semibold text-white text-sm flex items-center gap-1.5"><RiPhoneLine className="text-purple-400"/> Panggilan Orang Tua</label>
-                <p className="text-dark-200 text-[10px] mt-0.5">Undang orang tua wali ke sekolah.</p>
-              </div>
-              <input type="checkbox" className="accent-purple-500 w-4 h-4 cursor-pointer" checked={form.panggilan} onChange={e => setForm({...form, panggilan: e.target.checked})} />
+
+          {/* Tindakan Lanjutan */}
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-dark-300 mb-2">Tindakan Lanjutan (Opsional)</label>
+            <div className="flex flex-col gap-2">
+              <label className="flex items-center justify-between p-3 rounded-xl glass border border-amber-500/20 cursor-pointer hover:border-amber-500/40 transition-colors">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+                    <RiHomeHeartLine className="text-amber-400 text-sm" />
+                  </div>
+                  <div>
+                    <span className="font-semibold text-white text-sm block">Home Visit</span>
+                    <span className="text-dark-300 text-[10px]">Jadwalkan kunjungan rumah orang tua.</span>
+                  </div>
+                </div>
+                <input type="checkbox" className="accent-amber-500 w-4 h-4 cursor-pointer flex-shrink-0" checked={form.visit} onChange={e => setForm({...form, visit: e.target.checked})} />
+              </label>
+              <label className="flex items-center justify-between p-3 rounded-xl glass border border-blue-500/20 cursor-pointer hover:border-blue-500/40 transition-colors">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                    <RiChatVoiceLine className="text-blue-400 text-sm" />
+                  </div>
+                  <div>
+                    <span className="font-semibold text-white text-sm block">Konseling</span>
+                    <span className="text-dark-300 text-[10px]">Jadwalkan sesi konseling khusus.</span>
+                  </div>
+                </div>
+                <input type="checkbox" className="accent-blue-500 w-4 h-4 cursor-pointer flex-shrink-0" checked={form.konseling} onChange={e => setForm({...form, konseling: e.target.checked})} />
+              </label>
+              <label className="flex items-center justify-between p-3 rounded-xl glass border border-purple-500/20 cursor-pointer hover:border-purple-500/40 transition-colors">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center flex-shrink-0">
+                    <RiPhoneLine className="text-purple-400 text-sm" />
+                  </div>
+                  <div>
+                    <span className="font-semibold text-white text-sm block">Panggilan Orang Tua</span>
+                    <span className="text-dark-300 text-[10px]">Undang orang tua wali ke sekolah.</span>
+                  </div>
+                </div>
+                <input type="checkbox" className="accent-purple-500 w-4 h-4 cursor-pointer flex-shrink-0" checked={form.panggilan} onChange={e => setForm({...form, panggilan: e.target.checked})} />
+              </label>
             </div>
           </div>
         </form>
-        <div className="p-4 border-t border-white/10 bg-dark-950/50 flex gap-3">
-          <button type="button" onClick={onClose} className="flex-1 btn-secondary text-sm py-2">Batal</button>
-          <button type="button" onClick={handleSubmit} disabled={saving} className="flex-1 btn-primary text-sm py-2 gap-2 bg-primary-500 disabled:opacity-60">
+
+        {/* Footer Buttons */}
+        <div
+          className="px-5 pb-5 pt-4 flex gap-3"
+          style={{ borderTop: '1px solid rgba(var(--color-white), 0.08)' }}
+        >
+          <button type="button" onClick={onClose} className="flex-1 btn-secondary text-sm py-2.5">Batal</button>
+          <button type="button" onClick={handleSubmit} disabled={saving} className="flex-1 btn-primary text-sm py-2.5 gap-2 disabled:opacity-60">
             {saving ? <RiLoader4Line className="animate-spin" /> : <RiSaveLine />}
             {saving ? 'Menyimpan...' : 'Simpan Kasus'}
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 

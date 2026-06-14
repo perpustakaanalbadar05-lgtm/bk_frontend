@@ -1,6 +1,6 @@
 /**
  * StudentSelector.jsx
- * Konseli by Alifba Media — Komponen pencarian & pemilihan siswa dari database.
+ * Konselia by Alifba Media — Komponen pencarian & pemilihan siswa dari database.
  *
  * Cara pakai:
  *   <StudentSelector
@@ -100,7 +100,7 @@ export default function StudentSelector({
 
       {/* Dropdown list */}
       {open && (
-        <div className="absolute left-0 right-0 top-full mt-1.5 z-[200] bg-dark-900 border border-white/15 rounded-xl shadow-2xl overflow-hidden animate-in">
+        <div className="absolute left-0 right-0 top-full mt-1.5 z-[99999] bg-dark-900 border border-white/15 rounded-xl shadow-2xl overflow-hidden animate-in">
           {/* Info kelas filter */}
           {kelas && (
             <div className="px-3 py-2 border-b border-white/10 flex items-center gap-1.5 bg-primary-500/5">

@@ -15,7 +15,7 @@ export default function LoginPage() {
   const toggleTheme = () => {
     const isDarkNow = document.documentElement.classList.toggle('dark')
     setIsDark(isDarkNow)
-    localStorage.setItem('theme', isDarkNow ? 'dark' : 'light')
+    localStorage.setItem('simbk_theme', isDarkNow ? 'dark' : 'light')
   }
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
@@ -25,7 +25,7 @@ export default function LoginPage() {
     setLoading(true)
     try {
       const user = await login(form)
-      toast.success('Selamat datang di Konseli!')
+      toast.success('Selamat datang di Konselia!')
       if (user.role === 'super_admin') {
         navigate('/super-admin/dashboard')
       } else {
@@ -61,7 +61,7 @@ export default function LoginPage() {
           <div className="w-20 h-20 rounded-2xl bg-primary-500 flex items-center justify-center mx-auto mb-8 shadow-glow animate-float">
             <RiShieldStarLine className="text-[#ffffff] text-4xl" />
           </div>
-          <h1 className="font-display font-black text-5xl text-[#ffffff] mb-2">Konseli</h1>
+          <h1 className="font-display font-black text-5xl text-[#ffffff] mb-2">Konselia</h1>
           <p className="text-primary-300 font-semibold text-lg mb-1">by Alifba Media.</p>
           <p className="text-[#cbd5e1] font-medium italic mb-3">Konseling, Solusi, Edukasi.</p>
           <p className="text-[#94a3b8] text-sm leading-relaxed">
@@ -85,7 +85,7 @@ export default function LoginPage() {
               <RiShieldStarLine className="text-white text-2xl" />
             </div>
             <div>
-              <div className="font-display font-bold text-white text-2xl">Konseli</div>
+              <div className="font-display font-bold text-white text-2xl">Konselia</div>
               <div className="text-dark-200 text-xs">by Alifba Media.</div>
             </div>
           </div>
@@ -151,7 +151,7 @@ export default function LoginPage() {
               ) : (
                 <>
                   <RiSparklingLine />
-                  Masuk ke Konseli
+                  Masuk ke Konselia
                   <RiArrowRightLine />
                 </>
               )}
@@ -162,7 +162,7 @@ export default function LoginPage() {
             <p className="text-dark-200 text-sm">
               Belum memiliki akun?{' '}
               <Link to="/login" className="text-primary-400 hover:text-primary-300 font-medium transition-colors">
-                Hubungi Admin Sekolah
+                Hubungi Admin Kami 0821-4377-7455
               </Link>
             </p>
           </div>

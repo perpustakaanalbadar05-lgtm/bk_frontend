@@ -9,7 +9,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Kesadaran untuk beribadah Tuhan YME dengan Ikhlas",
     "materi": "Tuhan selalu hadir dalam hidupku",
-    "tujuanLayanan": "Peserta didik/konseli memiliki kesadaran untuk beribadah pada Tuhan YME",
+    "tujuanLayanan": "Peserta didik/konselia memiliki kesadaran untuk beribadah pada Tuhan YME",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -20,7 +20,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Kesadaran untuk selalu bersikap jujur",
     "materi": "Nilai suatu sikap kejujuran",
-    "tujuanLayanan": "Peserta didik/konseli memiliki kebiasaan untuk selalu bersikap jujur",
+    "tujuanLayanan": "Peserta didik/konselia memiliki kebiasaan untuk selalu bersikap jujur",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -31,7 +31,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Memiliki sikap selalu bersyukur pada Tuhan YME",
     "materi": "Bersyukur dengan hati yang ikhlas",
-    "tujuanLayanan": "Peserta didik/konseli selau bersyukur pada Tuhan YME atas segala yang telah diberikan-Nya",
+    "tujuanLayanan": "Peserta didik/konselia selau bersyukur pada Tuhan YME atas segala yang telah diberikan-Nya",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -42,7 +42,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Pemahaman terhadap dampak menyontek",
     "materi": "Akibat suka menyontek",
-    "tujuanLayanan": "Peserta didik/konseli memahami dampak menyontek dan dapat menghindarinya",
+    "tujuanLayanan": "Peserta didik/konselia memahami dampak menyontek dan dapat menghindarinya",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -53,7 +53,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Kesadaran untuk mencintai budaya indonesia",
     "materi": "Saya cinta budaya sendiri",
-    "tujuanLayanan": "Peserta didik/konseli memiliki kesadaran mencintai budaya indonesia tercinta",
+    "tujuanLayanan": "Peserta didik/konselia memiliki kesadaran mencintai budaya indonesia tercinta",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Kelompok"
   },
@@ -64,7 +64,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Kemampuan untuk selalu bertanggung jawab",
     "materi": "Langkahku tanggung jawabku",
-    "tujuanLayanan": "Peserta didik/konseli memiliki sikap yang bertanggung jawab",
+    "tujuanLayanan": "Peserta didik/konselia memiliki sikap yang bertanggung jawab",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Kelompok"
   },
@@ -75,7 +75,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Kemampuan mengendalikan diri dari rasa marah",
     "materi": "Mengelola marah",
-    "tujuanLayanan": "Peserta didik/konseli  mengelola kemarahan",
+    "tujuanLayanan": "Peserta didik/konselia  mengelola kemarahan",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -86,7 +86,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Memiliki kepercaya diri",
     "materi": "Menghilangkan rasa rendah diri",
-    "tujuanLayanan": "Peserta didik/konseli tidak rendah diri",
+    "tujuanLayanan": "Peserta didik/konselia tidak rendah diri",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -97,7 +97,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Kesadaran untuk menerima pemberian terbaik dari Tuhan",
     "materi": "Menerima diriku apa adanya",
-    "tujuanLayanan": "Peserta didik/konseli mampu besyukur dan menerima dengan ikhlas apa yang sudah dimilikinya",
+    "tujuanLayanan": "Peserta didik/konselia mampu besyukur dan menerima dengan ikhlas apa yang sudah dimilikinya",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -108,7 +108,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Memperoleh perhatian orang tua yang cukup",
     "materi": "Kiat mendapat perhatian orang tua",
-    "tujuanLayanan": "Peserta didik/konseli memperoleh perhatian orang tua yang cukup",
+    "tujuanLayanan": "Peserta didik/konselia memperoleh perhatian orang tua yang cukup",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -119,7 +119,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Memiliki kesehatan jasmani dan rohani yang baik",
     "materi": "Pola hidup bersih dan sehat",
-    "tujuanLayanan": "Peserta didik/konseli memiliki kesehatan jasmani dan rohani yang baik",
+    "tujuanLayanan": "Peserta didik/konselia memiliki kesehatan jasmani dan rohani yang baik",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -130,7 +130,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Menggali Potensi Diri Sendiri",
     "materi": "Potensi diri",
-    "tujuanLayanan": "Peserta didik/konseli mampu menggali Potensi Diri Sendiri",
+    "tujuanLayanan": "Peserta didik/konselia mampu menggali Potensi Diri Sendiri",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -141,7 +141,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Memiliki kesehatan jasmani dan rohani yang baik",
     "materi": "Menjaga kesehatan diri",
-    "tujuanLayanan": "Peserta didik/konseli mampu menjaga kesehatan jasmani dan rohani",
+    "tujuanLayanan": "Peserta didik/konselia mampu menjaga kesehatan jasmani dan rohani",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -152,7 +152,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Mengetahui Kelebihan dan Kelemahan yang dimiliki",
     "materi": "Kelebihan dan kekurangan diri",
-    "tujuanLayanan": "Peserta didik/konseli dapat mengetahui kelebihan dan  kelemahan yang dimilikinya",
+    "tujuanLayanan": "Peserta didik/konselia dapat mengetahui kelebihan dan  kelemahan yang dimilikinya",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Kelompok"
   },
@@ -163,7 +163,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Meningkatkan taraf hidup /ekonomi keluarga",
     "materi": "Kiat mengatur keuangan",
-    "tujuanLayanan": "Peserta didik/konseli dapat meningkatkan taraf hidup /ekonomi keluarga",
+    "tujuanLayanan": "Peserta didik/konselia dapat meningkatkan taraf hidup /ekonomi keluarga",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -174,7 +174,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Mengatur jadwal kegiatan sehari-hari dengan baik",
     "materi": "Cara mengatur waktu",
-    "tujuanLayanan": "Peserta didik/konseli mampu mengatur jadwal kegiatan sehari-hari dengan baik",
+    "tujuanLayanan": "Peserta didik/konselia mampu mengatur jadwal kegiatan sehari-hari dengan baik",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -185,7 +185,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Kemampuan mengenal diri sendiri sendiri",
     "materi": "Pemahaman diri sendiri",
-    "tujuanLayanan": "Peserta didik/konseli mampu mengenal diri sendiri sendiri",
+    "tujuanLayanan": "Peserta didik/konselia mampu mengenal diri sendiri sendiri",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -196,7 +196,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Menyadari dan memahami perubahan yang terjadi pada masa remaja",
     "materi": "Masa remaja dan perubahannya",
-    "tujuanLayanan": "Peserta didik/konseli dapat menyadari dan memahami perubahan yang terjadi pada masa remaja",
+    "tujuanLayanan": "Peserta didik/konselia dapat menyadari dan memahami perubahan yang terjadi pada masa remaja",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -207,7 +207,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Memiliki disiplin diri dalam kehidupan",
     "materi": "Disiplin diri",
-    "tujuanLayanan": "Peserta didik/konseli memiliki disiplin diri dalam kehidupan",
+    "tujuanLayanan": "Peserta didik/konselia memiliki disiplin diri dalam kehidupan",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -218,7 +218,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Memiliki kepribadian yang mandiri",
     "materi": "Menjadi pribadi mandiri",
-    "tujuanLayanan": "Peserta didik/konseli dapat memiliki kepribadian yang mandiri",
+    "tujuanLayanan": "Peserta didik/konselia dapat memiliki kepribadian yang mandiri",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -229,7 +229,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Menghindari bahaya atau dampak rokok",
     "materi": "Bahaya rokok dan dampaknya",
-    "tujuanLayanan": "Peserta didik/konseli dapat menghindari bahaya atau dampak rokok",
+    "tujuanLayanan": "Peserta didik/konselia dapat menghindari bahaya atau dampak rokok",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -240,7 +240,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Kemampuan mengucapkan kata maaf, tolong dan terima kasih",
     "materi": "Melakukan 3 kata penting dalam pergaulan",
-    "tujuanLayanan": "Peserta didik/konseli mampu melakukan 3 kata penting dalam pergaulan",
+    "tujuanLayanan": "Peserta didik/konselia mampu melakukan 3 kata penting dalam pergaulan",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Kelompok"
   },
@@ -251,7 +251,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Dapat berinteraksi dengan guru dan karyawan sekolah",
     "materi": "Membina hubungan baik dengan guru dan karyawan",
-    "tujuanLayanan": "Peserta didik/konseli dapat berinteraksi dengan guru dan karyawan sekolah",
+    "tujuanLayanan": "Peserta didik/konselia dapat berinteraksi dengan guru dan karyawan sekolah",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -262,7 +262,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Mudah beradaptasi dengan lingkungan sekolah baru",
     "materi": "Adaptasi di lingkungan sekolah baru",
-    "tujuanLayanan": "Peserta didik/konseli mudah beradaptasi dengan lingkungan sekolah baru",
+    "tujuanLayanan": "Peserta didik/konselia mudah beradaptasi dengan lingkungan sekolah baru",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -273,7 +273,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Kemudahan bergaul dengan teman-teman di sekolah",
     "materi": "Kiat membina hubungan dengan teman",
-    "tujuanLayanan": "Peserta didik/konseli dapat mudah bergaul dengan teman-teman di sekolah",
+    "tujuanLayanan": "Peserta didik/konselia dapat mudah bergaul dengan teman-teman di sekolah",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -284,7 +284,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Kemampuan mengatasi masalah dengan teman di sekolah",
     "materi": "Menyelesaikan  masalah dengan teman",
-    "tujuanLayanan": "Peserta didik/konseli mampu mengatasi masalah dengan teman di sekolah",
+    "tujuanLayanan": "Peserta didik/konselia mampu mengatasi masalah dengan teman di sekolah",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Kelompok"
   },
@@ -295,7 +295,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Kemudahan mencari dan disenangi teman",
     "materi": "Kiat mencari dan disenangi teman",
-    "tujuanLayanan": "Peserta didik/konseli mudah mencarai dan disenangi teman",
+    "tujuanLayanan": "Peserta didik/konselia mudah mencarai dan disenangi teman",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -306,7 +306,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Memahami tentang bullying dan cara mensikapinya",
     "materi": "Stop bulliying",
-    "tujuanLayanan": "Peserta didik/konseli dapat memahami tentang bullying dan cara mensikapinya",
+    "tujuanLayanan": "Peserta didik/konselia dapat memahami tentang bullying dan cara mensikapinya",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -317,7 +317,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Mengendalikan penggunaan medsos sesuai kebutuhan",
     "materi": "Mengelola sarana media sosial",
-    "tujuanLayanan": "Peserta didik/konseli dapat mengendalikan penggunaan medsos sesuai kebutuhan",
+    "tujuanLayanan": "Peserta didik/konselia dapat mengendalikan penggunaan medsos sesuai kebutuhan",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -328,7 +328,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Dapat berinteraksi dengan lawan jenis sesuai norma yang berlaku",
     "materi": "Mengenal norma kehidupan",
-    "tujuanLayanan": "Peserta didik/konseli dapat berinteraksi dengan lawan jenis sesuai norma yang berlaku",
+    "tujuanLayanan": "Peserta didik/konselia dapat berinteraksi dengan lawan jenis sesuai norma yang berlaku",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -339,7 +339,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Kesadaran sebagai makhluk sosial yang harus berinteraksi",
     "materi": "Manusia sebagai makhluk sosial",
-    "tujuanLayanan": "Peserta didik/konseli memiliki Kesadaran sebagai makhluk sosial yang harus berinteraksi",
+    "tujuanLayanan": "Peserta didik/konselia memiliki Kesadaran sebagai makhluk sosial yang harus berinteraksi",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -350,7 +350,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Kesadaran orang tua untuk peduli pada kegiatan belajar anaknya",
     "materi": "Kiat agar orang tua peduli dengan kegiatan belajar kita",
-    "tujuanLayanan": "Peserta didik/konseli memiliki kesadaran orang tua untuk peduli pada kegiatan belajar anaknya",
+    "tujuanLayanan": "Peserta didik/konselia memiliki kesadaran orang tua untuk peduli pada kegiatan belajar anaknya",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -361,7 +361,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Kemudahan memaham pelajaran",
     "materi": "Identifikasi kesulitan belajar",
-    "tujuanLayanan": "Peserta didik/konseli memperoleh kemudahan memaham pelajaran",
+    "tujuanLayanan": "Peserta didik/konselia memperoleh kemudahan memaham pelajaran",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -372,7 +372,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Melakukan disiplin belajar",
     "materi": "Pentingnya disiplin belajar",
-    "tujuanLayanan": "Peserta didik/konseli dapat melakukan disiplin belajar",
+    "tujuanLayanan": "Peserta didik/konselia dapat melakukan disiplin belajar",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -383,7 +383,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Melakukan kebiasaan belajar",
     "materi": "Tanggung jawab seorang siswa",
-    "tujuanLayanan": "Peserta didik/konseli dapat melakukan kebiasaan belajar",
+    "tujuanLayanan": "Peserta didik/konselia dapat melakukan kebiasaan belajar",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -394,7 +394,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Memiliki kebiasaan belajar di rumah",
     "materi": "Cara belajar di rumah",
-    "tujuanLayanan": "Peserta didik/konseli dapat belajar di rumah",
+    "tujuanLayanan": "Peserta didik/konselia dapat belajar di rumah",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -405,7 +405,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Kemampuan untuk tidak  menunda pekerjaan sekolah",
     "materi": "Bahaya menunda pekerjaan sekolah",
-    "tujuanLayanan": "Peserta didik/konseli tidak menunda pekerjaan sekolah",
+    "tujuanLayanan": "Peserta didik/konselia tidak menunda pekerjaan sekolah",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -416,7 +416,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Memperoleh atau meraih prestasi di sekolah",
     "materi": "Kiat sukses meraih prestasi",
-    "tujuanLayanan": "Peserta didik/konseli dapat memperoleh atau meraih prestasi di sekolah",
+    "tujuanLayanan": "Peserta didik/konselia dapat memperoleh atau meraih prestasi di sekolah",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -427,7 +427,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Memiliki Motivasi belajar",
     "materi": "Pentingnya motivasi belajar",
-    "tujuanLayanan": "Peserta didik/konseli memiliki Motivasi belajar",
+    "tujuanLayanan": "Peserta didik/konselia memiliki Motivasi belajar",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -438,7 +438,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Melakukan belajar kelompok yang baik",
     "materi": "Cara belajar kelompok",
-    "tujuanLayanan": "Peserta didik/konseli dapat melakukan belajar kelompok yang baik",
+    "tujuanLayanan": "Peserta didik/konselia dapat melakukan belajar kelompok yang baik",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -449,7 +449,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Pemahaman cara belajar di SMP/MTs yang baik",
     "materi": "Cara belajar di sekolah baru",
-    "tujuanLayanan": "Peserta didik/konseli memiliki pemahaman tentang cara belajar di SMP/MTs yang baik",
+    "tujuanLayanan": "Peserta didik/konselia memiliki pemahaman tentang cara belajar di SMP/MTs yang baik",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -460,7 +460,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Menemukan cara belajar yang sesuai",
     "materi": "Cara mencari teman yang cocok untuk belajar bersama",
-    "tujuanLayanan": "Peserta didik/konseli dapat menemukan cara belajar yang sesuai",
+    "tujuanLayanan": "Peserta didik/konselia dapat menemukan cara belajar yang sesuai",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -471,7 +471,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Karir",
     "rumusanKebutuhan": "Memperoleh informasi beasiswa",
     "materi": "Cara mendapatkan beasiswa",
-    "tujuanLayanan": "Peserta didik/konseli dapat memperoleh informasi beasiswa",
+    "tujuanLayanan": "Peserta didik/konselia dapat memperoleh informasi beasiswa",
     "komponenLayanan": "Pem&Perenc Indv",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -482,7 +482,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Karir",
     "rumusanKebutuhan": "Kemampuan mengatur waktu bekerja dan sekolah",
     "materi": "Cara mengatur waktu belajar sambil bekerja",
-    "tujuanLayanan": "Peserta didik/konseli memiliki kemampuan mengatur waktu bekerja dan sekolah",
+    "tujuanLayanan": "Peserta didik/konselia memiliki kemampuan mengatur waktu bekerja dan sekolah",
     "komponenLayanan": "Pem&Perenc Indv",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -493,7 +493,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Karir",
     "rumusanKebutuhan": "Memilih Ekskul yang sesuai",
     "materi": "Cara memilih kegiatan ekstra kurikuler yang sesuai",
-    "tujuanLayanan": "Peserta didik/konseli dapat memilih Ekskul yang sesuai",
+    "tujuanLayanan": "Peserta didik/konselia dapat memilih Ekskul yang sesuai",
     "komponenLayanan": "Pem&Perenc Indv",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -504,7 +504,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Karir",
     "rumusanKebutuhan": "Memiliki Sikap optimis dapat naik kelas",
     "materi": "Optimis untuk naik kelas",
-    "tujuanLayanan": "Peserta didik/konseli memiliki Sikap optimis dapat naik kelas",
+    "tujuanLayanan": "Peserta didik/konselia memiliki Sikap optimis dapat naik kelas",
     "komponenLayanan": "Pem&Perenc Indv",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -515,7 +515,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Karir",
     "rumusanKebutuhan": "Mengidentifikasi cita-cita yang sesuai dengan dirinya",
     "materi": "Cita-cita karirku",
-    "tujuanLayanan": "Peserta didik/konseli dapat mengidentifikasi cita-cita yang sesuai dengan dirinya",
+    "tujuanLayanan": "Peserta didik/konselia dapat mengidentifikasi cita-cita yang sesuai dengan dirinya",
     "komponenLayanan": "Pem&Perenc Indv",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -526,7 +526,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Karir",
     "rumusanKebutuhan": "Pemahaman mengenai jenis-jenis profesi di masyarakat",
     "materi": "Jenis pekerjaan dan prospeknya",
-    "tujuanLayanan": "Peserta didik/konseli mampu memahami mengenai jenis-jenis profesi di masyarakat",
+    "tujuanLayanan": "Peserta didik/konselia mampu memahami mengenai jenis-jenis profesi di masyarakat",
     "komponenLayanan": "Pem&Perenc Indv",
     "strategiLayanan": "Bimbingan Klasikal"
   },
@@ -537,7 +537,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Karir",
     "rumusanKebutuhan": "Mengenal osis dan kegiataannya",
     "materi": "Mengenal osis dan kegiataannya",
-    "tujuanLayanan": "Peserta didik/konseli dapat mengenal osis dan kegiataannya",
+    "tujuanLayanan": "Peserta didik/konselia dapat mengenal osis dan kegiataannya",
     "komponenLayanan": "Pem&Perenc Indv",
     "strategiLayanan": "Bimbingan Kelas besar"
   },
@@ -548,7 +548,7 @@ const DEFAULT_AKPD_MASTER = [
     "bidang": "Karir",
     "rumusanKebutuhan": "Memahami hubungan hobi, bakat, minat dan kemampuan",
     "materi": "Mengenal bakat, minat, hobi dan karir",
-    "tujuanLayanan": "Peserta didik/konseli dapat memahami hubungan hobi, bakat, minat dan kemampuan",
+    "tujuanLayanan": "Peserta didik/konselia dapat memahami hubungan hobi, bakat, minat dan kemampuan",
     "komponenLayanan": "Pem&Perenc Indv",
     "strategiLayanan": "Bimbingan Klasikal"
   }
@@ -563,7 +563,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Kiat meningkatkan ibadah",
     "materi": "Kiat meningkatkan ibadah",
-    "tujuanLayanan": "Peserta didik/konseli  dapat meningkatkan Kualitas Ibadah pada Tuhan YME",
+    "tujuanLayanan": "Peserta didik/konselia  dapat meningkatkan Kualitas Ibadah pada Tuhan YME",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -574,7 +574,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Dahsyatnya keutamaan bersyukur",
     "materi": "Dahsyatnya keutamaan bersyukur",
-    "tujuanLayanan": "Peserta didik/konseli dapat menyadari nikmat dari pemberian-Nya serta memiliki sikap bersyukur terhadap nikmat yang telah diberikan oleh-Nya",
+    "tujuanLayanan": "Peserta didik/konselia dapat menyadari nikmat dari pemberian-Nya serta memiliki sikap bersyukur terhadap nikmat yang telah diberikan oleh-Nya",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -585,7 +585,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Berpikir dan bersikap positif",
     "materi": "Berpikir dan bersikap positif",
-    "tujuanLayanan": "Peserta didik/konseli  dapat memahami pentingnya berpikir dan bersikap positif serta menerapkannya dalam kehidupan hingga menjadi pribadi yang sukses",
+    "tujuanLayanan": "Peserta didik/konselia  dapat memahami pentingnya berpikir dan bersikap positif serta menerapkannya dalam kehidupan hingga menjadi pribadi yang sukses",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -596,7 +596,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Menyontek, penyebab dan solusinya",
     "materi": "Menyontek, penyebab dan solusinya",
-    "tujuanLayanan": "Peserta didik/konseli  memiliki pemahaman dan kesadaran bahwa menyontek adalah perbuatan tidak baik (tercela), memahami penyebab dan dampak dari perbuatan menyontek serta mampu untuk menghindarinya",
+    "tujuanLayanan": "Peserta didik/konselia  memiliki pemahaman dan kesadaran bahwa menyontek adalah perbuatan tidak baik (tercela), memahami penyebab dan dampak dari perbuatan menyontek serta mampu untuk menghindarinya",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Kelompok"
   },
@@ -607,7 +607,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Kecerdasan emosi dan pengendalian diri",
     "materi": "Kecerdasan emosi dan pengendalian diri",
-    "tujuanLayanan": "Peserta didik/konseli dapat memahami tentang kecerdasan emosi dan pengendalian diri serta pelunya mentaati norma dan peraturan yang berlaku",
+    "tujuanLayanan": "Peserta didik/konselia dapat memahami tentang kecerdasan emosi dan pengendalian diri serta pelunya mentaati norma dan peraturan yang berlaku",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -618,7 +618,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Mekanisme pertahanan diri",
     "materi": "Mekanisme pertahanan diri",
-    "tujuanLayanan": "Peserta didik/konseli dapat memahami akan pentingnya mekanisme pertahanan diri serta berbagai jenis atau bentuk dari mekanisme pertahanan diri yang dapat dilakukan",
+    "tujuanLayanan": "Peserta didik/konselia dapat memahami akan pentingnya mekanisme pertahanan diri serta berbagai jenis atau bentuk dari mekanisme pertahanan diri yang dapat dilakukan",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -629,7 +629,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Manajemen waktu",
     "materi": "Manajemen waktu",
-    "tujuanLayanan": "Peserta didik/konseli  dapat memahami pentingnya manajemen waktu serta mampu menerapkan manajemen waktu tersebut dalam kehidupan sehari-hari",
+    "tujuanLayanan": "Peserta didik/konselia  dapat memahami pentingnya manajemen waktu serta mampu menerapkan manajemen waktu tersebut dalam kehidupan sehari-hari",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -640,7 +640,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Kesehatan reproduksi remaja",
     "materi": "Kesehatan reproduksi remaja",
-    "tujuanLayanan": "Peserta didik/konseli  dapat memahami tentang kesehatan reproduksi , pentingnya merawat organ atau alat reproduksi yanag ada pada pria dan wanita serta menjaga prilaku pelecehan seksual",
+    "tujuanLayanan": "Peserta didik/konselia  dapat memahami tentang kesehatan reproduksi , pentingnya merawat organ atau alat reproduksi yanag ada pada pria dan wanita serta menjaga prilaku pelecehan seksual",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -651,7 +651,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Bahaya narkoba dan dampaknya",
     "materi": "Bahaya narkoba dan dampaknya",
-    "tujuanLayanan": "Peserta didik/konseli memiliki pemahaman tentang jenis dan bentuk narkoba dengan benar, dapat memahami dampak dari mengkonsumsi narboka serta memiliki perasaan positif untuk mencegah dampak negatif narboka",
+    "tujuanLayanan": "Peserta didik/konselia memiliki pemahaman tentang jenis dan bentuk narkoba dengan benar, dapat memahami dampak dari mengkonsumsi narboka serta memiliki perasaan positif untuk mencegah dampak negatif narboka",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -662,7 +662,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Jiwa Kepemimpinan",
     "materi": "Jiwa Kepemimpinan",
-    "tujuanLayanan": "Peserta didik/konseli dapat memahami apa yang disebut pemimpin, dapat mengenal fungsi dan tugas kepemimpinan serta gaya kepemimpinan",
+    "tujuanLayanan": "Peserta didik/konselia dapat memahami apa yang disebut pemimpin, dapat mengenal fungsi dan tugas kepemimpinan serta gaya kepemimpinan",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -673,7 +673,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Mental disorder dan permasalahannya",
     "materi": "Mental disorder dan permasalahannya",
-    "tujuanLayanan": "Peserta didik/konseli dapat memahami tentang penyakit mental (mental disorder) serta tanda-tandanya atau gejalanya, dapat menjadi individu yang sehat secara rohani dan jasmani",
+    "tujuanLayanan": "Peserta didik/konselia dapat memahami tentang penyakit mental (mental disorder) serta tanda-tandanya atau gejalanya, dapat menjadi individu yang sehat secara rohani dan jasmani",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -684,7 +684,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Mengatasi kejenuhan masuk sekolah",
     "materi": "Mengatasi kejenuhan masuk sekolah",
-    "tujuanLayanan": "Peserta didik/konseli  mampu menghilangkan kejenuhanya masuk sekolah",
+    "tujuanLayanan": "Peserta didik/konselia  mampu menghilangkan kejenuhanya masuk sekolah",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -695,7 +695,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Akibat kebiasaan keluar malam (bermain,begadang)",
     "materi": "Akibat kebiasaan keluar malam (bermain,begadang)",
-    "tujuanLayanan": "Peserta didik/konseli mampu menghilangkan kebiasaan keluar malam (bermain,begadang)",
+    "tujuanLayanan": "Peserta didik/konselia mampu menghilangkan kebiasaan keluar malam (bermain,begadang)",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -706,7 +706,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Budaya  membuang sampah pada tempatnya",
     "materi": "Budaya  membuang sampah pada tempatnya",
-    "tujuanLayanan": "Peserta didik/konseli memiliki budaya dan  kebiasaan membuang sampah pada tempatnya",
+    "tujuanLayanan": "Peserta didik/konselia memiliki budaya dan  kebiasaan membuang sampah pada tempatnya",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Kelompok"
   },
@@ -717,7 +717,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Budaya antri",
     "materi": "Budaya antri",
-    "tujuanLayanan": "Peserta didik/konseli memiliki budaya dan  kebiasaan untuk antri",
+    "tujuanLayanan": "Peserta didik/konselia memiliki budaya dan  kebiasaan untuk antri",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Kelompok"
   },
@@ -728,7 +728,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Pribadi",
     "rumusanKebutuhan": "Dampak pacaran di kalangan remaja",
     "materi": "Dampak pacaran di kalangan remaja",
-    "tujuanLayanan": "Peserta didik/konseli memiliki pemahaman akan pacaran dan dampak negatif dari pacaran sehingga dapat memutuskan untuk memfokuskan diri pada tugas pokok pelajar",
+    "tujuanLayanan": "Peserta didik/konselia memiliki pemahaman akan pacaran dan dampak negatif dari pacaran sehingga dapat memutuskan untuk memfokuskan diri pada tugas pokok pelajar",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -739,7 +739,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Kepekaan diri dan sosial",
     "materi": "Kepekaan diri dan sosial",
-    "tujuanLayanan": "Peserta didik/konseli memiliki kepekaan diri dan sosial, dapat memahami pentingnya hidup bersosial serta dapat berprilaku yang bertanggung jawab dalam masyarakat",
+    "tujuanLayanan": "Peserta didik/konselia memiliki kepekaan diri dan sosial, dapat memahami pentingnya hidup bersosial serta dapat berprilaku yang bertanggung jawab dalam masyarakat",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -750,7 +750,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Komunikasi efektif",
     "materi": "Komunikasi efektif",
-    "tujuanLayanan": "Peserta didik/konseli  dapat memahami pentingnya komunikasi untuk menyampaikan pesan, ide atau gagasan dalam hidup bermasyarakat",
+    "tujuanLayanan": "Peserta didik/konselia  dapat memahami pentingnya komunikasi untuk menyampaikan pesan, ide atau gagasan dalam hidup bermasyarakat",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -761,7 +761,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Pemanasan Global dan dampaknya",
     "materi": "Pemanasan Global dan dampaknya",
-    "tujuanLayanan": "Peserta didik/konseli memiliki pemahaman tentang pemanasan global (global warning) dan akibat yang ditimbulkan, serta memiliki perasaan positif untuk mengurangi dampaknya",
+    "tujuanLayanan": "Peserta didik/konselia memiliki pemahaman tentang pemanasan global (global warning) dan akibat yang ditimbulkan, serta memiliki perasaan positif untuk mengurangi dampaknya",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -772,7 +772,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Etika dan budaya tertib berlalu lintas",
     "materi": "Etika dan budaya tertib berlalu lintas",
-    "tujuanLayanan": "Peserta didik/konseli  dapat memahami pentingnya etika dan budaya dalam berlalu lintas, dan mau mematuhinya",
+    "tujuanLayanan": "Peserta didik/konselia  dapat memahami pentingnya etika dan budaya dalam berlalu lintas, dan mau mematuhinya",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan Kelompok"
   },
@@ -783,7 +783,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Tata tertib sekolah",
     "materi": "Tata tertib sekolah",
-    "tujuanLayanan": "Peserta didik/konseli  dapat memahami pentingnya tata tertib  sekolah, dan mau mematuhinya dalam kehidupan sehari-hari",
+    "tujuanLayanan": "Peserta didik/konselia  dapat memahami pentingnya tata tertib  sekolah, dan mau mematuhinya dalam kehidupan sehari-hari",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Lintas Kelas"
   },
@@ -794,7 +794,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Hebatnya pengaruh kata maaf, tolong dan terima kasih dalam pergaulan",
     "materi": "Hebatnya pengaruh kata maaf, tolong dan terima kasih dalam pergaulan",
-    "tujuanLayanan": "Peserta didik/konseli  dapat mengucapkan  kata maaf, tolong dan terimakasih dalam pergaulan",
+    "tujuanLayanan": "Peserta didik/konselia  dapat mengucapkan  kata maaf, tolong dan terimakasih dalam pergaulan",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -805,7 +805,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Dampak  ketergantungan pada medsos (fb, wa, dll)",
     "materi": "Dampak  ketergantungan pada medsos (fb, wa, dll)",
-    "tujuanLayanan": "Peserta didik/konseli  dapat mengendalikan diri dari ketergantungan pada medsos (fb, wa, dll)",
+    "tujuanLayanan": "Peserta didik/konselia  dapat mengendalikan diri dari ketergantungan pada medsos (fb, wa, dll)",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -816,7 +816,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Etika bergaul",
     "materi": "Etika bergaul",
-    "tujuanLayanan": "Peserta didik/konseli dapat memahami arti pentingnya etika bergaul dan menjunjung tinggi nilai yang diyakini oleh masyarakat, serta mampu bergaul dengan menyesuaikan diri sesuai etika yang ada dalam masyarakat",
+    "tujuanLayanan": "Peserta didik/konselia dapat memahami arti pentingnya etika bergaul dan menjunjung tinggi nilai yang diyakini oleh masyarakat, serta mampu bergaul dengan menyesuaikan diri sesuai etika yang ada dalam masyarakat",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -827,7 +827,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Membina persahabatan sejati",
     "materi": "Membina persahabatan sejati",
-    "tujuanLayanan": "Peserta didik/konseli  memiliki perasaan positif untuk membina persahabatan dengan kegiatan positif serta miliki rencana kegiatan untuk mengisi kegiatan persahabatan yang positif",
+    "tujuanLayanan": "Peserta didik/konselia  memiliki perasaan positif untuk membina persahabatan dengan kegiatan positif serta miliki rencana kegiatan untuk mengisi kegiatan persahabatan yang positif",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -838,7 +838,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Kiat memiliki banyak teman",
     "materi": "Kiat memiliki banyak teman",
-    "tujuanLayanan": "Peserta didik/konseli dapat memiliki banyak teman dalam pergaulan",
+    "tujuanLayanan": "Peserta didik/konselia dapat memiliki banyak teman dalam pergaulan",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -849,7 +849,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Selektif dalam bergaul",
     "materi": "Selektif dalam bergaul",
-    "tujuanLayanan": "Peserta didik/konseli memiliki kemampuan untuk selektif dalam bergaul sehingga terbebas dari pergaulan yang kurang baik",
+    "tujuanLayanan": "Peserta didik/konselia memiliki kemampuan untuk selektif dalam bergaul sehingga terbebas dari pergaulan yang kurang baik",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -860,7 +860,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Bentuk-bentuk kenakalan remaja",
     "materi": "Bentuk-bentuk kenakalan remaja",
-    "tujuanLayanan": "Peserta didik/konseli memiliki pemahaman tentang  bentuk-bentuk kenakalan remaja dan mampu menghindarinya",
+    "tujuanLayanan": "Peserta didik/konselia memiliki pemahaman tentang  bentuk-bentuk kenakalan remaja dan mampu menghindarinya",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -871,7 +871,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Tawuran pelajar dan akibatnya",
     "materi": "Tawuran pelajar dan akibatnya",
-    "tujuanLayanan": "Peserta didik/konseli memiliki pemahaman tentang  tawuran pelajar  dan mampu menghindarinya",
+    "tujuanLayanan": "Peserta didik/konselia memiliki pemahaman tentang  tawuran pelajar  dan mampu menghindarinya",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -882,7 +882,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Peran sosial pria dan wanita",
     "materi": "Peran sosial pria dan wanita",
-    "tujuanLayanan": "Peserta didik/konseli dapat memahami dan menerima peran sosial pria dan wanita dengan norma yang ada di masyarakat serta berprilaku sebagai pria dan wanita sesuai dengan norma masyarakat",
+    "tujuanLayanan": "Peserta didik/konselia dapat memahami dan menerima peran sosial pria dan wanita dengan norma yang ada di masyarakat serta berprilaku sebagai pria dan wanita sesuai dengan norma masyarakat",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  Kelompok"
   },
@@ -893,7 +893,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Sosial",
     "rumusanKebutuhan": "Dampak  dari Sek Bebas, LGBT, HIV/AIDs",
     "materi": "Dampak  dari Sek Bebas, LGBT, HIV/AIDs",
-    "tujuanLayanan": "Peserta didik/konseli memiliki pemahaman tentang  Sek Bebas, LGBT, HIV/AIDs dan mampu menghindarinya",
+    "tujuanLayanan": "Peserta didik/konselia memiliki pemahaman tentang  Sek Bebas, LGBT, HIV/AIDs dan mampu menghindarinya",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  Kelompok"
   },
@@ -904,7 +904,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Cara belajar efektif dan efisien",
     "materi": "Cara belajar efektif dan efisien",
-    "tujuanLayanan": "Peserta didik/konseli  dapat mengenal hakekat belajar, memahami faktor-faktor yang mempengaruhi hasil belajar serta cara belajar efektif dan efisien",
+    "tujuanLayanan": "Peserta didik/konselia  dapat mengenal hakekat belajar, memahami faktor-faktor yang mempengaruhi hasil belajar serta cara belajar efektif dan efisien",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -915,7 +915,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Mind mapping untuk prestasi belajar",
     "materi": "Mind mapping untuk prestasi belajar",
-    "tujuanLayanan": "Peserta didik/konseli  mampu memahami tentang mind mapping serta dapat membuat suatu peta pikiran untuk meningkatkan prestasi belajar",
+    "tujuanLayanan": "Peserta didik/konselia  mampu memahami tentang mind mapping serta dapat membuat suatu peta pikiran untuk meningkatkan prestasi belajar",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -926,7 +926,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Cara kerja otak kiri dan otak kanan",
     "materi": "Cara kerja otak kiri dan otak kanan",
-    "tujuanLayanan": "Peserta didik/konseli  memiliki pemahaman tentang perbedaan fungsi, cara mengembangkan serta memanfaatkan fungsi otak kanan dan otak kiri",
+    "tujuanLayanan": "Peserta didik/konselia  memiliki pemahaman tentang perbedaan fungsi, cara mengembangkan serta memanfaatkan fungsi otak kanan dan otak kiri",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -937,7 +937,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Membangkitkan semangat belajar",
     "materi": "Membangkitkan semangat belajar",
-    "tujuanLayanan": "Peserta didik/konseli  dapat menerapkan sikap dan kebiasaan yang benar dalam belajar hingga dapat membangkitkan semangat belajar untuk berprestasi",
+    "tujuanLayanan": "Peserta didik/konselia  dapat menerapkan sikap dan kebiasaan yang benar dalam belajar hingga dapat membangkitkan semangat belajar untuk berprestasi",
     "komponenLayanan": "Dasar",
     "strategiLayanan": "Bimbingan  klasikal"
   },
@@ -948,7 +948,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Disiplin mengerjakan tugas sekolah",
     "materi": "Disiplin mengerjakan tugas sekolah",
-    "tujuanLayanan": "Peserta didik/konseli  memiliki kedisiplinan dalam mengerjakan tugas-tugas sekolah",
+    "tujuanLayanan": "Peserta didik/konselia  memiliki kedisiplinan dalam mengerjakan tugas-tugas sekolah",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -959,7 +959,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Tips memahami pelajaran",
     "materi": "Tips memahami pelajaran",
-    "tujuanLayanan": "Peserta didik/konseli  dapat memahami teknik memahami pelajaran",
+    "tujuanLayanan": "Peserta didik/konselia  dapat memahami teknik memahami pelajaran",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -970,7 +970,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Semangat belajar tidak hanya saat ujian",
     "materi": "Semangat belajar tidak hanya saat ujian",
-    "tujuanLayanan": "Peserta didik/konseli  memiliki semangat belajar tidak hanya saat akan ada tes/ujian saja",
+    "tujuanLayanan": "Peserta didik/konselia  memiliki semangat belajar tidak hanya saat akan ada tes/ujian saja",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -981,7 +981,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Belajar kelompok yang efektif",
     "materi": "Belajar kelompok yang efektif",
-    "tujuanLayanan": "Peserta didik/konseli memiliki kebiasaan dan keterampilan untuk belajar kelompok secara efektif",
+    "tujuanLayanan": "Peserta didik/konselia memiliki kebiasaan dan keterampilan untuk belajar kelompok secara efektif",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -992,7 +992,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Memilih lembaga bimbel yang tepat",
     "materi": "Memilih lembaga bimbel yang tepat",
-    "tujuanLayanan": "Peserta didik/konseli  dapat mengidentifikasi dan memilih bimbingan belajar yang sesuai untuk dirinya",
+    "tujuanLayanan": "Peserta didik/konselia  dapat mengidentifikasi dan memilih bimbingan belajar yang sesuai untuk dirinya",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -1003,7 +1003,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Memanfaatkan IT untuk meraih prestasi",
     "materi": "Memanfaatkan IT untuk meraih prestasi",
-    "tujuanLayanan": "Peserta didik/konseli mampu memanfaatkan teknologi informasi untuk sumber belajar",
+    "tujuanLayanan": "Peserta didik/konselia mampu memanfaatkan teknologi informasi untuk sumber belajar",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -1014,7 +1014,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Kebiasaan belajar rutin",
     "materi": "Kebiasaan belajar rutin",
-    "tujuanLayanan": "Peserta didik/konseli memiliki kebiasaan belajar secara rutin",
+    "tujuanLayanan": "Peserta didik/konselia memiliki kebiasaan belajar secara rutin",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individu"
   },
@@ -1025,7 +1025,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Berani bertanya dan menjawab di kelas",
     "materi": "Berani bertanya dan menjawab di kelas",
-    "tujuanLayanan": "Peserta didik/konseli memiliki keberanian bertanya dan menjawab di kelas",
+    "tujuanLayanan": "Peserta didik/konselia memiliki keberanian bertanya dan menjawab di kelas",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individu"
   },
@@ -1036,7 +1036,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Belajar",
     "rumusanKebutuhan": "Kiat  menumbuhkan minat baca",
     "materi": "Kiat  menumbuhkan minat baca",
-    "tujuanLayanan": "Peserta didik/konseli  memiliki kebiasaan dan budaya membaca yang tinggi",
+    "tujuanLayanan": "Peserta didik/konselia  memiliki kebiasaan dan budaya membaca yang tinggi",
     "komponenLayanan": "Responsif",
     "strategiLayanan": "Konseling Individual"
   },
@@ -1047,7 +1047,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Karir",
     "rumusanKebutuhan": "Kiat belajar sambil bekerja",
     "materi": "Kiat belajar sambil bekerja",
-    "tujuanLayanan": "Peserta didik/konseli  dapat memanfaatkan peluang kerja sambil sekolah untuk memperoleh penghasilan untuk biaya hidup sambil sekolah",
+    "tujuanLayanan": "Peserta didik/konselia  dapat memanfaatkan peluang kerja sambil sekolah untuk memperoleh penghasilan untuk biaya hidup sambil sekolah",
     "komponenLayanan": "Pem&Perenc Indv",
     "strategiLayanan": "Konseling Individual"
   },
@@ -1058,7 +1058,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Karir",
     "rumusanKebutuhan": "Jenis-jenis profesi/pekerjaan",
     "materi": "Jenis-jenis profesi/pekerjaan",
-    "tujuanLayanan": "Peserta didik/ konseli mengenal jenis-jenis profesi/pekerjaan untuk persiapan masa depannya",
+    "tujuanLayanan": "Peserta didik/ konselia mengenal jenis-jenis profesi/pekerjaan untuk persiapan masa depannya",
     "komponenLayanan": "Pem&Perenc Indv",
     "strategiLayanan": "Bimbingan Kelompok"
   },
@@ -1069,7 +1069,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Karir",
     "rumusanKebutuhan": "Program studi di Perguruan Tinggi",
     "materi": "Program studi di Perguruan Tinggi",
-    "tujuanLayanan": "Peserta didik/konseli  mengenal tentang berbagai macam program studi di perguruan tinggi, dan mampu menyusun strategi untuk bisa memilih dan masuk pada program studi yang sesuai dengan dirinya",
+    "tujuanLayanan": "Peserta didik/konselia  mengenal tentang berbagai macam program studi di perguruan tinggi, dan mampu menyusun strategi untuk bisa memilih dan masuk pada program studi yang sesuai dengan dirinya",
     "komponenLayanan": "Pem&Perenc Indv",
     "strategiLayanan": "Bimbingan Kelompok"
   },
@@ -1080,7 +1080,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Karir",
     "rumusanKebutuhan": "Hubungan bakat, minat, pendidikan dan pekerjaan",
     "materi": "Hubungan bakat, minat, pendidikan dan pekerjaan",
-    "tujuanLayanan": "Peserta didik/konseli  memahami hubungan antara  bakat, minat, pendidikan dan pekerjaan dimasa depan",
+    "tujuanLayanan": "Peserta didik/konselia  memahami hubungan antara  bakat, minat, pendidikan dan pekerjaan dimasa depan",
     "komponenLayanan": "Pem&Perenc Indv",
     "strategiLayanan": "Konseling Individual"
   },
@@ -1091,7 +1091,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Karir",
     "rumusanKebutuhan": "Identifkasi pilihan karir atau cita-cita yang sesuai",
     "materi": "Identifkasi pilihan karir atau cita-cita yang sesuai",
-    "tujuanLayanan": "Peserta didik/konseli  mampu mengidentifikasi dan menetapkan cita-cita  karir masa depannya",
+    "tujuanLayanan": "Peserta didik/konselia  mampu mengidentifikasi dan menetapkan cita-cita  karir masa depannya",
     "komponenLayanan": "Pem&Perenc Indv",
     "strategiLayanan": "Konseling Individual"
   },
@@ -1102,7 +1102,7 @@ export const AKPD_MASTER_SMA = [
     "bidang": "Karir",
     "rumusanKebutuhan": "Informasi tentang seleksi masuk perguruan tinggi",
     "materi": "Informasi tentang seleksi masuk perguruan tinggi",
-    "tujuanLayanan": "Peserta didik/konseli  mampu memahami berbagai macam bentuk seleksi  masuk  Perguruan tinggi, dan memiliki strategi untuk bisa diterima di perguruan tinggi yang dicita-citakan",
+    "tujuanLayanan": "Peserta didik/konselia  mampu memahami berbagai macam bentuk seleksi  masuk  Perguruan tinggi, dan memiliki strategi untuk bisa diterima di perguruan tinggi yang dicita-citakan",
     "komponenLayanan": "Pem&Perenc Indv",
     "strategiLayanan": "Lintas Kelas"
   }

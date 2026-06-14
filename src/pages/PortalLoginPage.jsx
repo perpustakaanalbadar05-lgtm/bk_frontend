@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   RiShieldStarLine, RiUserLine, RiLockLine, RiEyeLine, RiEyeOffLine,
-  RiArrowLeftLine, RiUserStarLine, RiTeamLine
+  RiArrowLeftLine, RiUserStarLine, RiTeamLine, RiGraduationCapLine
 } from 'react-icons/ri'
 import { useRole } from '../contexts/RoleContext'
 import toast from 'react-hot-toast'
@@ -24,6 +24,14 @@ const ROLE_CONFIG = {
     description: 'Portal pemantauan dan supervisi BK',
     redirect: '/portal/kepala-sekolah',
   },
+  murid: {
+    label: 'Murid / Siswa',
+    icon: RiGraduationCapLine,
+    color: 'from-purple-600 to-pink-700',
+    accent: 'text-purple-400',
+    description: 'Lihat riwayat konseling dan asesmen Anda',
+    redirect: '/portal/murid',
+  },
 }
 
 export default function PortalLoginPage() {
@@ -43,20 +51,26 @@ export default function PortalLoginPage() {
     e.preventDefault()
     if (!username || !password) return toast.error('Lengkapi username dan password!')
     setLoading(true)
-    setTimeout(() => {
-      const result = loginPortal(username, password)
-      setLoading(false)
+    try {
+      const result = await loginPortal(username, password)
       if (result.success) {
-        if (result.account.role !== selectedRole) {
+        if (selectedRole && result.account.role !== selectedRole) {
           toast.error('Role akun tidak sesuai dengan portal ini.')
           return
         }
         toast.success(`Selamat datang, ${result.account.name}!`)
-        navigate(ROLE_CONFIG[result.account.role]?.redirect || '/portal/kepala-sekolah')
+        const role = result.account.role
+        if (role === 'murid' || role === 'orang_tua') {
+          navigate('/portal/murid')
+        } else {
+          navigate(ROLE_CONFIG[role]?.redirect || '/portal/kepala-sekolah')
+        }
       } else {
         toast.error(result.message)
       }
-    }, 600)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -84,7 +98,7 @@ export default function PortalLoginPage() {
               <div className="w-16 h-16 rounded-2xl bg-primary-500 flex items-center justify-center mx-auto mb-4 shadow-glow-sm">
                 <RiShieldStarLine className="text-white text-3xl" />
               </div>
-              <h1 className="text-2xl font-display font-black text-white">Portal Konseli</h1>
+              <h1 className="text-2xl font-display font-black text-white">Portal Konselia</h1>
               <p className="text-slate-400 text-sm mt-1">Pilih portal sesuai peran Anda</p>
             </div>
 

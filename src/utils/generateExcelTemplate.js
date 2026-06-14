@@ -1,6 +1,6 @@
 /**
  * generateExcelTemplate.js
- * Konseli by Alifba Media — Generator Template Excel AKPD
+ * Konselia by Alifba Media — Generator Template Excel AKPD
  *
  * Menghasilkan file .xlsx yang siap diisi oleh Guru BK/Siswa
  * dan kompatibel penuh dengan akpdParser.js (sheet ENTRI, kolom 1-50).
@@ -87,7 +87,7 @@ export const generateExcelTemplate = (type = 'akpd', meta = {}) => {
 
   /* ────────── SHEET 2: PANDUAN ────────── */
   const PANDUAN_rows = [
-    [`📋 TEMPLATE ASESMEN ${title.toUpperCase()} — Konseli by Alifba Media.`],
+    [`📋 TEMPLATE ASESMEN ${title.toUpperCase()} — Konselia by Alifba Media.`],
     [],
     ['PETUNJUK PENGISIAN:'],
     ['1. Isi data identitas Sekolah, Kelas, dan Tahun Pelajaran di Sheet "ENTRI" (baris 1-3, kolom B).'],
@@ -103,7 +103,7 @@ export const generateExcelTemplate = (type = 'akpd', meta = {}) => {
     ['• Sheet harus bernama "ENTRI" (huruf kapital semua).'],
     ['• Jangan mengubah baris header nomor butir (baris 5, kolom G dst).'],
     ['• Simpan file dalam format .xlsx atau .xls.'],
-    ['• Setelah selesai, unggah kembali file ini ke Konseli via tombol "UNGGAH EXCEL ACUAN".'],
+    ['• Setelah selesai, unggah kembali file ini ke Konselia via tombol "UNGGAH EXCEL ACUAN".'],
     [],
     ['─────────────────────────────────────────────────────'],
     ['DAFTAR BUTIR PERNYATAAN:'],
@@ -116,7 +116,7 @@ export const generateExcelTemplate = (type = 'akpd', meta = {}) => {
       item.strategiLayanan || '',
     ]),
     [],
-    ['© ' + new Date().getFullYear() + ' CV. Alifba Media — Konseli. Konseling, Solusi, Edukasi.'],
+    ['© ' + new Date().getFullYear() + ' CV. Alifba Media — Konselia. Konseling, Solusi, Edukasi.'],
   ];
 
   const wsPanduan = XLSX.utils.aoa_to_sheet(PANDUAN_rows);
