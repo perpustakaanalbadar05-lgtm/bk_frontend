@@ -33,7 +33,7 @@ import { computeAkpdResults } from '../utils/akpdCalculator'
 import { AKPD_MASTER, AKPD_MASTER_SMA } from '../data/akpdMaster'
 import { GAYA_BELAJAR_MASTER, KECERDASAN_MASTER, KEPRIBADIAN_MASTER, BAKAT_MINAT_MASTER } from '../data/assessmentMasters'
 import { generateExcelTemplate } from '../utils/generateExcelTemplate'
-
+import { exportAkpdRaporToPdf } from '../utils/exportUtils'
 const TABS = [
   { id: 'akpd', label: 'Asesmen AKPD' },
   { id: 'gaya-belajar', label: 'Gaya Belajar' },
@@ -88,6 +88,7 @@ export default function AsesmenPage() {
   }, [])
   
   // Modals state
+  const [selectedSessionIndex, setSelectedSessionIndex] = useState(0);
   const [showNewSessionModal, setShowNewSessionModal] = useState(false)
   const [selectedStudent, setSelectedStudent] = useState(null)
 
@@ -113,6 +114,23 @@ export default function AsesmenPage() {
   const [editingText, setEditingText] = useState('')
   const [editingMateri, setEditingMateri] = useState('')
   const [editingBidang, setEditingBidang] = useState('')
+
+  
+  const handleUpdateSessionArray = (conf, newSession) => {
+    let newResult;
+    if (Array.isArray(conf.result)) {
+      const existingIdx = conf.result.findIndex(s => s.meta.kelas === newSession.meta.kelas);
+      newResult = [...conf.result];
+      if (existingIdx >= 0) newResult[existingIdx] = newSession;
+      else newResult.push(newSession);
+    } else if (conf.result) {
+      newResult = [conf.result, newSession];
+    } else {
+      newResult = [newSession];
+    }
+    conf.setResult(newResult);
+    setSelectedSessionIndex(newResult.length - 1);
+  };
 
   const getAssessmentConfig = (tabId = activeTab) => {
     let master = []
@@ -158,7 +176,7 @@ export default function AsesmenPage() {
     try {
       const conf = getAssessmentConfig();
       const result = await parseAkpdExcel(file, conf.master)
-      conf.setResult(result)
+      handleUpdateSessionArray(conf, result)
       toast.success(`Berhasil memproses data ${conf.title} ${result.meta.kelas}!`, { id: toastId })
     } catch (err) {
       console.error(err)
@@ -184,7 +202,7 @@ export default function AsesmenPage() {
       tingkat: sessionForm.tingkat
     }, [], getAssessmentConfig().master);
 
-    getAssessmentConfig().setResult(emptyResult);
+    handleUpdateSessionArray(getAssessmentConfig(), emptyResult);
     setShowNewSessionModal(false);
     toast.success(`Sesi asesmen digital Kelas ${sessionForm.kelas} telah aktif!`);
   }
@@ -198,12 +216,21 @@ export default function AsesmenPage() {
     });
   }
 
+  
   const handleResetData = () => {
-    if (confirm('Apakah Anda yakin ingin menghapus hasil Asesmen ini? Semua data yang terisi digital akan terhapus.')) {
-      getAssessmentConfig().setResult(null)
-      toast.success('Data asesmen berhasil dihapus.')
+    if (confirm('Apakah Anda yakin ingin menghapus hasil Asesmen Kelas ini?')) {
+      const conf = getAssessmentConfig();
+      if (Array.isArray(conf.result)) {
+         const newResult = conf.result.filter((_, i) => i !== selectedSessionIndex);
+         conf.setResult(newResult.length > 0 ? newResult : null);
+         setSelectedSessionIndex(Math.max(0, selectedSessionIndex - 1));
+      } else {
+         conf.setResult(null);
+      }
+      toast.success('Data asesmen kelas berhasil dihapus.')
     }
   }
+
 
   const handleDownloadTemplate = (e) => {
     e.preventDefault()
@@ -422,7 +449,26 @@ export default function AsesmenPage() {
           {/* Footer Actions */}
           <div className="px-6 py-4 border-t border-white/10 bg-dark-950/50 flex justify-end gap-3 flex-shrink-0">
             <button onClick={() => setSelectedStudent(null)} className="btn-secondary py-2 px-4 text-xs">Tutup</button>
-            <button onClick={() => toast.success('Membuka generator laporan individu...')} className="btn-primary py-2 px-4 text-xs bg-primary-500 font-bold gap-2"><RiDownloadLine /> Cetak Rapor Siswa</button>
+            <button 
+              onClick={async () => {
+                try {
+                  toast.loading('Membuat PDF...', { id: 'pdf' });
+                  const resultObj = {
+                    totalScore: selectedStudent.totalScore,
+                    category: selectedStudent.totalScore > 15 ? 'Urgent' : selectedStudent.totalScore > 7 ? 'Sedang' : 'Stabil',
+                    selectedItems: personalChecked
+                  };
+                  await exportAkpdRaporToPdf(selectedStudent, resultObj, conf, sekolah?.nama);
+                  toast.success('Rapor berhasil diunduh!', { id: 'pdf' });
+                } catch (e) {
+                  console.error(e);
+                  toast.error('Gagal membuat PDF', { id: 'pdf' });
+                }
+              }} 
+              className="btn-primary py-2 px-4 text-xs bg-primary-500 font-bold gap-2"
+            >
+              <RiDownloadLine /> Cetak Rapor Siswa
+            </button>
           </div>
 
         </div>
@@ -507,34 +553,21 @@ export default function AsesmenPage() {
     );
   };
 
-  const renderAssessmentContent = () => {
+    const renderAssessmentContent = () => {
     const conf = getAssessmentConfig();
-    const result = conf.result;
-
+    let sessions = [];
+    if (conf.result) {
+        sessions = Array.isArray(conf.result) ? conf.result : [conf.result];
+    }
+    
     // Calculate unique categories for the editing dropdown
     const uniqueBidangs = [...new Set(conf.master.map(item => item.bidang))];
 
-    // Group aggregates by bidang to match student portal ordering
-    const groupedAggregates = [];
-    if (result && result.aggregates) {
-      const bidangMap = {};
-      result.aggregates.forEach(item => {
-        if (!bidangMap[item.bidang]) {
-          bidangMap[item.bidang] = [];
-        }
-        bidangMap[item.bidang].push(item);
-      });
-      Object.values(bidangMap).forEach(list => {
-        groupedAggregates.push(...list);
-      });
-    }
-
-    // If no uploaded data, show upload & create options
     if (fetchingMasters) {
       return <div className="py-20 text-center text-dark-300 animate-pulse">Memuat template instrumen...</div>
     }
 
-    if (!result) {
+    if (sessions.length === 0) {
       return (
         <div className="max-w-3xl mx-auto text-center py-12 animate-in">
           <div className="card-feature border-dashed border-white/30 p-12 bg-white/5/30 transition-all flex flex-col items-center justify-center relative">
@@ -605,6 +638,25 @@ export default function AsesmenPage() {
       )
     }
 
+    // Determine currently selected session
+    const currentIdx = Math.min(selectedSessionIndex, Math.max(0, sessions.length - 1));
+    const result = sessions[currentIdx];
+
+    // Group aggregates by bidang to match student portal ordering
+    const groupedAggregates = [];
+    if (result && result.aggregates) {
+      const bidangMap = {};
+      result.aggregates.forEach(item => {
+        if (!bidangMap[item.bidang]) {
+          bidangMap[item.bidang] = [];
+        }
+        bidangMap[item.bidang].push(item);
+      });
+      Object.values(bidangMap).forEach(list => {
+        groupedAggregates.push(...list);
+      });
+    }
+
     // Render populated state
     const radarData = result.bidangSummary.map(b => ({
       subject: b.label,
@@ -613,7 +665,50 @@ export default function AsesmenPage() {
     }))
 
     return (
+      
       <div className="animate-in space-y-6">
+        
+        {/* Session Tabs & Actions */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center">
+          <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-thin w-full sm:w-auto flex-nowrap">
+            {sessions.map((s, i) => (
+              <button 
+                key={i} 
+                onClick={() => setSelectedSessionIndex(i)}
+                className={`px-4 py-2 rounded-xl text-sm font-bold border whitespace-nowrap transition-all ${i === currentIdx ? 'bg-primary-500 text-white border-primary-500 shadow-glow-sm' : 'bg-dark-900 text-dark-300 border-white/10 hover:bg-white/5'}`}
+              >
+                Kelas {s.meta.kelas}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <input 
+              type="file" 
+              accept=".xlsx, .xls" 
+              className="hidden" 
+              ref={fileInputRef} 
+              onChange={handleFileUpload}
+              disabled={loading}
+            />
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              disabled={loading}
+              className="btn-secondary py-2 px-3 text-xs border border-dashed border-white/20 hover:border-white/40 text-dark-200 hover:text-white"
+              title="Unggah Excel Acuan Kelas Baru"
+            >
+              <RiFileExcel2Line className="text-base" />
+            </button>
+            <button 
+              onClick={() => setShowNewSessionModal(true)}
+              disabled={loading}
+              className="btn-primary py-2 px-3 text-xs bg-primary-500/20 text-primary-300 hover:bg-primary-500 hover:text-white border border-primary-500/30 font-bold gap-1"
+            >
+              <RiAddLine className="text-base" /> Tambah Kelas
+            </button>
+          </div>
+        </div>
+
         
         {/* Link Distribution Box */}
         <div className="card-feature py-4 px-6 bg-gradient-to-r from-emerald-950/40 to-dark-950 border-emerald-500/20 flex flex-col md:flex-row justify-between items-center gap-4">

@@ -69,9 +69,7 @@ export default function Sidebar({ open, collapsed, onCollapse, onClose }) {
       {/* Header: Logo & Text */}
       <div className="flex items-center p-5 border-b border-white/10 h-20 overflow-hidden relative">
         <div className="relative flex-shrink-0 flex justify-center">
-          <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center shadow-glow-sm transition-transform duration-500">
-            <RiShieldStarLine className="text-white text-xl" />
-          </div>
+          <img src="/logo.svg" alt="Konselia Logo" className="w-10 h-10 rounded-xl shadow-glow-sm transition-transform duration-500" />
           <span className="absolute -top-1 -right-1 w-3 h-3 bg-teal-400 rounded-full border-2 border-dark-950 animate-pulse" />
         </div>
         

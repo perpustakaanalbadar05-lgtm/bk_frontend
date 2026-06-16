@@ -83,9 +83,7 @@ export default function LandingPage() {
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-primary-500 flex items-center justify-center shadow-glow-sm">
-              <RiShieldStarLine className="text-white text-lg" />
-            </div>
+            <img src="/logo.svg" alt="Konselia Logo" className="w-9 h-9 rounded-xl shadow-glow-sm" />
             <div>
               <span className="font-display font-bold text-white text-lg">Konselia</span>
               <span className="hidden sm:block text-[10px] text-dark-200 leading-none">by Alifba Media.</span>
@@ -108,7 +106,7 @@ export default function LandingPage() {
             </button>
             <Link to="/login" className="btn-ghost text-sm">Masuk</Link>
             <Link to="/login" className="btn-primary text-sm py-2.5">
-              Coba Gratis <RiArrowRightLine />
+              Coba Sekarang <RiArrowRightLine />
             </Link>
           </div>
 
@@ -281,9 +279,7 @@ export default function LandingPage() {
         </div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <div className="card-feature p-12 md:p-16">
-            <div className="w-16 h-16 rounded-2xl bg-primary-500 flex items-center justify-center mx-auto mb-6 shadow-glow animate-float">
-              <RiShieldStarLine className="text-white text-3xl" />
-            </div>
+            <img src="/logo.svg" alt="Konselia Logo" className="w-16 h-16 rounded-2xl mx-auto mb-6 shadow-glow animate-float" />
             <h2 className="section-title mb-4">
               Siap Transformasi Layanan BK<br />
               <span className="gradient-text">Sekolah Anda?</span>
@@ -312,9 +308,7 @@ export default function LandingPage() {
       <footer className="border-t border-white/20 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center">
-              <RiShieldStarLine className="text-white text-sm" />
-            </div>
+            <img src="/logo.svg" alt="Konselia Logo" className="w-8 h-8 rounded-lg" />
             <div>
               <span className="font-display font-bold text-white">Konselia</span>
               <span className="text-dark-300 text-xs ml-2">by Alifba Media.</span>

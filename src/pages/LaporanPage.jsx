@@ -2,59 +2,71 @@ import { useState } from 'react'
 import { 
   RiDownloadLine, RiFilePdfLine, RiFileExcelLine, RiBarChart2Line, 
   RiCalendarLine, RiPrinterLine, RiCloseLine, RiHeartLine, RiUserStarLine, 
-  RiScales3Line, RiHomeHeartLine, RiCheckDoubleLine, RiDashboardLine
+  RiScales3Line, RiHomeHeartLine, RiCheckDoubleLine, RiDashboardLine, RiDeleteBinLine,
+  RiLoader4Line
 } from 'react-icons/ri'
 import { useData } from '../contexts/DataContext'
 import { useSettings } from '../contexts/SettingsContext'
 import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
 
-const ARCHIVED_REPORTS = [
-  { judul: 'Laporan Bulanan April 2026', tipe: 'Bulanan', tanggal: '01 Mei 2026', ukuran: '2.4 MB', format: 'PDF' },
-  { judul: 'Rekap Konseling Semester Genap', tipe: 'Semester', tanggal: '28 Apr 2026', ukuran: '1.8 MB', format: 'PDF' },
-  { judul: 'Data Asesmen AKPD 2025/2026', tipe: 'Asesmen', tanggal: '15 Mar 2026', ukuran: '3.2 MB', format: 'Excel' },
-]
-
 const TIPE_CLS = {
   'Bulanan': 'badge bg-primary-500/20 text-primary-300 border border-primary-500/30',
-  'Semester': 'badge bg-accent-500/20 text-accent-300 border border-accent-500/30',
+  'Semesteran': 'badge bg-accent-500/20 text-accent-300 border border-accent-500/30',
   'Asesmen': 'badge bg-teal-500/20 text-teal-300 border border-teal-500/30',
   'Tahunan': 'badge bg-amber-500/20 text-amber-300 border border-amber-500/30',
+  'Surat SP': 'badge bg-red-500/20 text-red-300 border border-red-500/30',
 }
 
 export default function LaporanPage() {
   const { user } = useAuth()
-  const { siswa, sessions, kasus } = useData()
+  const { siswa, sessions, kasus, savedReports, saveReport, deleteReport } = useData()
   const { sekolah } = useSettings()
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedDoc, setGeneratedDoc] = useState(null)
 
   const handleGenerateNew = (type = 'Bulanan') => {
     setIsGenerating(true)
-    setTimeout(() => {
-      setIsGenerating(false)
-      
+    setTimeout(async () => {
       // Calculate live metrics
       const completedSessions = sessions.filter(s => s.status === 'Selesai').length
       const totalPoin = kasus.reduce((sum, k) => sum + (k.poin || 0), 0)
       const pendingVisits = kasus.filter(k => k.visit && k.status !== 'Selesai').length
       const completedVisits = kasus.filter(k => k.visit && k.status === 'Selesai').length
 
+      const stats = {
+        totalSiswa: siswa.length,
+        sesiKonseling: sessions.length,
+        sesiSelesai: completedSessions,
+        totalKasus: kasus.length,
+        totalPoin: totalPoin,
+        kunjunganRumah: kasus.filter(k => k.visit).length,
+        kunjunganSelesai: completedVisits
+      }
+
+      const tanggalStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+
       setGeneratedDoc({
         tipe: type,
-        tanggal: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
+        tanggal: tanggalStr,
         judul: `LAPORAN REKAPITULASI LAYANAN BK (${type.toUpperCase()})`,
-        stats: {
-          totalSiswa: siswa.length,
-          sesiKonseling: sessions.length,
-          sesiSelesai: completedSessions,
-          totalKasus: kasus.length,
-          totalPoin: totalPoin,
-          kunjunganRumah: kasus.filter(k => k.visit).length,
-          kunjunganSelesai: completedVisits
-        }
+        stats,
       })
-      toast.success(`Berhasil men-generate data laporan ${type} terupdate!`)
+
+      // Save to DB archive
+      try {
+        await saveReport({
+          judul: `Laporan ${type} — ${tanggalStr}`,
+          tipe: type,
+          stats_data: stats,
+          format: 'PDF',
+        })
+        toast.success(`Laporan ${type} berhasil di-generate dan tersimpan di arsip!`)
+      } catch (e) {
+        toast.success(`Berhasil men-generate data laporan ${type}!`)
+      }
+
+      setIsGenerating(false)
     }, 1500)
   }
 
@@ -206,55 +218,65 @@ export default function LaporanPage() {
         </div>
       </div>
 
-      {/* ARCHIVED TABLE HISTORY */}
+      {/* ARCHIVED TABLE HISTORY — real data from DB */}
       <div className="card-feature bg-white/5 border border-white/10 hide-on-print">
         <div className="flex justify-between items-center mb-5">
-          <h3 className="font-display font-bold text-white text-base">Riwayat & Arsip Laporan Terdahulu</h3>
-          <span className="text-xs bg-white/5 text-dark-300 px-2 py-1 rounded border border-white/10 font-mono">PDF/Excel Ready</span>
+          <h3 className="font-display font-bold text-white text-base">Riwayat & Arsip Laporan Tersimpan</h3>
+          <span className="text-xs bg-white/5 text-dark-300 px-2 py-1 rounded border border-white/10 font-mono">{savedReports.length} Laporan</span>
         </div>
-        <div className="space-y-2">
-          {ARCHIVED_REPORTS.map(({ judul, tipe, tanggal, ukuran, format }) => (
-            <div key={judul} className="flex items-center gap-4 p-4 rounded-xl glass hover:bg-white/10 transition-colors border border-white/5">
-              <div className={`flex-shrink-0 text-2xl ${format === 'PDF' ? 'text-red-400' : 'text-emerald-400'}`}>
-                {format === 'PDF' ? <RiFilePdfLine /> : <RiFileExcelLine />}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="font-bold text-white text-sm truncate">{judul}</div>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className={TIPE_CLS[tipe]}>{tipe}</span>
-                  <span className="text-dark-300 text-xs font-mono">{tanggal} · {ukuran}</span>
+        {savedReports.length === 0 ? (
+          <div className="text-center py-10 text-dark-400">
+            <RiFilePdfLine className="text-4xl mx-auto mb-2 opacity-30" />
+            <p className="text-sm">Belum ada laporan yang disimpan.</p>
+            <p className="text-xs mt-1">Klik "Buat Laporan Baru" untuk membuat dan menyimpan laporan pertama Anda.</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {savedReports.map((rpt) => (
+              <div key={rpt.id} className="flex items-center gap-4 p-4 rounded-xl glass hover:bg-white/10 transition-colors border border-white/5">
+                <div className={`flex-shrink-0 text-2xl ${rpt.format === 'Excel' ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {rpt.format === 'Excel' ? <RiFileExcelLine /> : <RiFilePdfLine />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-white text-sm truncate">{rpt.judul}</div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className={TIPE_CLS[rpt.tipe] || 'badge bg-white/10 text-dark-300'}>{rpt.tipe}</span>
+                    <span className="text-dark-300 text-xs font-mono">
+                      {new Date(rpt.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => {
+                      setGeneratedDoc({
+                        tipe: rpt.tipe,
+                        tanggal: new Date(rpt.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
+                        judul: rpt.judul.toUpperCase(),
+                        stats: rpt.stats_data,
+                      })
+                    }}
+                    className="btn-secondary text-xs py-1.5 px-3 gap-1.5 font-bold"
+                  >
+                    <RiDownloadLine /> Lihat
+                  </button>
+                  <button
+                    onClick={async () => {
+                      try {
+                        await deleteReport(rpt.id)
+                        toast.success('Arsip laporan dihapus.')
+                      } catch { toast.error('Gagal menghapus.') }
+                    }}
+                    className="p-2 text-dark-300 hover:text-red-400 transition-colors rounded-lg hover:bg-red-500/10"
+                    title="Hapus arsip"
+                  >
+                    <RiDeleteBinLine />
+                  </button>
                 </div>
               </div>
-              <button onClick={() => {
-                setIsGenerating(true);
-                toast.success(`Menyiapkan arsip: ${judul}...`);
-                setTimeout(() => {
-                  setIsGenerating(false);
-                  const completedSessions = sessions.filter(s => s.status === 'Selesai').length;
-                  const totalPoin = kasus.reduce((sum, k) => sum + (k.poin || 0), 0);
-                  const completedVisits = kasus.filter(k => k.visit && k.status === 'Selesai').length;
-                  
-                  setGeneratedDoc({
-                    tipe: tipe,
-                    tanggal: tanggal,
-                    judul: judul.toUpperCase(),
-                    stats: {
-                      totalSiswa: siswa.length,
-                      sesiKonseling: sessions.length,
-                      sesiSelesai: completedSessions,
-                      totalKasus: kasus.length,
-                      totalPoin: totalPoin,
-                      kunjunganRumah: kasus.filter(k => k.visit).length,
-                      kunjunganSelesai: completedVisits
-                    }
-                  });
-                }, 1000);
-              }} className="btn-secondary text-xs py-1.5 px-3 gap-1.5 flex-shrink-0 font-bold">
-                <RiDownloadLine /> Unduh
-              </button>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ========================================================== */}

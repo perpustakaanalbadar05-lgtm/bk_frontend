@@ -3,7 +3,7 @@ import {
   RiAddLine, RiHeartLine, RiUserLine, RiTimeLine, RiCheckboxCircleLine,
   RiFileLine, RiCloseLine, RiBallPenLine, RiEraserLine, RiCheckLine,
   RiFileTextLine, RiAccountCircleLine, RiPrinterLine, RiDeleteBinLine,
-  RiLoader4Line
+  RiLoader4Line, RiSearchLine, RiFileExcel2Line, RiDownloadLine
 } from 'react-icons/ri'
 import SignatureCanvas from 'react-signature-canvas'
 import toast from 'react-hot-toast'
@@ -11,6 +11,7 @@ import { useSettings } from '../contexts/SettingsContext'
 import { useData } from '../contexts/DataContext'
 import ConfirmDialog from '../components/ConfirmDialog'
 import StudentSelector from '../components/StudentSelector'
+import { exportSesiToExcel } from '../utils/exportUtils'
 
 const STATUS_CLS = {
   'Selesai': 'badge bg-teal-500/20 text-teal-300 border border-teal-500/30',
@@ -26,6 +27,7 @@ const JENIS_CLS = {
 
 export default function KonselingPage() {
   const [activeTab, setActiveTab] = useState('semua')
+  const [searchTerm, setSearchTerm] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [saving, setSaving] = useState(false)
@@ -92,9 +94,17 @@ export default function KonselingPage() {
     }
   }
 
-  const filtered = activeTab === 'semua'
+  let filtered = activeTab === 'semua'
     ? sessions
     : sessions.filter(s => s.status.toLowerCase() === activeTab)
+
+  if (searchTerm) {
+    const q = searchTerm.toLowerCase()
+    filtered = filtered.filter(s => 
+      (s.siswa || '').toLowerCase().includes(q) || 
+      (s.topik || '').toLowerCase().includes(q)
+    )
+  }
 
   return (
     <div className="space-y-6 relative">
@@ -236,9 +246,17 @@ export default function KonselingPage() {
           </h1>
           <p className="text-dark-200 text-sm">Arsip & pencatatan sesi layanan bimbingan lengkap dengan digital signature.</p>
         </div>
-        <button id="konseling-add-btn" onClick={() => setShowForm(true)} className="btn-primary text-sm py-2.5 shadow-glow-teal bg-primary-500">
-          <RiBallPenLine className="text-lg" /> Catat Sesi Baru
-        </button>
+        <div className="flex gap-2">
+          <button onClick={async () => {
+            try { await exportSesiToExcel(sessions); toast.success('Data konseling diekspor ke Excel!') }
+            catch { toast.error('Gagal mengekspor.') }
+          }} className="btn-secondary text-sm py-2.5 hidden sm:flex gap-1.5">
+            <RiFileExcel2Line /> Export
+          </button>
+          <button id="konseling-add-btn" onClick={() => setShowForm(true)} className="btn-primary text-sm py-2.5 shadow-glow-teal bg-primary-500">
+            <RiBallPenLine className="text-lg" /> Catat Sesi Baru
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -262,16 +280,24 @@ export default function KonselingPage() {
 
       {/* Table */}
       <div className="card-feature p-0 overflow-hidden">
-        <div className="flex items-center justify-between p-5 border-b border-white/20 bg-white/5 hide-on-print">
-          <div className="flex gap-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 border-b border-white/20 bg-white/5 gap-4 hide-on-print">
+          <div className="flex gap-1 overflow-x-auto pb-1 sm:pb-0">
             {tabs.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${activeTab === tab ? 'bg-primary-600/20 border border-primary-500/50 text-white' : 'text-dark-300 hover:text-white'}`}>
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap ${activeTab === tab ? 'bg-primary-600/20 border border-primary-500/50 text-white' : 'text-dark-300 hover:text-white'}`}>
                 {tab}
               </button>
             ))}
           </div>
-          <div className="text-xs text-dark-300 hidden md:block">Menampilkan {filtered.length} arsip</div>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-200" />
+              <input type="text" placeholder="Cari siswa/topik..."
+                value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                className="bg-white/10 border border-white/20 rounded-xl pl-9 pr-4 py-1.5 text-sm text-white outline-none focus:border-primary-500 w-full sm:w-64" />
+            </div>
+            <div className="text-xs text-dark-300 hidden md:block whitespace-nowrap">Menampilkan {filtered.length} arsip</div>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -327,9 +353,11 @@ export default function KonselingPage() {
             </tbody>
           </table>
           {filtered.length === 0 && (
-            <div className="p-12 text-center">
-              <RiFileTextLine className="text-5xl text-dark-700 mx-auto mb-3" />
-              <p className="text-dark-300">Tidak ada data konseling untuk filter "{activeTab}".</p>
+            <div className="p-16 text-center">
+              <RiFileTextLine className="text-5xl text-dark-600 mx-auto mb-3 opacity-60" />
+              <p className="text-dark-300 text-sm">
+                {searchTerm ? `Tidak ada sesi yang cocok dengan "${searchTerm}"` : `Tidak ada data konseling untuk status "${activeTab}".`}
+              </p>
             </div>
           )}
         </div>

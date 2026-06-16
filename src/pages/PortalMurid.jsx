@@ -10,6 +10,7 @@ import { useData } from '../contexts/DataContext'
 import { useSettings } from '../contexts/SettingsContext'
 import toast from 'react-hot-toast'
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts'
+import { AKPD_MASTER } from '../data/akpdMaster'
 
 export default function PortalMurid() {
   const { portalUser, logoutPortal } = useRole()
@@ -40,11 +41,30 @@ export default function PortalMurid() {
   const mySessions = sessions.filter(s => s.siswa?.toLowerCase() === linkedName.toLowerCase())
   const myKasus = kasus.filter(k => k.siswa?.toLowerCase() === linkedName.toLowerCase())
 
-  // Find AKPD result for this student
-  const myAkpdResult = akpdResult?.meta?.nama?.toLowerCase() === linkedName.toLowerCase() ? akpdResult : null
+  // Find AKPD result for this student from the aggregated results
+  const myAkpdResult = akpdResult?.students?.find(s => s.nama?.toLowerCase() === linkedName.toLowerCase()) || null
 
-  const radarData = myAkpdResult
-    ? myAkpdResult.bidangSummary?.map(b => ({ subject: b.bidang, A: b.persentase })) || []
+  let computedRadar = []
+  if (myAkpdResult && myAkpdResult.responses) {
+    const counts = { Pribadi: 0, Sosial: 0, Belajar: 0, Karir: 0 }
+    let total = 0
+    myAkpdResult.responses.forEach((resp, i) => {
+      if (resp === 1 && AKPD_MASTER[i]) {
+        const bdg = AKPD_MASTER[i].bidang
+        if (counts[bdg] !== undefined) counts[bdg]++
+        total++
+      }
+    })
+    computedRadar = [
+      { subject: 'Pribadi', A: total ? Math.round((counts.Pribadi / total) * 100) : 0 },
+      { subject: 'Sosial', A: total ? Math.round((counts.Sosial / total) * 100) : 0 },
+      { subject: 'Belajar', A: total ? Math.round((counts.Belajar / total) * 100) : 0 },
+      { subject: 'Karir', A: total ? Math.round((counts.Karir / total) * 100) : 0 },
+    ]
+  }
+
+  const radarData = computedRadar.length > 0
+    ? computedRadar
     : [
         { subject: 'Pribadi', A: 72 },
         { subject: 'Sosial', A: 65 },

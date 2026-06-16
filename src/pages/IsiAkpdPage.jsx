@@ -44,16 +44,21 @@ export default function IsiAkpdPage() {
                      type === 'kepribadian' ? 'simbk_data_kepribadian_result' : 
                      type === 'bakat-minat' ? 'simbk_data_bakat-minat_result' : 'simbk_data_akpd_result';
 
+  
   const getActiveMeta = () => {
     try {
       const saved = localStorage.getItem(storageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed[0].meta || {};
+        }
         return parsed.meta || {};
       }
     } catch (_) {}
     return { sekolah: 'SMP Negeri 2 Pamekasan', kelas: 'VII G', tahun: '2022-2023', tingkat: 'SMP/MTs' };
   };
+
 
   const activeMeta = getActiveMeta();
 
@@ -128,23 +133,34 @@ export default function IsiAkpdPage() {
     window.scrollTo(0,0);
   };
 
+  
   const handleSubmit = () => {
     const confirmSubmit = confirm("Apakah Anda yakin jawaban Anda sudah benar dan siap dikirim?");
     if (!confirmSubmit) return;
 
     try {
-      let currentResult = null;
+      let resultsArray = [];
       const savedStr = localStorage.getItem(config.key);
       if (savedStr) {
-        currentResult = JSON.parse(savedStr);
-      } else {
-        currentResult = {
-          meta: { ...activeMeta },
-          students: []
-        };
+        const parsed = JSON.parse(savedStr);
+        resultsArray = Array.isArray(parsed) ? parsed : [parsed];
       }
 
-      const nextNo = currentResult.students.length + 1;
+      let sessionIdx = resultsArray.findIndex(s => s.meta && s.meta.kelas === studentInfo.kelas);
+      
+      let currentSession;
+      if (sessionIdx >= 0) {
+        currentSession = resultsArray[sessionIdx];
+      } else {
+        currentSession = {
+          meta: { ...activeMeta, kelas: studentInfo.kelas },
+          students: []
+        };
+        resultsArray.push(currentSession);
+        sessionIdx = resultsArray.length - 1;
+      }
+
+      const nextNo = currentSession.students.length + 1;
       const newStudent = {
         no: String(nextNo),
         nama: studentInfo.nama.trim(),
@@ -152,10 +168,12 @@ export default function IsiAkpdPage() {
         responses: selections
       };
 
-      const updatedStudents = [...currentResult.students, newStudent];
-      const finalComputed = computeAkpdResults(currentResult.meta, updatedStudents, config.master);
+      const updatedStudents = [...currentSession.students, newStudent];
+      const finalComputed = computeAkpdResults(currentSession.meta, updatedStudents, config.master);
 
-      localStorage.setItem(config.key, JSON.stringify(finalComputed));
+      resultsArray[sessionIdx] = finalComputed;
+
+      localStorage.setItem(config.key, JSON.stringify(resultsArray));
 
       // Trigger sync across tabs
       window.dispatchEvent(new Event('storage'));
@@ -169,6 +187,7 @@ export default function IsiAkpdPage() {
       toast.error("Terjadi kesalahan saat menyimpan data.");
     }
   };
+
 
   const countChecked = selections.reduce((a, b) => a + b, 0);
   

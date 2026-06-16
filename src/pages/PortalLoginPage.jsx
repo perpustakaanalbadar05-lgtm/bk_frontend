@@ -24,14 +24,6 @@ const ROLE_CONFIG = {
     description: 'Portal pemantauan dan supervisi BK',
     redirect: '/portal/kepala-sekolah',
   },
-  murid: {
-    label: 'Murid / Siswa',
-    icon: RiGraduationCapLine,
-    color: 'from-purple-600 to-pink-700',
-    accent: 'text-purple-400',
-    description: 'Lihat riwayat konseling dan asesmen Anda',
-    redirect: '/portal/murid',
-  },
 }
 
 export default function PortalLoginPage() {
@@ -95,9 +87,7 @@ export default function PortalLoginPage() {
           /* Role Selection */
           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
             <div className="text-center mb-8">
-              <div className="w-16 h-16 rounded-2xl bg-primary-500 flex items-center justify-center mx-auto mb-4 shadow-glow-sm">
-                <RiShieldStarLine className="text-white text-3xl" />
-              </div>
+              <img src="/logo.svg" alt="Konselia Logo" className="w-16 h-16 rounded-2xl mx-auto mb-4 shadow-glow-sm" />
               <h1 className="text-2xl font-display font-black text-white">Portal Konselia</h1>
               <p className="text-slate-400 text-sm mt-1">Pilih portal sesuai peran Anda</p>
             </div>

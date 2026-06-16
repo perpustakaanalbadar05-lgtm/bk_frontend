@@ -13,9 +13,9 @@ import { useSettings } from '../contexts/SettingsContext'
 import { useRole } from '../contexts/RoleContext'
 import api from '../lib/axios'
 
-const ROLE_ICONS  = { kepala_sekolah: RiUserStarLine, pengawas: RiTeamLine, murid: RiGraduationCapLine, orang_tua: RiUserLine }
-const ROLE_COLORS = { kepala_sekolah: 'from-blue-500 to-indigo-600', pengawas: 'from-emerald-500 to-teal-600', murid: 'from-purple-500 to-pink-600', orang_tua: 'from-amber-500 to-orange-600' }
-const ROLE_LABELS = { kepala_sekolah: 'Kepala Sekolah', pengawas: 'Pengawas', murid: 'Murid / Siswa', orang_tua: 'Orang Tua' }
+const ROLE_ICONS  = { kepala_sekolah: RiUserStarLine, pengawas: RiTeamLine }
+const ROLE_COLORS = { kepala_sekolah: 'from-blue-500 to-indigo-600', pengawas: 'from-emerald-500 to-teal-600' }
+const ROLE_LABELS = { kepala_sekolah: 'Kepala Sekolah', pengawas: 'Pengawas' }
 const ALL_MENUS = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'siswa', label: 'Data Siswa' },
@@ -431,20 +431,25 @@ export default function SettingsPage() {
             <div className="animate-in">
               <div>
                 <h2 className="font-display font-bold text-white text-lg mb-1">Notifikasi</h2>
-                <p className="text-dark-200 text-sm">Atur preferensi notifikasi sistem</p>
+                <p className="text-dark-200 text-sm">Preferensi notifikasi — tersimpan otomatis ke akun Anda</p>
               </div>
               <div className="space-y-3 mt-6">
                 {[
-                  'Pengingat jadwal konseling',
-                  'Laporan bulanan otomatis',
-                  'Notifikasi siswa baru',
-                  'Alert siswa bermasalah',
-                  'Update sistem Konselia',
-                ].map(item => (
-                  <label key={item} className="flex items-center justify-between p-4 glass rounded-xl cursor-pointer hover:bg-white/10 transition-colors">
-                    <span className="text-dark-200 text-sm">{item}</span>
-                    <div className="relative">
-                      <input type="checkbox" defaultChecked className="sr-only peer" />
+                  { key: 'jadwal', label: 'Pengingat jadwal konseling' },
+                  { key: 'laporan', label: 'Laporan bulanan otomatis' },
+                  { key: 'siswa_baru', label: 'Notifikasi siswa baru' },
+                  { key: 'alert_masalah', label: 'Alert siswa bermasalah' },
+                  { key: 'update_sistem', label: 'Update sistem Konselia' },
+                ].map(({ key, label }) => (
+                  <label key={key} className="flex items-center justify-between p-4 glass rounded-xl cursor-pointer hover:bg-white/10 transition-colors">
+                    <span className="text-dark-200 text-sm">{label}</span>
+                    <div className="relative" onClick={e => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={!!notifPrefs[key]}
+                        onChange={e => saveNotifPrefs({ ...notifPrefs, [key]: e.target.checked })}
+                        className="sr-only peer"
+                      />
                       <div className="w-11 h-6 bg-white/10 rounded-full peer peer-checked:bg-primary-500 transition-colors" />
                       <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5" />
                     </div>
@@ -521,7 +526,11 @@ export default function SettingsPage() {
                 </button>
               </div>
 
-              {accounts.length === 0 ? (
+              {accountsLoading ? (
+                <div className="text-center py-8">
+                  <RiLoader4Line className="text-3xl text-primary-400 animate-spin mx-auto" />
+                </div>
+              ) : accounts.length === 0 ? (
                 <div className="text-center py-10 border border-dashed border-white/10 rounded-xl">
                   <RiShieldStarLine className="text-4xl text-dark-400 mx-auto mb-2" />
                   <p className="text-dark-300 text-sm">Belum ada akun tambahan</p>
@@ -533,12 +542,22 @@ export default function SettingsPage() {
                     const Icon = ROLE_ICONS[acc.role] || RiUserLine
                     return (
                       <div key={acc.id} className="flex items-center gap-3 p-4 glass rounded-xl border border-white/5 group">
-                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${ROLE_COLORS[acc.role]} flex items-center justify-center text-white flex-shrink-0`}><Icon /></div>
+                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${ROLE_COLORS[acc.role] || 'from-slate-500 to-slate-600'} flex items-center justify-center text-white flex-shrink-0`}><Icon /></div>
                         <div className="flex-1 min-w-0">
                           <p className="text-white font-bold text-sm truncate">{acc.name}</p>
-                          <p className="text-dark-300 text-xs">@{acc.username} · {ROLE_LABELS[acc.role]}{acc.siswa ? ` · Siswa: ${acc.siswa}` : ''}</p>
+                          <p className="text-dark-300 text-xs">@{acc.username} · {ROLE_LABELS[acc.role] || acc.role}{acc.siswa ? ` · ${acc.siswa}` : ''}</p>
                         </div>
-                        <button onClick={() => { deleteAccount(acc.id); toast.success('Akun dihapus') }} className="opacity-0 group-hover:opacity-100 p-2 text-dark-300 hover:text-red-400 transition-all">
+                        <button
+                          onClick={async () => {
+                            try {
+                              await deleteAccount(acc.id)
+                              toast.success('Akun dihapus')
+                            } catch (e) {
+                              toast.error('Gagal menghapus akun')
+                            }
+                          }}
+                          className="opacity-0 group-hover:opacity-100 p-2 text-dark-300 hover:text-red-400 transition-all"
+                        >
                           <RiDeleteBinLine />
                         </button>
                       </div>
@@ -558,9 +577,15 @@ export default function SettingsPage() {
                     <div>
                       <label className="text-dark-300 text-xs font-medium block mb-1">Role</label>
                       <select value={akunForm.role} onChange={e => setAkunForm({...akunForm, role: e.target.value})} className="input-field">
-                        {Object.entries(ROLE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                        {Object.entries(ROLE_LABELS).filter(([k]) => k !== 'super_admin').map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                       </select>
                     </div>
+                    {(akunForm.role === 'murid' || akunForm.role === 'orang_tua') && (
+                      <div>
+                        <label className="text-dark-300 text-xs font-medium block mb-1">Nama Siswa yang Ditautkan</label>
+                        <input type="text" placeholder="Sama persis dengan nama siswa di sistem..." value={akunForm.siswa} onChange={e => setAkunForm({...akunForm, siswa: e.target.value})} className="input-field" />
+                      </div>
+                    )}
                     <div>
                       <label className="text-dark-300 text-xs font-medium block mb-1">Nama Lengkap *</label>
                       <input type="text" placeholder="Nama lengkap..." value={akunForm.name} onChange={e => setAkunForm({...akunForm, name: e.target.value})} className="input-field" />

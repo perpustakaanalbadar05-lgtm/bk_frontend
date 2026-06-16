@@ -58,9 +58,7 @@ export default function LoginPage() {
           style={{ backgroundImage: 'linear-gradient(#6366f1 1px, transparent 1px), linear-gradient(90deg, #6366f1 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
 
         <div className="relative text-center max-w-md">
-          <div className="w-20 h-20 rounded-2xl bg-primary-500 flex items-center justify-center mx-auto mb-8 shadow-glow animate-float">
-            <RiShieldStarLine className="text-[#ffffff] text-4xl" />
-          </div>
+          <img src="/logo.svg" alt="Konselia Logo" className="w-16 h-16 rounded-2xl shadow-xl relative z-10 mx-auto mb-8" />
           <h1 className="font-display font-black text-5xl text-[#ffffff] mb-2">Konselia</h1>
           <p className="text-primary-300 font-semibold text-lg mb-1">by Alifba Media.</p>
           <p className="text-[#cbd5e1] font-medium italic mb-3">Konseling, Solusi, Edukasi.</p>
@@ -81,9 +79,7 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-3 justify-center mb-10">
-            <div className="w-11 h-11 rounded-xl bg-primary-500 flex items-center justify-center shadow-glow-sm">
-              <RiShieldStarLine className="text-white text-2xl" />
-            </div>
+            <img src="/logo.svg" alt="Konselia Logo" className="w-10 h-10 rounded-xl" />
             <div>
               <div className="font-display font-bold text-white text-2xl">Konselia</div>
               <div className="text-dark-200 text-xs">by Alifba Media.</div>

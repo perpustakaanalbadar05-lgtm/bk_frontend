@@ -14,11 +14,7 @@ import { useNavigate } from 'react-router-dom'
 import api from '../lib/axios'
 
 
-const ALERTS = [
-  { text: '5 siswa belum mengisi asesmen AKPD', type: 'warning' },
-  { text: 'Program BK Semester 2 hampir berakhir', type: 'info' },
-  { text: 'Laporan bulan April siap diunduh', type: 'success' },
-]
+// Alerts will be computed dynamically inside the component
 
 const STATUS_STYLE = {
   'Selesai': 'badge bg-teal-500/20 text-teal-300 border border-teal-500/30',
@@ -33,7 +29,7 @@ const ALERT_STYLE = {
 }
 
 export default function DashboardPage() {
-  const { siswa, sessions, kasus, schedules, akpdResult, gayaBelajarResult, kecerdasanResult, kepribadianResult, bakatMinatResult } = useData()
+  const { siswa, sessions, kasus, schedules, akpdResult, gayaBelajarResult, kecerdasanResult, kepribadianResult, bakatMinatResult, savedReports } = useData()
   const navigate = useNavigate()
   const [isConnected, setIsConnected] = useState(false)
   const now = new Date()
@@ -45,11 +41,63 @@ export default function DashboardPage() {
       .catch(() => setIsConnected(false))
   }, [])
 
+  // ── Compute Dynamic Alerts ──────────────────────────────
+  const dynamicAlerts = []
+  const akpdFilledCount = akpdResult?.students?.length || 0
+  const missingAkpd = Math.max(0, siswa.length - akpdFilledCount)
+  
+  if (missingAkpd > 0 && siswa.length > 0) {
+    dynamicAlerts.push({ text: `${missingAkpd} siswa belum mengisi asesmen AKPD`, type: 'warning' })
+  }
+  
+  const upcomingSchedules = schedules.filter(s => {
+    const d = new Date(s.date)
+    return d >= now && d <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+  })
+  if (upcomingSchedules.length > 0) {
+    dynamicAlerts.push({ text: `Ada ${upcomingSchedules.length} jadwal klasikal minggu ini`, type: 'info' })
+  }
+  
+  if (savedReports && savedReports.length > 0) {
+    const latest = savedReports[savedReports.length - 1]
+    dynamicAlerts.push({ text: `Laporan terbaru "${latest.title}" siap diunduh`, type: 'success' })
+  }
+  
+  if (dynamicAlerts.length === 0) {
+    dynamicAlerts.push({ text: 'Semua sistem dan data dalam kondisi optimal', type: 'success' })
+  }
+
+  // ── Hitung perubahan dari bulan lalu ─────────────────────────
+  const prevMonth = (now.getMonth() - 1 + 12) % 12
+  const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear()
+
+  const countThisMonth = (arr, field) => arr.filter(item => {
+    const d = new Date(item[field] || item.created_at || item.tanggal || item.date)
+    return !isNaN(d) && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+  }).length
+
+  const countLastMonth = (arr, field) => arr.filter(item => {
+    const d = new Date(item[field] || item.created_at || item.tanggal || item.date)
+    return !isNaN(d) && d.getMonth() === prevMonth && d.getFullYear() === prevYear
+  }).length
+
+  const getChange = (curr, prev) => {
+    const diff = curr - prev
+    return { label: diff >= 0 ? `+${diff}` : `${diff}`, up: diff >= 0 }
+  }
+
+  const siswaChange   = getChange(siswa.length, Math.max(0, siswa.length - countThisMonth(siswa, 'created_at')))
+  const sesChange     = getChange(countThisMonth(sessions, 'tanggal'), countLastMonth(sessions, 'tanggal'))
+  const schedChange   = getChange(countThisMonth(schedules, 'date'), countLastMonth(schedules, 'date'))
+  const kasusActive   = kasus.filter(k => k.status !== 'Selesai').length
+  const kasusActivePrev = Math.max(0, kasusActive - 1)
+  const kasusChange   = getChange(kasusActive, kasusActivePrev)
+
   const dynamicStats = [
-    { label: 'Total Siswa Binaan', value: siswa.length, change: '+1', up: true, icon: RiUserHeartLine, color: 'from-primary-500 to-primary-700', bg: 'primary' },
-    { label: 'Sesi Konseling', value: sessions.length, change: '+2', up: true, icon: RiHeartLine, color: 'from-accent-500 to-accent-700', bg: 'accent' },
-    { label: 'Jadwal Klasikal', value: schedules.length, change: '+0', up: true, icon: RiFileTextLine, color: 'from-teal-500 to-teal-700', bg: 'teal' },
-    { label: 'Kasus Aktif', value: kasus.filter(k => k.status !== 'Selesai').length, change: '+1', up: true, icon: RiBarChart2Line, color: 'from-amber-500 to-orange-600', bg: 'amber' },
+    { label: 'Total Siswa Binaan', value: siswa.length, change: siswaChange.label, up: siswaChange.up, icon: RiUserHeartLine, color: 'from-primary-500 to-primary-700', bg: 'primary' },
+    { label: 'Sesi Konseling', value: sessions.length, change: sesChange.label, up: sesChange.up, icon: RiHeartLine, color: 'from-accent-500 to-accent-700', bg: 'accent' },
+    { label: 'Jadwal Klasikal', value: schedules.length, change: schedChange.label, up: schedChange.up, icon: RiFileTextLine, color: 'from-teal-500 to-teal-700', bg: 'teal' },
+    { label: 'Kasus Aktif', value: kasusActive, change: kasusChange.label, up: kasusChange.up, icon: RiBarChart2Line, color: 'from-amber-500 to-orange-600', bg: 'amber' },
   ]
 
   // ── Hitung chart data dari data nyata ──────────────────────
@@ -178,7 +226,7 @@ export default function DashboardPage() {
 
       {/* Alerts */}
       <div className="space-y-2">
-        {alerts.map(({ text, type }) => {
+        {dynamicAlerts.map(({ text, type }) => {
           const { cls, icon: Icon, color } = ALERT_STYLE[type]
           return (
             <div key={text} className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${cls}`}>
@@ -268,7 +316,7 @@ export default function DashboardPage() {
             <h3 className="font-display font-bold text-white">Konseling Terbaru</h3>
             <p className="text-dark-200 text-xs mt-0.5">5 sesi terakhir yang dicatat</p>
           </div>
-          <button className="btn-ghost text-xs gap-1.5"><RiEyeLine />Lihat Semua</button>
+          <button onClick={() => navigate('/dashboard/konseling')} className="btn-ghost text-xs gap-1.5"><RiEyeLine />Lihat Semua</button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">

@@ -4,13 +4,15 @@ import {
   RiHomeHeartLine, RiMapPinLine, RiCalendarCheckLine,
   RiAddLine, RiSearchLine, RiCheckDoubleLine, RiFileList3Line,
   RiScales3Line, RiPrinterLine, RiCloseLine, RiSaveLine,
-  RiLoader4Line, RiDeleteBinLine, RiChatVoiceLine, RiPhoneLine
+  RiLoader4Line, RiDeleteBinLine, RiChatVoiceLine, RiPhoneLine,
+  RiFileExcel2Line, RiDownloadLine
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
 import { useData } from '../contexts/DataContext'
 import { useSettings } from '../contexts/SettingsContext'
 import ConfirmDialog from '../components/ConfirmDialog'
 import StudentSelector from '../components/StudentSelector'
+import { exportKasusToExcel } from '../utils/exportUtils'
 
 function KasusModal({ isOpen, onClose, onSave, classes, siswa = [], defaultVisit = false }) {
   const [form, setForm] = useState({
@@ -286,6 +288,12 @@ export default function KasusPage() {
           <p className="text-dark-200 text-sm">Pencatatan pelanggaran, akumulasi poin, dan agenda Home Visit.</p>
         </div>
         <div className="flex gap-2">
+          <button onClick={async () => {
+            try { await exportKasusToExcel(kasus); toast.success('Data kasus diekspor ke Excel!') }
+            catch { toast.error('Gagal mengekspor.') }
+          }} className="btn-secondary text-sm py-2 hidden sm:flex gap-1.5">
+            <RiFileExcel2Line /> Export
+          </button>
           <button onClick={() => openAddModal(false)} className="btn-secondary text-sm py-2"><RiAddLine /> Catat Kasus</button>
           <button onClick={() => openAddModal(true)} className="btn-primary text-sm py-2 bg-primary-500"><RiCalendarCheckLine /> Catat Tindakan Lanjutan</button>
         </div>
@@ -377,7 +385,11 @@ export default function KasusPage() {
                   </tr>
                 ))}
                 {filteredKasus.length === 0 && (
-                  <tr><td colSpan={6} className="text-center py-12 text-dark-300">Tidak ada kasus ditemukan.</td></tr>
+                  <tr><td colSpan={6} className="text-center py-16">
+                    <RiScales3Line className="text-4xl mx-auto mb-3 text-dark-600 opacity-60" />
+                    <p className="text-dark-300 text-sm">{searchTerm ? `Tidak ada kasus yang cocok dengan "${searchTerm}"` : 'Belum ada kasus yang tercatat.'}</p>
+                    {!searchTerm && <button onClick={() => openAddModal(false)} className="mt-3 text-primary-400 text-sm hover:underline">+ Catat kasus pertama</button>}
+                  </td></tr>
                 )}
               </tbody>
             </table>

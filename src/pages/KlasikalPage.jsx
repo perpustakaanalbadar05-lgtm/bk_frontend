@@ -134,7 +134,7 @@ export default function KlasikalPage() {
 
   const handleOpenAttendance = (schedule) => {
     setActiveClass(schedule)
-    setAttendance({})
+    setAttendance(schedule.attendance_data || {})
     setView('attendance')
   }
 
@@ -146,7 +146,11 @@ export default function KlasikalPage() {
     const hadirCount = classStudents.filter(s => (attendance[s.id] || 'Hadir') === 'Hadir').length
     setSaving(true)
     try {
-      await updateSchedule(activeClass.id, { status: 'Selesai', attended: hadirCount })
+      await updateSchedule(activeClass.id, { 
+        status: 'Selesai', 
+        attended: hadirCount,
+        attendance_data: attendance
+      })
       toast.success(`Presensi kelas ${activeClass.class} berhasil disimpan!`, { icon: '📋' })
       setView('list')
     } catch {

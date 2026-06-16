@@ -5,12 +5,13 @@ import {
   RiSaveLine, RiUserLine, RiAlertLine, RiCheckLine,
   RiUploadLine, RiTimeLine, RiHeartLine, RiScales3Line,
   RiBallPenLine, RiCheckboxCircleLine, RiFileTextLine, RiErrorWarningLine,
-  RiLoader4Line
+  RiLoader4Line, RiFileExcel2Line, RiFilePdf2Line
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
 import { useSettings } from '../contexts/SettingsContext'
 import { useData } from '../contexts/DataContext'
 import { useNavigate } from 'react-router-dom'
+import { exportSiswaToExcel, exportSiswaToPdf } from '../utils/exportUtils'
 
 const STATUS_CLS = {
   'Aktif': 'badge bg-teal-500/20 text-teal-300 border border-teal-500/30',
@@ -453,24 +454,53 @@ export default function SiswaPage() {
     }
   }
 
-  const handleExport = () => {
-    const rows = [['NIS','Nama','Kelas','J/K','Status','Konseling','HP','Alamat']]
-    filtered.forEach(s => rows.push([s.nis, s.nama, s.kelas, s.jk, s.status, s.counseling_sessions_count || 0, s.hp || '', s.alamat || '']))
-    const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n')
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url; a.download = `data-siswa-${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.csv`; a.click()
-    URL.revokeObjectURL(url)
-    toast.success('Data berhasil diekspor ke CSV!')
+  const handleExport = async (format = 'excel') => {
+    if (filtered.length === 0) return toast.error('Tidak ada data untuk diekspor!')
+    try {
+      if (format === 'excel') {
+        await exportSiswaToExcel(filtered)
+        toast.success(`${filtered.length} data siswa berhasil diekspor ke Excel!`)
+      } else {
+        const { sekolah } = {} // placeholder
+        await exportSiswaToPdf(filtered)
+        toast.success(`${filtered.length} data siswa berhasil diekspor ke PDF!`)
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error('Gagal mengekspor data. Coba lagi.')
+    }
   }
 
   const resetFilter = () => { setFilterStatus('Semua'); setFilterKelas('Semua'); setShowFilter(false) }
   const activeFilterCount = [filterStatus !== 'Semua', filterKelas !== 'Semua'].filter(Boolean).length
 
   if (dataLoading) return (
-    <div className="flex items-center justify-center h-64">
-      <RiLoader4Line className="text-5xl text-primary-400 animate-spin" />
+    <div className="space-y-6">
+      <div className="flex justify-between">
+        <div className="space-y-2">
+          <div className="h-7 w-36 bg-white/10 rounded-lg animate-pulse" />
+          <div className="h-4 w-52 bg-white/5 rounded-lg animate-pulse" />
+        </div>
+        <div className="h-9 w-32 bg-white/10 rounded-lg animate-pulse" />
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {[1,2,3,4].map(i => (
+          <div key={i} className="card-feature py-5 text-center">
+            <div className="h-8 w-16 bg-white/10 rounded mx-auto animate-pulse mb-2" />
+            <div className="h-3 w-24 bg-white/5 rounded mx-auto animate-pulse" />
+          </div>
+        ))}
+      </div>
+      <div className="card-feature">
+        {[1,2,3,4,5].map(i => (
+          <div key={i} className="flex gap-4 py-4 border-b border-white/5">
+            <div className="h-4 w-4 bg-white/10 rounded animate-pulse" />
+            <div className="h-4 flex-1 bg-white/10 rounded animate-pulse" />
+            <div className="h-4 w-20 bg-white/10 rounded animate-pulse" />
+            <div className="h-4 w-16 bg-white/10 rounded animate-pulse" />
+          </div>
+        ))}
+      </div>
     </div>
   )
 
@@ -549,7 +579,17 @@ export default function SiswaPage() {
               }} 
             />
           </label>
-          <button onClick={handleExport} className="btn-secondary text-sm py-2 hidden sm:flex"><RiDownloadLine /> Export</button>
+          <div className="relative group hidden sm:block">
+            <button className="btn-secondary text-sm py-2 gap-1"><RiDownloadLine /> Export ▾</button>
+            <div className="absolute right-0 top-full mt-1 w-40 bg-dark-900 border border-white/10 rounded-xl shadow-2xl py-1 z-20 hidden group-hover:block">
+              <button onClick={() => handleExport('excel')} className="w-full text-left px-4 py-2 text-sm text-emerald-400 hover:bg-white/5 flex items-center gap-2">
+                <RiFileExcel2Line /> Export Excel
+              </button>
+              <button onClick={() => handleExport('pdf')} className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5 flex items-center gap-2">
+                <RiFilePdf2Line /> Export PDF
+              </button>
+            </div>
+          </div>
           <button id="siswa-add-btn" onClick={() => setModalAdd(true)} className="btn-primary text-sm py-2"><RiUserAddLine /> Tambah Siswa</button>
         </div>
       </div>
