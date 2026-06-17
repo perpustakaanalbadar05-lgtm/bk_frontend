@@ -162,74 +162,107 @@ export async function exportSiswaToPdf(siswa, namaSekolah = 'Konselia') {
 /**
  * Export individual AKPD Rapor to PDF
  */
-export async function exportAkpdRaporToPdf(student, result, conf, namaSekolah = 'Konselia') {
+export async function exportAkpdRaporToPdf(student, result, conf, sekolah = {}, user = {}) {
   const { default: jsPDF } = await import('jspdf')
   const { default: autoTable } = await import('jspdf-autotable')
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
 
-  // Header
+  // KOP SURAT
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'bold')
+  doc.text((sekolah?.yayasan || 'DINAS PENDIDIKAN DAN KEBUDAYAAN').toUpperCase(), 105, 16, { align: 'center' })
   doc.setFontSize(16)
   doc.setFont('helvetica', 'bold')
-  doc.text('RAPOR DIAGNOSA AKPD', 105, 20, { align: 'center' })
-  
-  doc.setFontSize(11)
+  doc.text((sekolah?.nama || 'UNIT PELAKSANA TEKNIS BIMBINGAN KONSELING').toUpperCase(), 105, 23, { align: 'center' })
+  doc.setFontSize(10)
   doc.setFont('helvetica', 'normal')
-  doc.text(namaSekolah, 105, 26, { align: 'center' })
-  
-  doc.line(14, 30, 196, 30)
+  doc.text(sekolah?.alamat || 'Jalan Raya Pendidikan No. 101, Pamekasan', 105, 29, { align: 'center' })
+  doc.setFontSize(9)
+  doc.setFont('helvetica', 'italic')
+  doc.text(sekolah?.kontak || 'Email: bk@sekolah.sch.id | Telp: (0324) 321456', 105, 34, { align: 'center' })
 
-  // Student Info
+  // Garis KOP ganda
+  doc.setLineWidth(0.5)
+  doc.line(14, 38, 196, 38)
+  doc.setLineWidth(1.0)
+  doc.line(14, 39.5, 196, 39.5)
+
+  // Judul
+  doc.setFontSize(14)
+  doc.setFont('helvetica', 'bold')
+  doc.text(`RAPOR DIAGNOSA ${conf?.title || 'AKPD'}`, 105, 50, { align: 'center' })
+  
+  // Detail Siswa
   doc.setFontSize(10)
   doc.setFont('helvetica', 'bold')
-  doc.text('DATA SISWA', 14, 40)
+  doc.text('DATA IDENTITAS', 14, 65)
   
   doc.setFont('helvetica', 'normal')
-  doc.text(`Nama Lengkap   : ${student.nama || '-'}`, 14, 48)
-  doc.text(`No. Induk (NIS) : ${student.nis || '-'}`, 14, 54)
-  doc.text(`Kelas / Gender  : ${student.kelas || '-'} / ${student.jk === 'L' ? 'Laki-laki' : 'Perempuan'}`, 14, 60)
+  doc.text(`Nama Lengkap   : ${student.nama || '-'}`, 14, 72)
+  doc.text(`No. Induk (NIS) : ${student.nis || '-'}`, 14, 78)
+  doc.text(`Kelas / Gender  : ${student.kelas || '-'} / ${student.jk === 'L' ? 'Laki-laki' : student.jk === 'P' ? 'Perempuan' : '-'}`, 14, 84)
 
   // Result Summary
   doc.setFont('helvetica', 'bold')
-  doc.text('RINGKASAN HASIL', 120, 40)
+  doc.text('RINGKASAN HASIL', 120, 65)
   doc.setFont('helvetica', 'normal')
-  doc.text(`Total Skor : ${result.totalScore} Masalah`, 120, 48)
-  doc.text(`Kategori   : ${result.category}`, 120, 54)
+  doc.text(`Total Skor : ${result.totalScore} Masalah`, 120, 72)
+  doc.text(`Kategori   : ${result.category}`, 120, 78)
 
   // Detail Masalah
   doc.setFont('helvetica', 'bold')
-  doc.text('PETA DIAGNOSA MASALAH TERPILIH', 14, 75)
+  doc.text('PETA DIAGNOSA MASALAH TERPILIH', 14, 95)
 
   // Table
   const selectedItems = result.selectedItems || []
-  const tableRows = selectedItems.map(item => [
-    item.no,
+  const tableRows = selectedItems.map((item, idx) => [
+    idx + 1,
     item.pernyataan,
     item.bidang,
     item.strategiLayanan || '-'
   ])
 
   autoTable(doc, {
-    startY: 80,
+    startY: 100,
     head: [['No', 'Pernyataan / Masalah', 'Bidang', 'Layanan']],
     body: tableRows,
     theme: 'grid',
-    headStyles: { fillColor: [79, 70, 229], fontStyle: 'bold', fontSize: 9 },
+    headStyles: { fillColor: [51, 65, 85], fontStyle: 'bold', fontSize: 9, halign: 'center' },
     bodyStyles: { fontSize: 9 },
     columnStyles: {
-      0: { cellWidth: 10 },
+      0: { cellWidth: 10, halign: 'center' },
       1: { cellWidth: 90 },
-      2: { cellWidth: 35 },
-      3: { cellWidth: 45 },
+      2: { cellWidth: 35, halign: 'center' },
+      3: { cellWidth: 45, halign: 'center' },
     }
   })
 
   // Footer (Tanda tangan)
   const finalY = doc.lastAutoTable.finalY + 20
+  
+  // Tanggal
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  const kota = sekolah?.alamat?.split(',')[0] || 'Pamekasan';
+
   doc.setFont('helvetica', 'normal')
-  doc.text(`Mengetahui,`, 140, finalY)
-  doc.text(`Guru Bimbingan Konseling`, 140, finalY + 5)
-  doc.line(140, finalY + 25, 190, finalY + 25)
+  doc.text(`${kota}, ${formattedDate}`, 130, finalY)
+  doc.text(`Guru Bimbingan Konseling`, 130, finalY + 6)
+  
+  doc.setFont('helvetica', 'bold')
+  doc.text(user?.name || 'Guru Pembimbing BK', 130, finalY + 25)
+  doc.setFont('helvetica', 'normal')
+  doc.text(user?.nip ? `NIP. ${user.nip}` : 'NIP. -', 130, finalY + 30)
+
+  // Mengetahui Kepala Sekolah
+  doc.text(`Mengetahui,`, 14, finalY)
+  doc.text(`Kepala Sekolah`, 14, finalY + 6)
+
+  doc.setFont('helvetica', 'bold')
+  doc.text(sekolah?.kepsek || 'Nama Kepala Sekolah', 14, finalY + 25)
+  doc.setFont('helvetica', 'normal')
+  doc.text(sekolah?.nip_kepsek ? `NIP. ${sekolah.nip_kepsek}` : 'NIP. -', 14, finalY + 30)
 
   doc.save(`Rapor_AKPD_${(student.nama || 'Siswa').replace(/\s+/g, '_')}.pdf`)
 }

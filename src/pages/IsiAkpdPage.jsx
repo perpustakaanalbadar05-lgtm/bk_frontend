@@ -15,28 +15,38 @@ export default function IsiAkpdPage() {
   const [searchParams] = useSearchParams();
   const type = searchParams.get('type') || 'akpd';
   const bkId = searchParams.get('bk_id');
+  const queryKelas = searchParams.get('kelas');
 
   const [customMaster, setCustomMaster] = useState(null);
   const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
-    const fetchMaster = async () => {
+    const fetchMasterAndResults = async () => {
       if (!bkId) {
         setFetching(false);
         return;
       }
       try {
-        const res = await api.get(`/public/assessment-templates/${bkId}/${type}`);
-        if (res.data?.data) {
-          setCustomMaster(res.data.data);
+        const [tplRes, resRes] = await Promise.all([
+          api.get(`/public/assessment-templates/${bkId}/${type}`),
+          api.get(`/public/assessment-results/${bkId}/${type}`).catch(() => ({ data: null }))
+        ]);
+        
+        if (tplRes.data?.data) {
+          setCustomMaster(tplRes.data.data);
+        }
+        
+        if (resRes.data) {
+          // Pre-seed local storage with the latest server data so students see accurate state
+          localStorage.setItem(storageKey, JSON.stringify(resRes.data));
         }
       } catch (err) {
-        console.error('Failed to fetch custom master', err);
+        console.error('Failed to fetch custom master or server data', err);
       } finally {
         setFetching(false);
       }
     };
-    fetchMaster();
+    fetchMasterAndResults();
   }, [bkId, type]);
 
   const storageKey = type === 'gaya-belajar' ? 'simbk_data_gaya-belajar_result' : 
@@ -51,12 +61,16 @@ export default function IsiAkpdPage() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
+          if (queryKelas) {
+            const found = parsed.find(s => s.meta && s.meta.kelas === queryKelas);
+            if (found) return found.meta || {};
+          }
           return parsed[0].meta || {};
         }
         return parsed.meta || {};
       }
     } catch (_) {}
-    return { sekolah: 'SMP Negeri 2 Pamekasan', kelas: 'VII G', tahun: '2022-2023', tingkat: 'SMP/MTs' };
+    return { sekolah: 'SMP Negeri 2 Pamekasan', kelas: queryKelas || 'VII G', tahun: '2022-2023', tingkat: 'SMP/MTs' };
   };
 
 
@@ -102,12 +116,21 @@ export default function IsiAkpdPage() {
   const inputRef = useRef(null);
 
   const filteredSiswa = siswaCache
-    .filter(s => !namaQuery || (s.nama || '').toLowerCase().includes(namaQuery.toLowerCase()) || (s.nis || '').includes(namaQuery))
+    .filter(s => {
+      // If the link is specific to a class, only show students from that class
+      if (queryKelas && s.kelas && s.kelas !== queryKelas) return false;
+      return !namaQuery || (s.nama || '').toLowerCase().includes(namaQuery.toLowerCase()) || (s.nis || '').includes(namaQuery);
+    })
     .slice(0, 10);
 
   const handleSelectSiswa = (s) => {
     const nama = s.nama || '';
-    setStudentInfo({ nama, jk: s.jenisKelamin === 'Perempuan' ? 'P' : 'L', kelas: s.kelas || activeMeta.kelas });
+    setStudentInfo({ 
+      nama, 
+      jk: s.jenisKelamin === 'Perempuan' ? 'P' : 'L', 
+      // If queryKelas is present, force it to queryKelas to prevent accidental new class creation
+      kelas: queryKelas || s.kelas || activeMeta.kelas 
+    });
     setNamaQuery(nama);
     setShowDrop(false);
   };
@@ -134,16 +157,29 @@ export default function IsiAkpdPage() {
   };
 
   
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const confirmSubmit = confirm("Apakah Anda yakin jawaban Anda sudah benar dan siap dikirim?");
     if (!confirmSubmit) return;
 
+    // Menampilkan loading indikator saat proses sync
+    const loadingToast = toast.loading('Menyinkronkan data dengan server sekolah...');
+
     try {
       let resultsArray = [];
-      const savedStr = localStorage.getItem(config.key);
-      if (savedStr) {
-        const parsed = JSON.parse(savedStr);
-        resultsArray = Array.isArray(parsed) ? parsed : [parsed];
+      
+      // 1. Coba ambil data terbaru dari server agar sinkron dengan siswa lain (menghindari tumpukan)
+      try {
+        const res = await api.get(`/public/assessment-results/${bkId}/${type}`);
+        if (res.data) {
+          resultsArray = Array.isArray(res.data) ? res.data : [res.data];
+        }
+      } catch (e) {
+        // Fallback jika offline, ambil dari localStorage
+        const savedStr = localStorage.getItem(config.key);
+        if (savedStr) {
+          const parsed = JSON.parse(savedStr);
+          resultsArray = Array.isArray(parsed) ? parsed : [parsed];
+        }
       }
 
       let sessionIdx = resultsArray.findIndex(s => s.meta && s.meta.kelas === studentInfo.kelas);
@@ -173,18 +209,22 @@ export default function IsiAkpdPage() {
 
       resultsArray[sessionIdx] = finalComputed;
 
+      // 2. Simpan di localStorage & kirim ke Server (Database)
       localStorage.setItem(config.key, JSON.stringify(resultsArray));
+      window.dispatchEvent(new Event('storage')); // Trigger update di tab yang sama
 
-      // Trigger sync across tabs
-      window.dispatchEvent(new Event('storage'));
+      await api.post(`/public/assessment-results/${bkId}/${type}`, { result_data: resultsArray });
 
+      toast.dismiss(loadingToast);
+      toast.success("Jawaban berhasil terkirim dan disinkronisasi ke sistem BK!", { icon: '🎉' });
+      
       setStep(3);
       window.scrollTo(0,0);
-      toast.success("Jawaban berhasil terkirim ke sistem BK!", { icon: '🎉' });
 
     } catch (error) {
       console.error(error);
-      toast.error("Terjadi kesalahan saat menyimpan data.");
+      toast.dismiss(loadingToast);
+      toast.error("Terjadi kesalahan koneksi saat mengirim data ke server.");
     }
   };
 

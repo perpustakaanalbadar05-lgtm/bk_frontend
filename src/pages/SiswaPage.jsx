@@ -600,7 +600,7 @@ export default function SiswaPage() {
           { label: 'Total Siswa', value: siswa.length, color: 'text-primary-400' },
           { label: 'Aktif', value: siswa.filter(s=>s.status==='Aktif').length, color: 'text-teal-400' },
           { label: 'Perlu Perhatian', value: siswa.filter(s=>s.status==='Perhatian').length, color: 'text-amber-400' },
-          { label: 'Konseling Aktif', value: siswa.reduce((a,s)=>a+(s.counseling_sessions_count || 0),0), color: 'text-accent-400' },
+          { label: 'Konseling Aktif', value: siswa.reduce((a,s)=>a+parseInt(s.counseling_sessions_count || 0, 10),0), color: 'text-accent-400' },
         ].map(({ label, value, color }) => (
           <div key={label} className="card-feature text-center py-5">
             <div className={`font-display font-black text-3xl ${color} mb-1 drop-shadow-md`}>{value}</div>

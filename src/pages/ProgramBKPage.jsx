@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   RiAddLine, RiFileTextLine, RiDownloadLine, RiEditLine, RiEyeLine,
   RiMagicLine, RiCheckboxCircleLine, RiRefreshLine, RiCalendarCheckLine,
@@ -43,6 +43,51 @@ export default function ProgramBKPage() {
     tingkatFallback = 'SMA/SMK/MA';
   }
 
+  // Aggregate all sessions if akpdResult is an array (multi-class support)
+  const { combinedAggregates, combinedMeta, hasData } = useMemo(() => {
+    let combinedAggregates = [];
+    let combinedMeta = { tingkat: tingkatFallback, sekolah: sekolah?.nama || 'Belum diatur', kelas: 'Semua Kelas' };
+    let hasData = false;
+
+    if (akpdResult) {
+      const sessions = Array.isArray(akpdResult) ? akpdResult : [akpdResult];
+      const validSessions = sessions.filter(s => s && s.aggregates);
+      
+      if (validSessions.length > 0) {
+        hasData = true;
+        combinedMeta = validSessions[0].meta || combinedMeta;
+        if (validSessions.length > 1) {
+          combinedMeta = { ...combinedMeta, kelas: 'Lintas Kelas (Agregat)' };
+        }
+
+        const mergedAggregates = {};
+        let totalSiswa = 0;
+        
+        validSessions.forEach(session => {
+           const studentCount = session.students ? session.students.length : 0;
+           totalSiswa += studentCount;
+           if (session.aggregates) {
+             session.aggregates.forEach(agg => {
+               if (!mergedAggregates[agg.no]) {
+                 mergedAggregates[agg.no] = { ...agg, jmlResponden: 0 };
+               }
+               mergedAggregates[agg.no].jmlResponden += agg.jmlResponden;
+             });
+           }
+        });
+        
+        combinedAggregates = Object.values(mergedAggregates).map(agg => {
+            const persentase = totalSiswa > 0 ? (agg.jmlResponden / totalSiswa) * 100 : 0;
+            let prioritas = 'RENDAH';
+            if (persentase >= 2) prioritas = 'TINGGI'; 
+            else if (persentase >= 1) prioritas = 'SEDANG';
+            return { ...agg, persentase, prioritas };
+        });
+      }
+    }
+    return { combinedAggregates, combinedMeta, hasData };
+  }, [akpdResult, tingkatFallback, sekolah?.nama]);
+
   const handleGenerate = () => {
     setGenerating(true)
     
@@ -50,11 +95,11 @@ export default function ProgramBKPage() {
       setGenerating(false)
       setShowResult(true)
       
-      if (akpdResult) {
-        let prioritizedItems = akpdResult.aggregates.filter(a => a.prioritas === 'TINGGI' || a.prioritas === 'SEDANG');
+      if (hasData) {
+        let prioritizedItems = combinedAggregates.filter(a => a.prioritas === 'TINGGI' || a.prioritas === 'SEDANG');
         
         if (prioritizedItems.length === 0) {
-          prioritizedItems = [...akpdResult.aggregates].sort((a,b) => b.persentase - a.persentase).slice(0, 12);
+          prioritizedItems = [...combinedAggregates].sort((a,b) => b.persentase - a.persentase).slice(0, 12);
         } else {
           prioritizedItems.sort((a, b) => b.persentase - a.persentase);
         }
@@ -65,7 +110,7 @@ export default function ProgramBKPage() {
           tujuan: item.tujuanLayanan || `Peserta didik mampu mengelola hal terkait ${item.bidang}`,
           komponen: item.komponenLayanan || 'Dasar',
           layanan: item.strategiLayanan || 'Bimbingan Klasikal',
-          kelas: akpdResult.meta.kelas.replace(/[^0-9]/g, '') || 'VII',
+          kelas: combinedMeta.kelas.replace(/[^0-9]/g, '') || 'VII',
           materi: item.materi || item.pernyataan,
           metode: item.strategiLayanan?.includes('Klasikal') ? 'Diskusi, Ceramah, Tanya Jawab' : 'Konseling Individu / Diskusi Kelompok',
           media: item.strategiLayanan?.includes('Klasikal') ? 'LCD Projector, PPT Slide, Alat Tulis' : 'Ruang Konseling, Kertas Kerja',
@@ -84,7 +129,7 @@ export default function ProgramBKPage() {
             tujuan: item.tujuanLayanan || `Memahami pentingnya ${item.materi || item.pernyataan}`,
             komponen: item.komponenLayanan || 'Layanan Dasar',
             layanan: item.strategiLayanan || 'Bimbingan Klasikal',
-            sasaran: `Kelas ${akpdResult.meta.kelas}`,
+            sasaran: `Kelas ${combinedMeta.kelas}`,
             waktu: bulan,
             prioritas: item.prioritas,
             persentase: item.persentase,
@@ -180,26 +225,26 @@ export default function ProgramBKPage() {
         <div className="space-y-6 animate-in hide-on-print">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { label: 'Matriks Action Plan', count: akpdResult ? '1 Matriks' : '0 Matriks', color: 'from-cyan-500/20 to-blue-500/20', text: 'text-cyan-400' },
-              { label: 'PROTA & PROSEM', count: akpdResult ? '2 Dokumen' : '0 Dokumen', color: 'from-purple-500/20 to-pink-500/20', text: 'text-pink-400' },
-              { label: 'RPL Rencana Layanan', count: akpdResult ? `${akpdResult.aggregates.filter(x=>x.prioritas!=='RENDAH').length} Modul` : '0 Modul', color: 'from-teal-500/20 to-emerald-500/20', text: 'text-teal-400' }
+              { label: 'Matriks Action Plan', count: hasData ? '1 Matriks' : '0 Matriks', color: 'from-cyan-500/20 to-blue-500/20', text: 'text-cyan-400' },
+              { label: 'PROTA & PROSEM', count: hasData ? '2 Dokumen' : '0 Dokumen', color: 'from-purple-500/20 to-pink-500/20', text: 'text-pink-400' },
+              { label: 'RPL Rencana Layanan', count: hasData ? `${combinedAggregates.filter(x=>x.prioritas!=='RENDAH').length} Modul` : '0 Modul', color: 'from-teal-500/20 to-emerald-500/20', text: 'text-teal-400' }
             ].map((item, i) => (
               <div key={i} className={`p-5 rounded-2xl bg-gradient-to-br ${item.color} border border-white/20 backdrop-blur-lg`}>
                 <h4 className="text-dark-300 text-xs font-medium uppercase tracking-wider">{item.label}</h4>
                 <p className={`text-3xl font-display font-black mt-2 ${item.text}`}>{item.count}</p>
                 <div className="flex justify-between items-center mt-4 text-xs text-dark-200">
-                  <span>Instansi: {sekolah.nama || (akpdResult ? akpdResult.meta.sekolah : 'Belum diatur')}</span>
-                  <RiCheckboxCircleLine className={akpdResult ? "text-teal-400 text-lg" : "text-dark-500 text-lg"} />
+                  <span>Instansi: {sekolah.nama || (hasData ? combinedMeta.sekolah : 'Belum diatur')}</span>
+                  <RiCheckboxCircleLine className={hasData ? "text-teal-400 text-lg" : "text-dark-500 text-lg"} />
                 </div>
               </div>
             ))}
           </div>
 
-          {akpdResult ? (
+          {hasData ? (
             <div className="card-feature bg-gradient-to-r from-primary-900/50 via-dark-900 to-accent-900/30 p-8 border border-primary-500/20 flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="relative z-10">
-                <h3 className="font-display text-2xl font-bold text-white flex items-center gap-2">Data AKPD {akpdResult.meta.kelas} Siap Digunakan!</h3>
-                <p className="text-dark-300 mt-2 max-w-md text-sm">Sistem mendeteksi {akpdResult.aggregates.filter(x=>x.prioritas!=='RENDAH').length} materi prioritas untuk target <b className="text-white">{akpdResult.meta.tingkat || tingkatFallback}</b>. Hasilkan Action Plan, Prota, Promes, dan 1-Page RPL lengkap.</p>
+                <h3 className="font-display text-2xl font-bold text-white flex items-center gap-2">Data AKPD {combinedMeta.kelas} Siap Digunakan!</h3>
+                <p className="text-dark-300 mt-2 max-w-md text-sm">Sistem mendeteksi {combinedAggregates.filter(x=>x.prioritas!=='RENDAH').length} materi prioritas untuk target <b className="text-white">{combinedMeta.tingkat || tingkatFallback}</b>. Hasilkan Action Plan, Prota, Promes, dan 1-Page RPL lengkap.</p>
               </div>
               <button onClick={() => setActiveTab('generator')} className="btn-primary gap-3 whitespace-nowrap bg-primary-500 font-bold">
                 SUSUN PROGRAM SEKARANG <RiMagicLine />
@@ -295,7 +340,7 @@ export default function ProgramBKPage() {
                       <div className="space-y-4 animate-in text-black">
                         <div className="text-center mb-6">
                           <h4 className="font-bold text-lg underline uppercase leading-tight">MATRIKS RENCANA KEGIATAN (ACTION PLAN)</h4>
-                          <p className="text-xs font-bold mt-1">TINGKAT: {akpdResult?.meta?.tingkat || tingkatFallback} | SEMESTER GANJIL TAHUN AJARAN {akpdResult ? akpdResult.meta.tahun : '2022-2023'}</p>
+                          <p className="text-xs font-bold mt-1">TINGKAT: {combinedMeta.tingkat || tingkatFallback} | SEMESTER GANJIL TAHUN AJARAN {combinedMeta.tahun || '2022-2023'}</p>
                         </div>
                         
                         <div className="overflow-x-auto border border-black rounded-sm">
@@ -345,7 +390,7 @@ export default function ProgramBKPage() {
                       <div className="space-y-4 animate-in text-black">
                         <div className="text-center mb-6">
                           <h4 className="font-bold text-lg underline uppercase leading-tight">PROGRAM TAHUNAN (PROTA) BIMBINGAN KONSELING</h4>
-                          <p className="text-xs font-bold mt-1">TINGKAT: {akpdResult?.meta?.tingkat || tingkatFallback} | SASARAN: {akpdResult ? `KELAS ${akpdResult.meta.kelas}` : 'SEMUA SISWA'}</p>
+                          <p className="text-xs font-bold mt-1">TINGKAT: {combinedMeta.tingkat || tingkatFallback} | SASARAN: {hasData ? `KELAS ${combinedMeta.kelas}` : 'SEMUA SISWA'}</p>
                         </div>
                         <div className="overflow-x-auto border border-black">
                           <table className="w-full text-xs text-left border-collapse">
@@ -382,7 +427,7 @@ export default function ProgramBKPage() {
                       <div className="space-y-4 animate-in text-black">
                         <div className="text-center mb-6">
                           <h4 className="font-bold text-lg underline uppercase leading-tight">PROGRAM SEMESTER GANJIL (PROSEM)</h4>
-                          <p className="text-xs font-bold mt-1">TINGKAT: {akpdResult?.meta?.tingkat || tingkatFallback} | BULAN PELAKSANAAN: JULI - DESEMBER</p>
+                          <p className="text-xs font-bold mt-1">TINGKAT: {combinedMeta.tingkat || tingkatFallback} | BULAN PELAKSANAAN: JULI - DESEMBER</p>
                         </div>
                         
                         <div className="overflow-x-auto border border-black">
@@ -570,7 +615,7 @@ export default function ProgramBKPage() {
               <div className="text-center my-6">
                 <h3 className="font-black text-base underline leading-tight uppercase">RENCANA PELAKSANAAN LAYANAN (RPL)</h3>
                 <h3 className="font-black text-base uppercase leading-tight">{selectedRpl.layanan === 'Klasikal' ? 'BIMBINGAN KLASIKAL' : `LAYANAN ${selectedRpl.layanan.toUpperCase()}`}</h3>
-                <p className="text-xs font-bold mt-1 uppercase">SEMESTER GANJIL TAHUN AJARAN {akpdResult?.meta?.tahun || '2022-2023'}</p>
+                <p className="text-xs font-bold mt-1 uppercase">SEMESTER GANJIL TAHUN AJARAN {combinedMeta.tahun || '2022-2023'}</p>
               </div>
 
               {/* ISI TABEL STRUKTUR RPL 1-HALAMAN KEMDIKBUD */}

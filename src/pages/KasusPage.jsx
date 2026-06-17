@@ -206,7 +206,7 @@ function KasusModal({ isOpen, onClose, onSave, classes, siswa = [], defaultVisit
 }
 
 export default function KasusPage() {
-  const { classes } = useSettings()
+  const { classes, sekolah } = useSettings()
   const { kasus, siswa, addKasus, updateKasus, deleteKasus } = useData()
   const [activeTab, setActiveTab] = useState('kasus')
   const [searchTerm, setSearchTerm] = useState('')
@@ -281,8 +281,21 @@ export default function KasusPage() {
         confirmLabel="Hapus"
       />
 
+      {/* PRINT ONLY HEADER (KOP) */}
+      <div className="hidden print:block mb-6 text-black border-b-[3px] border-double border-black pb-4 text-center">
+        <h2 className="text-sm font-bold uppercase tracking-widest">{sekolah?.yayasan || 'DINAS PENDIDIKAN DAN KEBUDAYAAN'}</h2>
+        <h1 className="text-2xl font-black uppercase mt-1">{sekolah?.nama || 'UNIT PELAKSANA TEKNIS BIMBINGAN KONSELING'}</h1>
+        <p className="text-xs mt-2">{sekolah?.alamat || 'Jalan Raya Pendidikan No. 101, Pamekasan'}</p>
+        <p className="text-xs italic mt-1">{sekolah?.kontak || 'Email: bk@sekolah.sch.id | Telp: (0324) 321456'}</p>
+      </div>
+      
+      <div className="hidden print:block mb-6 text-center text-black">
+        <h3 className="font-bold text-lg uppercase underline">Laporan Kasus & Poin Kedisiplinan</h3>
+        <p className="text-xs mt-1">Dicetak pada: {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
+      </div>
+
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden">
         <div>
           <h1 className="font-display font-bold text-2xl text-white">Buku Kasus & Poin Kedisiplinan</h1>
           <p className="text-dark-200 text-sm">Pencatatan pelanggaran, akumulasi poin, dan agenda Home Visit.</p>
@@ -300,7 +313,7 @@ export default function KasusPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex overflow-x-auto pb-2 border-b border-white/20 hide-on-print">
+      <div className="flex overflow-x-auto pb-2 border-b border-white/20 print:hidden">
         <div className="flex gap-6 w-max">
           <button onClick={() => setActiveTab('kasus')}
             className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 ${activeTab === 'kasus' ? 'border-primary-500 text-white' : 'border-transparent text-dark-300 hover:text-white'}`}>
@@ -314,8 +327,8 @@ export default function KasusPage() {
       </div>
 
       {activeTab === 'kasus' ? (
-        <div className="card-feature p-0 overflow-hidden animate-in">
-          <div className="p-5 border-b border-white/20 flex justify-between items-center bg-white/5 hide-on-print">
+        <div className="card-feature p-0 overflow-hidden animate-in print:border-none print:bg-transparent print:shadow-none print:p-0">
+          <div className="p-5 border-b border-white/20 flex justify-between items-center bg-white/5 print:hidden">
             <div className="relative w-full max-w-xs">
               <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-200" />
               <input type="text" placeholder="Cari nama siswa atau kasus..."
@@ -326,24 +339,24 @@ export default function KasusPage() {
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-black/20 border-b border-white/10 text-dark-200 font-semibold text-xs uppercase tracking-widest">
+              <thead className="bg-black/20 border-b border-white/10 text-dark-200 font-semibold text-xs uppercase tracking-widest print:bg-transparent print:text-black">
                 <tr>
-                  <th className="px-6 py-4 bg-transparent">Siswa</th>
-                  <th className="px-4 py-4 bg-transparent">Kasus</th>
-                  <th className="px-4 py-4 bg-transparent">Poin</th>
-                  <th className="px-4 py-4 bg-transparent">Tindak Lanjut</th>
-                  <th className="px-4 py-4 bg-transparent">Status</th>
-                  <th className="px-6 py-4 text-center bg-transparent hide-on-print">Aksi</th>
+                  <th className="px-6 py-4 bg-transparent print:text-black">Siswa</th>
+                  <th className="px-4 py-4 bg-transparent print:text-black">Kasus</th>
+                  <th className="px-4 py-4 bg-transparent print:text-black">Poin</th>
+                  <th className="px-4 py-4 bg-transparent print:text-black">Tindak Lanjut</th>
+                  <th className="px-4 py-4 bg-transparent print:text-black">Status</th>
+                  <th className="px-6 py-4 text-center bg-transparent print:hidden">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {filteredKasus.map((k) => (
                   <tr key={k.id} className="hover:bg-white/5 transition-colors group cursor-pointer">
                     <td className="px-6 py-4">
-                      <div className="font-bold text-white">{k.siswa}</div>
-                      <div className="text-xs text-dark-300">{k.kelas} • {k.date}</div>
+                      <div className="font-bold text-white print:text-black">{k.siswa}</div>
+                      <div className="text-xs text-dark-300 print:text-black">{k.kelas} • {k.date}</div>
                     </td>
-                    <td className="px-4 py-4 text-dark-300 max-w-xs">{k.kasus}</td>
+                    <td className="px-4 py-4 text-dark-300 print:text-black max-w-xs">{k.kasus}</td>
                     <td className="px-4 py-4">
                       <span className={`font-bold ${k.poin >= 50 ? 'text-red-400' : 'text-amber-400'}`}>+{k.poin} Poin</span>
                     </td>
@@ -371,12 +384,12 @@ export default function KasusPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-4 print:hidden">
                       <span className={`badge ${k.status === 'Selesai' ? 'bg-teal-500/20 text-teal-400 border-teal-500/30' : k.status === 'Proses' ? 'bg-primary-500/20 text-primary-400 border-primary-500/30' : 'bg-dark-600/30 text-dark-200 border-white/20'}`}>
                         {k.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-center hide-on-print">
+                    <td className="px-6 py-4 text-center print:hidden">
                       <div className="flex items-center justify-center gap-2">
                         <button onClick={() => window.print()} className="text-dark-200 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors" title="Cetak SP"><RiPrinterLine /></button>
                         <button onClick={() => setDeleteTarget(k)} className="text-red-400 hover:text-white hover:bg-red-500/20 p-1.5 rounded-lg transition-colors" title="Hapus"><RiDeleteBinLine /></button>

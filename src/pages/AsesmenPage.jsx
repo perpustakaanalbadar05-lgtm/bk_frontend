@@ -222,10 +222,10 @@ export default function AsesmenPage() {
       const conf = getAssessmentConfig();
       if (Array.isArray(conf.result)) {
          const newResult = conf.result.filter((_, i) => i !== selectedSessionIndex);
-         conf.setResult(newResult.length > 0 ? newResult : null);
+         conf.setResult(newResult);
          setSelectedSessionIndex(Math.max(0, selectedSessionIndex - 1));
       } else {
-         conf.setResult(null);
+         conf.setResult([]);
       }
       toast.success('Data asesmen kelas berhasil dihapus.')
     }
@@ -263,8 +263,11 @@ export default function AsesmenPage() {
         setCustomMasters(prev => ({ ...prev, [conf.type]: newMaster }));
         
         if (conf.result) {
-          const updatedResult = computeAkpdResults(conf.result.meta, conf.result.students, newMaster);
-          conf.setResult(updatedResult);
+          const sessions = Array.isArray(conf.result) ? conf.result : [conf.result];
+          const updatedSessions = sessions.map(session => {
+            return computeAkpdResults(session.meta, session.students || [], newMaster);
+          });
+          conf.setResult(updatedSessions);
         }
         toast.success('Pernyataan instrumen berhasil diperbarui!');
       } catch (err) {
@@ -290,14 +293,19 @@ export default function AsesmenPage() {
       if (conf.result) {
         // Also remove responses from students for the deleted index
         const idx = conf.master.findIndex(m => m.no === no);
-        const newStudents = JSON.parse(JSON.stringify(conf.result.students));
-        newStudents.forEach(std => {
-          if (std.responses && std.responses.length > idx) {
-            std.responses.splice(idx, 1);
-          }
+        const sessions = Array.isArray(conf.result) ? conf.result : [conf.result];
+        
+        const updatedSessions = sessions.map(session => {
+          const newStudents = JSON.parse(JSON.stringify(session.students || []));
+          newStudents.forEach(std => {
+            if (std.responses && std.responses.length > idx) {
+              std.responses.splice(idx, 1);
+            }
+          });
+          return computeAkpdResults(session.meta, newStudents, newMaster);
         });
-        const updatedResult = computeAkpdResults(conf.result.meta, newStudents, newMaster);
-        conf.setResult(updatedResult);
+        
+        conf.setResult(updatedSessions);
       }
       toast.success('Butir instrumen berhasil dihapus!');
     } catch (err) {
@@ -328,12 +336,17 @@ export default function AsesmenPage() {
       
       if (conf.result) {
         // Add empty response for all students
-        const newStudents = JSON.parse(JSON.stringify(conf.result.students));
-        newStudents.forEach(std => {
-          if (std.responses) std.responses.push(0);
+        const sessions = Array.isArray(conf.result) ? conf.result : [conf.result];
+        
+        const updatedSessions = sessions.map(session => {
+          const newStudents = JSON.parse(JSON.stringify(session.students || []));
+          newStudents.forEach(std => {
+            if (std.responses) std.responses.push(0); // Tambah nilai default 0 (Pilih) untuk butir baru
+          });
+          return computeAkpdResults(session.meta, newStudents, newMaster);
         });
-        const updatedResult = computeAkpdResults(conf.result.meta, newStudents, newMaster);
-        conf.setResult(updatedResult);
+        
+        conf.setResult(updatedSessions);
       }
       toast.success('Butir instrumen baru berhasil ditambahkan!');
     } catch (err) {
@@ -458,7 +471,7 @@ export default function AsesmenPage() {
                     category: selectedStudent.totalScore > 15 ? 'Urgent' : selectedStudent.totalScore > 7 ? 'Sedang' : 'Stabil',
                     selectedItems: personalChecked
                   };
-                  await exportAkpdRaporToPdf(selectedStudent, resultObj, conf, sekolah?.nama);
+                  await exportAkpdRaporToPdf(selectedStudent, resultObj, conf, sekolah, user);
                   toast.success('Rapor berhasil diunduh!', { id: 'pdf' });
                 } catch (e) {
                   console.error(e);
@@ -723,12 +736,12 @@ export default function AsesmenPage() {
           </div>
           <div className="flex w-full md:w-auto gap-2 bg-dark-900 p-1.5 rounded-xl border border-white/10">
             <code className="text-primary-300 text-xs font-mono flex items-center px-3 select-all truncate max-w-[200px] sm:max-w-xs">
-              {window.location.origin}/isi-asesmen?type={conf.type}&bk_id={user?.id}
+              {window.location.origin}/isi-asesmen?type={conf.type}&bk_id={user?.id}&kelas={encodeURIComponent(result.meta.kelas)}
             </code>
             <button onClick={() => {
-              const link = `${window.location.origin}/isi-asesmen?type=${conf.type}&bk_id=${user?.id}`;
+              const link = `${window.location.origin}/isi-asesmen?type=${conf.type}&bk_id=${user?.id}&kelas=${encodeURIComponent(result.meta.kelas)}`;
               navigator.clipboard.writeText(link).then(() => {
-                toast.success("Tautan asesmen berhasil disalin!");
+                toast.success(`Tautan asesmen Kelas ${result.meta.kelas} berhasil disalin!`);
               }).catch(() => {
                 toast.error("Gagal menyalin tautan otomatis.");
               });

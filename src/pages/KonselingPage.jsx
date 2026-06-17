@@ -35,7 +35,7 @@ export default function KonselingPage() {
   const tabs = ['semua', 'terjadwal', 'proses', 'selesai']
 
   const sigCanvas = useRef(null)
-  const { classes } = useSettings()
+  const { classes, sekolah } = useSettings()
 
   const defaultForm = { student_id: '', siswa: '', kelas: classes?.[0] || '', topik: '', jenis: 'Individu', ringkasan: '', durasi: '30' }
   const [formData, setFormData] = useState(defaultForm)
@@ -237,8 +237,21 @@ export default function KonselingPage() {
         </div>
       )}
 
+      {/* PRINT ONLY HEADER (KOP) */}
+      <div className="hidden print:block mb-6 text-black border-b-[3px] border-double border-black pb-4 text-center">
+        <h2 className="text-sm font-bold uppercase tracking-widest">{sekolah?.yayasan || 'DINAS PENDIDIKAN DAN KEBUDAYAAN'}</h2>
+        <h1 className="text-2xl font-black uppercase mt-1">{sekolah?.nama || 'UNIT PELAKSANA TEKNIS BIMBINGAN KONSELING'}</h1>
+        <p className="text-xs mt-2">{sekolah?.alamat || 'Jalan Raya Pendidikan No. 101, Pamekasan'}</p>
+        <p className="text-xs italic mt-1">{sekolah?.kontak || 'Email: bk@sekolah.sch.id | Telp: (0324) 321456'}</p>
+      </div>
+      
+      <div className="hidden print:block mb-6 text-center text-black">
+        <h3 className="font-bold text-lg uppercase underline">Laporan Jurnal Konseling Digital</h3>
+        <p className="text-xs mt-1">Dicetak pada: {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
+      </div>
+
       {/* MAIN UI */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
         <div>
           <h1 className="font-display font-bold text-2xl text-white flex items-center gap-2">
             Jurnal Konseling Digital
@@ -260,7 +273,7 @@ export default function KonselingPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 print:hidden">
         {[
           { label: 'Total Sesi', value: sessions.length, icon: RiHeartLine, color: 'text-primary-400' },
           { label: 'Bulan Ini', value: sessions.filter(s => s.tanggal?.includes(new Date().toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }))).length, icon: RiTimeLine, color: 'text-accent-400' },
@@ -279,8 +292,8 @@ export default function KonselingPage() {
       </div>
 
       {/* Table */}
-      <div className="card-feature p-0 overflow-hidden">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 border-b border-white/20 bg-white/5 gap-4 hide-on-print">
+      <div className="card-feature p-0 overflow-hidden print:border-none print:bg-transparent print:shadow-none print:p-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 border-b border-white/20 bg-white/5 gap-4 print:hidden">
           <div className="flex gap-1 overflow-x-auto pb-1 sm:pb-0">
             {tabs.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
@@ -304,13 +317,13 @@ export default function KonselingPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/10 bg-black/20">
-                <th className="table-header text-left py-4 px-6 bg-transparent">Subjek / Siswa</th>
-                <th className="table-header text-left py-4 px-4 bg-transparent">Topik</th>
-                <th className="table-header text-left py-4 px-4 hidden md:table-cell bg-transparent">Jenis</th>
-                <th className="table-header text-left py-4 px-4 hidden sm:table-cell bg-transparent">Durasi</th>
-                <th className="table-header text-center py-4 px-4 bg-transparent">TTD</th>
-                <th className="table-header text-left py-4 px-4 bg-transparent">Status</th>
-                <th className="table-header text-center py-4 px-6 bg-transparent hide-on-print">Aksi</th>
+                <th className="table-header text-left py-4 px-6 bg-transparent print:text-black">Subjek / Siswa</th>
+                <th className="table-header text-left py-4 px-4 bg-transparent print:text-black">Topik</th>
+                <th className="table-header text-left py-4 px-4 hidden md:table-cell bg-transparent print:table-cell print:text-black">Jenis</th>
+                <th className="table-header text-left py-4 px-4 hidden sm:table-cell bg-transparent print:table-cell print:text-black">Durasi</th>
+                <th className="table-header text-center py-4 px-4 bg-transparent print:text-black">TTD</th>
+                <th className="table-header text-left py-4 px-4 bg-transparent print:hidden">Status</th>
+                <th className="table-header text-center py-4 px-6 bg-transparent print:hidden">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -322,7 +335,7 @@ export default function KonselingPage() {
                         {s.siswa?.[0]}
                       </div>
                       <div>
-                        <div className="font-bold text-white text-sm group-hover:text-primary-300 transition-colors">{s.siswa}</div>
+                        <div className="font-bold text-white print:text-black text-sm group-hover:text-primary-300 transition-colors">{s.siswa}</div>
                         <div className="text-dark-300 text-xs mt-0.5">{s.kelas} • {s.tanggal}</div>
                       </div>
                     </div>
@@ -337,8 +350,8 @@ export default function KonselingPage() {
                       <div className="inline-flex p-1.5 rounded-full bg-white/10 text-dark-600" title="Belum TTD"><RiBallPenLine /></div>
                     )}
                   </td>
-                  <td className="table-cell"><span className={STATUS_CLS[s.status]}>{s.status}</span></td>
-                  <td className="py-4 px-6 text-center hide-on-print">
+                  <td className="table-cell print:hidden"><span className={STATUS_CLS[s.status]}>{s.status}</span></td>
+                  <td className="py-4 px-6 text-center print:hidden">
                     <div className="flex justify-center gap-2">
                       <button onClick={() => window.print()} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-xs text-white hover:bg-dark-700 transition-all" title="Cetak">
                         <RiPrinterLine className="text-sm" />
