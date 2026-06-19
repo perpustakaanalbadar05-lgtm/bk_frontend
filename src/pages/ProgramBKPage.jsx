@@ -110,7 +110,7 @@ export default function ProgramBKPage() {
           tujuan: item.tujuanLayanan || `Peserta didik mampu mengelola hal terkait ${item.bidang}`,
           komponen: item.komponenLayanan || 'Dasar',
           layanan: item.strategiLayanan || 'Bimbingan Klasikal',
-          kelas: combinedMeta.kelas.replace(/[^0-9]/g, '') || 'VII',
+          kelas: combinedMeta.kelas.replace(/^Kelas\s+/i, '') || 'VII',
           materi: item.materi || item.pernyataan,
           metode: item.strategiLayanan?.includes('Klasikal') ? 'Diskusi, Ceramah, Tanya Jawab' : 'Konseling Individu / Diskusi Kelompok',
           media: item.strategiLayanan?.includes('Klasikal') ? 'LCD Projector, PPT Slide, Alat Tulis' : 'Ruang Konseling, Kertas Kerja',

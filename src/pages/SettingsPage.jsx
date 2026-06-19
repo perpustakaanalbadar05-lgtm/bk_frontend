@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import {
   RiShieldStarLine, RiUserLine, RiLockLine, RiBellLine,
   RiPaletteLine, RiSaveLine, RiBuildingLine, RiGroupLine,
@@ -567,44 +568,45 @@ export default function SettingsPage() {
               )}
 
               {/* Create Account Modal */}
-              {showAkunModal && (
-                <div className="fixed inset-0 z-[999] bg-dark-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-                  <div className="w-full max-w-md bg-dark-900 border border-white/10 rounded-2xl p-6 space-y-4 shadow-2xl">
+              {showAkunModal && createPortal(
+                <div className="fixed inset-0 z-[9999] bg-slate-900/50 dark:bg-dark-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+                  <div className="w-full max-w-md bg-white dark:bg-dark-900 border border-slate-200 dark:border-white/10 rounded-2xl p-6 space-y-4 shadow-2xl my-auto">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-white">Buat Akun Baru</h3>
-                      <button onClick={() => setShowAkunModal(false)} className="text-dark-300 hover:text-white"><RiCloseLine className="text-xl" /></button>
+                      <h3 className="font-bold text-slate-900 dark:text-white">Buat Akun Baru</h3>
+                      <button onClick={() => setShowAkunModal(false)} className="text-slate-400 hover:text-slate-600 dark:text-dark-300 dark:hover:text-white"><RiCloseLine className="text-xl" /></button>
                     </div>
                     <div>
-                      <label className="text-dark-300 text-xs font-medium block mb-1">Role</label>
-                      <select value={akunForm.role} onChange={e => setAkunForm({...akunForm, role: e.target.value})} className="input-field">
+                      <label className="text-slate-600 dark:text-dark-300 text-xs font-medium block mb-1">Role</label>
+                      <select value={akunForm.role} onChange={e => setAkunForm({...akunForm, role: e.target.value})} className="input-field bg-white dark:bg-dark-800 text-slate-900 dark:text-white border-slate-200 dark:border-dark-700">
                         {Object.entries(ROLE_LABELS).filter(([k]) => k !== 'super_admin').map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                       </select>
                     </div>
                     {(akunForm.role === 'murid' || akunForm.role === 'orang_tua') && (
                       <div>
-                        <label className="text-dark-300 text-xs font-medium block mb-1">Nama Siswa yang Ditautkan</label>
-                        <input type="text" placeholder="Sama persis dengan nama siswa di sistem..." value={akunForm.siswa} onChange={e => setAkunForm({...akunForm, siswa: e.target.value})} className="input-field" />
+                        <label className="text-slate-600 dark:text-dark-300 text-xs font-medium block mb-1">Nama Siswa yang Ditautkan</label>
+                        <input type="text" placeholder="Sama persis dengan nama siswa di sistem..." value={akunForm.siswa} onChange={e => setAkunForm({...akunForm, siswa: e.target.value})} className="input-field bg-white dark:bg-dark-800 text-slate-900 dark:text-white border-slate-200 dark:border-dark-700" />
                       </div>
                     )}
                     <div>
-                      <label className="text-dark-300 text-xs font-medium block mb-1">Nama Lengkap *</label>
-                      <input type="text" placeholder="Nama lengkap..." value={akunForm.name} onChange={e => setAkunForm({...akunForm, name: e.target.value})} className="input-field" />
+                      <label className="text-slate-600 dark:text-dark-300 text-xs font-medium block mb-1">Nama Lengkap *</label>
+                      <input type="text" placeholder="Nama lengkap..." value={akunForm.name} onChange={e => setAkunForm({...akunForm, name: e.target.value})} className="input-field bg-white dark:bg-dark-800 text-slate-900 dark:text-white border-slate-200 dark:border-dark-700" />
                     </div>
                     <div>
-                      <label className="text-dark-300 text-xs font-medium block mb-1">Username *</label>
-                      <input type="text" placeholder="username_unik" value={akunForm.username} onChange={e => setAkunForm({...akunForm, username: e.target.value})} className="input-field" />
+                      <label className="text-slate-600 dark:text-dark-300 text-xs font-medium block mb-1">Username *</label>
+                      <input type="text" placeholder="username_unik" value={akunForm.username} onChange={e => setAkunForm({...akunForm, username: e.target.value})} className="input-field bg-white dark:bg-dark-800 text-slate-900 dark:text-white border-slate-200 dark:border-dark-700" />
                     </div>
                     <div>
-                      <label className="text-dark-300 text-xs font-medium block mb-1">Password *</label>
-                      <input type="password" placeholder="Min. 6 karakter" value={akunForm.password} onChange={e => setAkunForm({...akunForm, password: e.target.value})} className="input-field" />
+                      <label className="text-slate-600 dark:text-dark-300 text-xs font-medium block mb-1">Password *</label>
+                      <input type="password" placeholder="Min. 6 karakter" value={akunForm.password} onChange={e => setAkunForm({...akunForm, password: e.target.value})} className="input-field bg-white dark:bg-dark-800 text-slate-900 dark:text-white border-slate-200 dark:border-dark-700" />
                     </div>
 
                     <div className="flex gap-2 pt-2">
                       <button onClick={() => setShowAkunModal(false)} className="btn-secondary flex-1 py-2 text-sm">Batal</button>
-                      <button onClick={handleCreateAkun} className="btn-primary flex-1 py-2 text-sm"><RiCheckLine /> Buat Akun</button>
+                      <button onClick={handleCreateAkun} className="btn-primary flex-1 py-2 text-sm bg-primary-600"><RiCheckLine /> Buat Akun</button>
                     </div>
                   </div>
-                </div>
+                </div>,
+                document.body
               )}
             </div>
           )}
