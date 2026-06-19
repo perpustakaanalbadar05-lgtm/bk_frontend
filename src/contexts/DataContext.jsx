@@ -71,10 +71,10 @@ export function DataProvider({ children }) {
 
   // Cache core API data in localStorage for offline/reload speed
   useEffect(() => {
-    if (siswa.length > 0) localStorage.setItem('simbk_cache_siswa', JSON.stringify(siswa))
-    if (sessions.length > 0) localStorage.setItem('simbk_cache_sessions', JSON.stringify(sessions))
-    if (kasus.length > 0) localStorage.setItem('simbk_cache_kasus', JSON.stringify(kasus))
-    if (schedules.length > 0) localStorage.setItem('simbk_cache_schedules', JSON.stringify(schedules))
+    localStorage.setItem('simbk_cache_siswa', JSON.stringify(siswa))
+    localStorage.setItem('simbk_cache_sessions', JSON.stringify(sessions))
+    localStorage.setItem('simbk_cache_kasus', JSON.stringify(kasus))
+    localStorage.setItem('simbk_cache_schedules', JSON.stringify(schedules))
   }, [siswa, sessions, kasus, schedules])
 
   // ── Assessment setters — persist to DB + localStorage ───────────────────

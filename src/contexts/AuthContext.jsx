@@ -20,8 +20,7 @@ export const AuthProvider = ({ children }) => {
         setUser(res.data)
       } catch {
         // Token invalid or expired — clean up
-        localStorage.removeItem('simbk_token')
-        localStorage.removeItem('simbk_user')
+        clearAuthAndCache()
       } finally {
         setLoading(false)
       }
@@ -38,12 +37,26 @@ export const AuthProvider = ({ children }) => {
     return user
   }
 
+  const clearAuthAndCache = () => {
+    localStorage.removeItem('simbk_token')
+    localStorage.removeItem('simbk_user')
+    
+    // Clear all application cache to prevent data leaks between accounts
+    const keysToRemove = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && (key.startsWith('simbk_cache_') || key.startsWith('simbk_data_') || key === 'simbk_prev_stats')) {
+        keysToRemove.push(key)
+      }
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k))
+  }
+
   const logout = async () => {
     try {
       await api.post('/auth/logout')
     } catch (_) {}
-    localStorage.removeItem('simbk_token')
-    localStorage.removeItem('simbk_user')
+    clearAuthAndCache()
     setUser(null)
   }
 
