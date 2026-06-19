@@ -174,6 +174,20 @@ export default function KlasikalPage() {
     }
   }
 
+  const handleDeleteSchedule = async (id, classInfo) => {
+    if (window.confirm(`Apakah Anda yakin ingin menghapus sesi bimbingan untuk kelas ${classInfo}? Data presensi juga akan terhapus.`)) {
+      setSaving(true)
+      try {
+        await deleteSchedule(id)
+        toast.success('Sesi berhasil dihapus!')
+      } catch (err) {
+        toast.error('Gagal menghapus sesi.')
+      } finally {
+        setSaving(false)
+      }
+    }
+  }
+
   const formatTgl = (d) => {
     if (!d) return '-'
     return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
