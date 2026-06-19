@@ -2,7 +2,8 @@ import { useState, useMemo } from 'react'
 import {
   RiPresentationLine, RiTeamLine, RiCalendarCheckLine, RiFileTextLine,
   RiCheckLine, RiCloseLine, RiGroupLine, RiHistoryLine, RiArrowRightLine,
-  RiSaveLine, RiPrinterLine, RiSearchLine, RiTimeLine, RiLoader4Line
+  RiSaveLine, RiPrinterLine, RiSearchLine, RiTimeLine, RiLoader4Line,
+  RiDeleteBinLine
 } from 'react-icons/ri'
 import toast from 'react-hot-toast'
 import { useData } from '../contexts/DataContext'
@@ -116,7 +117,7 @@ function JadwalKlasikalModal({ isOpen, onClose, onSave, classes }) {
 
 export default function KlasikalPage() {
   const { classes } = useSettings()
-  const { schedules, addSchedule, updateSchedule, siswa } = useData()
+  const { schedules, addSchedule, updateSchedule, deleteSchedule, siswa } = useData()
   const [view, setView] = useState('list')
   const [activeClass, setActiveClass] = useState(null)
   const [attendance, setAttendance] = useState({})
@@ -296,14 +297,23 @@ export default function KlasikalPage() {
                               <p className="text-white/80 text-sm font-medium mt-0.5 line-clamp-1">{item.topic}</p>
                               {item.materi && <p className="text-dark-400 text-xs mt-0.5 line-clamp-1">Materi: {item.materi}</p>}
                             </div>
-                            <button
-                              onClick={() => handleOpenAttendance(item)}
-                              className={`flex-shrink-0 flex items-center gap-1 text-xs font-bold py-1.5 px-3 rounded-lg transition-all ${
-                                item.status === 'Selesai' ? 'bg-white/10 text-dark-200 hover:bg-dark-700' : 'bg-primary-600 text-white hover:bg-primary-500 shadow-glow-sm'
-                              }`}
-                            >
-                              {item.status === 'Selesai' ? 'Detail' : 'Presensi'} <RiArrowRightLine />
-                            </button>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleOpenAttendance(item)}
+                                className={`flex-shrink-0 flex items-center gap-1 text-xs font-bold py-1.5 px-3 rounded-lg transition-all ${
+                                  item.status === 'Selesai' ? 'bg-white/10 text-dark-200 hover:bg-dark-700' : 'bg-primary-600 text-white hover:bg-primary-500 shadow-glow-sm'
+                                }`}
+                              >
+                                {item.status === 'Selesai' ? 'Detail' : 'Presensi'} <RiArrowRightLine />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteSchedule(item.id, item.class)}
+                                className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all border border-red-500/20 hover:shadow-glow-sm"
+                                title="Hapus Sesi"
+                              >
+                                <RiDeleteBinLine />
+                              </button>
+                            </div>
                           </div>
                           <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-white/10">
                             <span className="flex items-center gap-1 text-xs text-dark-300">
